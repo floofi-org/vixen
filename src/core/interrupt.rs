@@ -36,12 +36,12 @@ impl Interrupt {
         println!();
         print!("zerop = ");
 
-        for (index, byte) in cpu.memory[0x0000..0x00FF].iter().enumerate() {
+        for (index, byte) in cpu.memory[0x0000..0x0100].iter().enumerate() {
             print!("{:0>2X}", byte);
             if index % 1 == 0 {
                 print!(" ");
             }
-            if (index + 1) % 32 == 0 {
+            if (index + 1) % 32 == 0 && index != 255 {
                 print!("\n        ");
             }
         }
@@ -49,12 +49,12 @@ impl Interrupt {
         println!();
         print!("\nstack = ");
 
-        for (index, byte) in cpu.memory[0x0100..0x01FF].iter().enumerate() {
+        for (index, byte) in cpu.memory[0x0100..0x0200].iter().enumerate() {
             print!("{:0>2X}", byte);
             if index % 1 == 0 {
                 print!(" ");
             }
-            if (index + 1) % 32 == 0 {
+            if (index + 1) % 32 == 0 && index != 255 {
                 print!("\n        ");
             }
         }
