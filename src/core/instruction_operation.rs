@@ -99,4 +99,12 @@ impl InstructionOperation {
             0x077 => Pll
         }
     }
+
+    pub fn disassemble(value: u16, mode: u8) -> String {
+        if let Ok(operation) = InstructionOperation::try_from(value) {
+            format!("{operation:?} ").to_lowercase()
+        } else {
+            format!("??({value:0>3X}{mode:0>1X}) ")
+        }
+    }
 }

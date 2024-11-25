@@ -29,7 +29,9 @@ impl Interrupt {
                  sp = cpu.sp, sr = cpu.sr);
 
         println!();
-        println!("pc = {pc:0>4X}: {state}: <disassembler not implemented>", pc = cpu.pc, state = cpu.extract_instruction(cpu.pc));
+        println!("pc = {pc:0>4X}: {state}: {disassembler}",
+                 pc = cpu.pc, state = cpu.extract_instruction(cpu.pc),
+                 disassembler = cpu.read_instruction_string(cpu.pc));
 
         println!();
         print!("zerop = ");

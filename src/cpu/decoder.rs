@@ -9,6 +9,7 @@ use crate::CPUResult;
 pub trait CPUDecoder {
     fn extract_instruction(&self, position: u16) -> ExtractedBinaryData;
     fn read_instruction(&self, position: u16) -> CPUResult<Instruction>;
+    fn read_instruction_string(&self, position: u16) -> String;
 }
 
 impl CPUDecoder for CPU {
@@ -38,5 +39,29 @@ impl CPUDecoder for CPU {
             mode,
             operands: [operand1, operand2],
         })
+    }
+
+    fn read_instruction_string(&self, position: u16) -> String {
+        let mut disassembled = String::new();
+
+        let opcode = self.extract_instruction(position).0;
+        let instruction = opcode[5] as u16 * 0x10 + (opcode[4] >> 4) as u16;
+        let mode = opcode[4] & 0x0F;
+
+        disassembled.push_str(&InstructionOperation::disassemble(instruction, mode));
+
+        if let Ok(mode) = InstructionMode::try_from(opcode[4] & 0x0F) {
+            disassembled.push_str(&Operand::disassemble(
+                opcode[3] as u16 * 0x100 + opcode[2] as u16,
+                self, mode));
+            disassembled.push_str(", ");
+            disassembled.push_str(&Operand::disassemble(
+                opcode[1] as u16 * 0x100 + opcode[0] as u16,
+                self, mode));
+        } else {
+            disassembled.push_str("<invalid memory mode>");
+        }
+
+        disassembled
     }
 }
