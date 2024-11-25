@@ -1,4 +1,4 @@
-use core::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter};
 use crate::cpu::CPU;
 use crate::cpu::decoder::CPUDecoder;
 

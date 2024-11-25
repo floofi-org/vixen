@@ -2,18 +2,19 @@ use crate::core::instruction_mode::InstructionMode;
 use crate::core::instruction_operation::InstructionOperation;
 use crate::core::operand::Operand;
 use crate::{instructions, CPUInstructionResult};
+use crate::cpu::CPU;
 
 #[derive(Debug)]
-pub struct Instruction<'a> {
+pub struct Instruction {
     pub operation: InstructionOperation,
     pub mode: InstructionMode,
-    pub operands: [Operand<'a>; 2]
+    pub operands: [Operand; 2]
 }
 
-impl<'a> Instruction<'a> {
-    pub fn execute(&self) -> CPUInstructionResult {
+impl Instruction {
+    pub fn execute(&self, cpu: &CPU) -> CPUInstructionResult {
         match self.operation {
-            InstructionOperation::Add => instructions::arithmetic::add(&self.operands),
+            InstructionOperation::Add => instructions::arithmetic::add(&self.operands, cpu),
             InstructionOperation::Sub => unimplemented!(),
             InstructionOperation::Mul => unimplemented!(),
             InstructionOperation::Div => unimplemented!(),

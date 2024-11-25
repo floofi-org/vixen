@@ -5,14 +5,14 @@ use crate::cpu::CPU;
 use crate::CPUResult;
 
 #[derive(Debug)]
-pub enum Operand<'a> {
+pub enum Operand {
     Literal(u16),
-    Register(RegisterId, &'a u8),
-    ZeroPage(u16, &'a u8),
-    Memory(u16, &'a u8)
+    Register(RegisterId, u8),
+    ZeroPage(u16, u8),
+    Memory(u16, u8)
 }
 
-impl<'a> Operand<'a> {
+impl Operand {
     pub fn decode(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> CPUResult<Operand> {
         match &mode {
             InstructionMode::Immediate => Ok(Operand::Literal(raw_operand)),
@@ -24,7 +24,7 @@ impl<'a> Operand<'a> {
                 if raw_operand > 0xFF {
                     Err(Interrupt::IllegalMemory)
                 } else {
-                    let operand = Operand::ZeroPage(raw_operand, &cpu.memory[raw_operand as usize]);
+                    let operand = Operand::ZeroPage(raw_operand, cpu.memory[raw_operand as usize]);
                     Ok(operand)
                 }
             },
@@ -32,7 +32,7 @@ impl<'a> Operand<'a> {
                 if raw_operand <= 0xFF {
                     Err(Interrupt::IllegalMemory)
                 } else {
-                    let operand = Operand::Memory(raw_operand, &cpu.memory[raw_operand as usize]);
+                    let operand = Operand::Memory(raw_operand, cpu.memory[raw_operand as usize]);
                     Ok(operand)
                 }
             }
