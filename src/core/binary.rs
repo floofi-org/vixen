@@ -1,4 +1,4 @@
-use std::fmt::{Display, Formatter};
+use core::fmt::{Display, Formatter};
 
 pub struct ExtractedBinaryData<'a>(pub(crate) &'a [u8]);
 
