@@ -18,10 +18,10 @@ pub struct CPU {
 impl CPU {
     pub fn new(rom: &[u8]) -> Self {
         let mut cpu = Self {
-            registers: CPURegisters::new(),
+            registers: CPURegisters::default(),
             sp: 0x0100,
             pc: 0xE000,
-            sr: CPUStatusRegister::new(),
+            sr: CPUStatusRegister::default(),
             memory: [0; 0xFFFF]
         };
         /*for (index, value) in cpu.memory.iter_mut().enumerate() {

@@ -8,7 +8,7 @@ fn run_cpu(cpu: &mut CPU) -> CPUResult<Interrupt> {
     loop {
         let pc = cpu.pc;
         let instruction =  cpu.read_instruction(pc)?;
-        instruction.execute(&cpu)?;
+        instruction.execute(cpu)?;
         cpu.pc += 6;
     }
 }

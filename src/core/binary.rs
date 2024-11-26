@@ -7,9 +7,7 @@ impl<'a> Display for ExtractedBinaryData<'a> {
         let mut hex = String::new();
         for (index, byte) in self.0.iter().enumerate() {
             hex.push_str(&format!("{:0>2X}", byte));
-            if index % 1 == 0 {
-                hex.push(' ');
-            }
+            hex.push(' ');
         }
         write!(f, "{}", hex.trim())
     }

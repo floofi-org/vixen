@@ -1,6 +1,6 @@
 use core::fmt::{Display, Formatter};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct CPUStatusRegister {
     pub zero: bool,
     pub carry: bool,
@@ -26,15 +26,5 @@ impl Display for CPUStatusRegister {
                    "-"
                }
         )
-    }
-}
-
-impl CPUStatusRegister {
-    pub fn new() -> Self {
-        Self {
-            zero: false,
-            carry: false,
-            overflow: false,
-        }
     }
 }
