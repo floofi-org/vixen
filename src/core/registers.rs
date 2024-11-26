@@ -1,5 +1,5 @@
 #[derive(Debug, Default)]
-pub struct CPURegisters {
+pub struct Registers {
     pub a: u8,
     pub x: u8,
     pub y: u8,

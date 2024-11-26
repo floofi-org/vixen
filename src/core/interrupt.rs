@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 use crate::cpu::CPU;
-use crate::cpu::decoder::CPUDecoder;
+use crate::cpu::decoder::Decoder;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Interrupt {

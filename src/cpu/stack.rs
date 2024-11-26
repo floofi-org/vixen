@@ -2,14 +2,14 @@ use crate::core::interrupt::Interrupt;
 use crate::cpu::CPU;
 use crate::CPUResult;
 
-pub trait CPUStack {
+pub trait Stack {
     fn stack_push_word(&mut self, value: u8) -> CPUResult<()>;
     fn stack_push_dword(&mut self, value: u16) -> CPUResult<()>;
     fn stack_pull_word(&mut self) -> CPUResult<u8>;
     fn stack_pull_dword(&mut self) -> CPUResult<u16>;
 }
 
-impl CPUStack for CPU {
+impl Stack for CPU {
     fn stack_push_word(&mut self, value: u8) -> CPUResult<()> {
         if self.sp >= 0x01FF {
             Err(Interrupt::StackOverflow)

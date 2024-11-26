@@ -1,7 +1,7 @@
 use crate::core::instruction_mode::InstructionMode;
 use crate::core::instruction_operation::InstructionOperation;
 use crate::core::operand::Operand;
-use crate::{instructions, CPUInstructionResult};
+use crate::{instructions, InstructionResult};
 use crate::cpu::CPU;
 
 #[derive(Debug)]
@@ -12,7 +12,7 @@ pub struct Instruction {
 }
 
 impl Instruction {
-    pub fn execute(&self, cpu: &CPU) -> CPUInstructionResult {
+    pub fn execute(&self, cpu: &CPU) -> InstructionResult {
         match self.operation {
             InstructionOperation::Add => instructions::arithmetic::add(&self.operands, cpu),
             InstructionOperation::Sub => unimplemented!(),

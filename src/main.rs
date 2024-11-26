@@ -2,7 +2,7 @@ use std::fs;
 use dumbcpu::CPUResult;
 use dumbcpu::core::interrupt::Interrupt;
 use dumbcpu::cpu::CPU;
-use dumbcpu::cpu::decoder::CPUDecoder;
+use dumbcpu::cpu::decoder::Decoder;
 
 fn run_cpu(cpu: &mut CPU) -> CPUResult<Interrupt> {
     loop {

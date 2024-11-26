@@ -4,4 +4,4 @@ mod instructions;
 
 use crate::core::interrupt::Interrupt;
 pub type CPUResult<T> = Result<T, Interrupt>;
-pub type CPUInstructionResult = CPUResult<()>;
+pub type InstructionResult = CPUResult<()>;

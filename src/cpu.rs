@@ -2,26 +2,26 @@ pub mod stack;
 pub mod decoder;
 
 use crate::core::register_id::RegisterId;
-use crate::core::registers::CPURegisters;
-use crate::core::status_register::CPUStatusRegister;
-use crate::cpu::stack::CPUStack;
+use crate::core::registers::Registers;
+use crate::core::status_register::StatusRegister;
+use crate::cpu::stack::Stack;
 
 #[derive(Debug)]
 pub struct CPU {
-    pub registers: CPURegisters,
+    pub registers: Registers,
     pub sp: u16,
     pub pc: u16,
-    pub sr: CPUStatusRegister,
+    pub sr: StatusRegister,
     pub memory: [u8; 0xFFFF]
 }
 
 impl CPU {
     pub fn new(rom: &[u8]) -> Self {
         let mut cpu = Self {
-            registers: CPURegisters::default(),
+            registers: Registers::default(),
             sp: 0x0100,
             pc: 0xE000,
-            sr: CPUStatusRegister::default(),
+            sr: StatusRegister::default(),
             memory: [0; 0xFFFF]
         };
         /*for (index, value) in cpu.memory.iter_mut().enumerate() {
