@@ -16,22 +16,16 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new(rom: &[u8]) -> Self {
-        let mut cpu = Self {
-            registers: Registers::default(),
-            sp: 0x0100,
-            pc: 0xE000,
-            sr: StatusRegister::default(),
-            memory: [0; 0xFFFF]
-        };
-        /*for (index, value) in cpu.memory.iter_mut().enumerate() {
-            if 0xE000 <= index && index <= 0xFF00 && index - 0xE000 < rom.len() {
-                *value = rom[index - 0xE000];
-            }
-        }*/
-        cpu.memory[0xE000..(0xE000 + rom.len())].copy_from_slice(rom);
-        cpu.stack_push_dword(0xE000).unwrap();
-        cpu
+    pub fn load_rom(&mut self, rom: &[u8]) {
+        let base_address = 0xE000;
+        let end_address = 0xE000 + rom.len();
+        let rom_region = base_address..end_address;
+
+        self.memory[rom_region].copy_from_slice(rom);
+
+        // Reset stack pointer to the start of the stack
+        self.sp = 0x0100;
+        self.stack_push_dword(0xE000).unwrap();
     }
 
     pub fn get_register(&self, register_id: RegisterId) -> u8 {
@@ -47,6 +41,18 @@ impl CPU {
             RegisterId::R5 => self.registers.r5,
             RegisterId::R6 => self.registers.r6,
             RegisterId::R7 => self.registers.r7
+        }
+    }
+}
+
+impl Default for CPU {
+    fn default() -> Self {
+        Self {
+            registers: Registers::default(),
+            sp: 0x0100,
+            pc: 0xE000,
+            sr: StatusRegister::default(),
+            memory: [0; 0xFFFF]
         }
     }
 }

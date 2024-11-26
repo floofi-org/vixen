@@ -15,7 +15,8 @@ fn run_cpu(cpu: &mut CPU) -> CPUResult<Interrupt> {
 
 fn main() {
     let file = fs::read("./rom.bin").unwrap();
-    let mut cpu = CPU::new(&file);
+    let mut cpu = CPU::default();
+    cpu.load_rom(&file);
 
     if let Err(interrupt) = run_cpu(&mut cpu) {
         interrupt.stack_trace(cpu);
