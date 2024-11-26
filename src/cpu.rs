@@ -9,9 +9,9 @@ use crate::cpu::stack::Stack;
 #[derive(Debug)]
 pub struct CPU {
     pub registers: Registers,
-    pub sp: u16,
-    pub pc: u16,
-    pub sr: StatusRegister,
+    pub stack_pointer: u16,
+    pub program_counter: u16,
+    pub status_register: StatusRegister,
     pub memory: [u8; 0xFFFF]
 }
 
@@ -24,7 +24,7 @@ impl CPU {
         self.memory[rom_region].copy_from_slice(rom);
 
         // Reset stack pointer to the start of the stack
-        self.sp = 0x0100;
+        self.stack_pointer = 0x0100;
         self.stack_push_dword(0xE000).unwrap();
     }
 
@@ -49,9 +49,9 @@ impl Default for CPU {
     fn default() -> Self {
         Self {
             registers: Registers::default(),
-            sp: 0x0100,
-            pc: 0xE000,
-            sr: StatusRegister::default(),
+            stack_pointer: 0x0100,
+            program_counter: 0xE000,
+            status_register: StatusRegister::default(),
             memory: [0; 0xFFFF]
         }
     }

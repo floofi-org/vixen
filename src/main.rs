@@ -6,10 +6,10 @@ use dumbcpu::cpu::decoder::Decoder;
 
 fn run_cpu(cpu: &mut CPU) -> CPUResult<Interrupt> {
     loop {
-        let pc = cpu.pc;
+        let pc = cpu.program_counter;
         let instruction =  cpu.read_instruction(pc)?;
         instruction.execute(cpu)?;
-        cpu.pc += 6;
+        cpu.program_counter += 6;
     }
 }
 

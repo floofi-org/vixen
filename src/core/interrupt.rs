@@ -15,7 +15,7 @@ pub enum Interrupt {
 
 impl Interrupt {
     pub fn stack_trace(self, cpu: CPU) {
-        let zerop = Self::get_byte_dump(&cpu.memory[0x0000..0x0100]);
+        let zero_page = Self::get_byte_dump(&cpu.memory[0x0000..0x0100]);
         let stack = Self::get_byte_dump(&cpu.memory[0x0100..0x0200]);
         let stack_trace = Self::get_stack_trace(&cpu.memory[0x0100..0x01FF]);
 
@@ -33,12 +33,12 @@ impl Interrupt {
             r5 = cpu.registers.r5,
             r6 = cpu.registers.r6,
             r7 = cpu.registers.r7,
-            sp = cpu.sp,
-            sr = cpu.sr,
-            pc = cpu.pc,
-            state = cpu.extract_instruction(cpu.pc),
-            disassembler = cpu.read_instruction_string(cpu.pc),
-            zerop = zerop,
+            sp = cpu.stack_pointer,
+            sr = cpu.status_register,
+            pc = cpu.program_counter,
+            state = cpu.extract_instruction(cpu.program_counter),
+            disassembler = cpu.read_instruction_string(cpu.program_counter),
+            zero_page = zero_page,
             stack = stack,
             stack_trace = stack_trace,
         )

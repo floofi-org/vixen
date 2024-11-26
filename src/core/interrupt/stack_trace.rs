@@ -8,7 +8,7 @@ sp = {sp:0>4X}; sr = {sr}
 
 pc = {pc:0>4X}: {state}: {disassembler}
 
-zerop = {zerop}
+zerop = {zero_page}
 
 stack = {stack}
             - _interrupt (????): <not handled>
