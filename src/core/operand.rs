@@ -16,27 +16,35 @@ impl Operand {
     pub fn decode(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> CPUResult<Operand> {
         match &mode {
             InstructionMode::Immediate => Ok(Operand::Literal(raw_operand)),
-            InstructionMode::Implied => {
-                let register = RegisterId::try_from(raw_operand)?;
-                Ok(Operand::Register(register, cpu.get_register(register)))
-            },
-            InstructionMode::ZeroPage => {
-                if raw_operand > 0xFF {
-                    Err(Interrupt::IllegalMemory)
-                } else {
-                    let operand = Operand::ZeroPage(raw_operand, cpu.memory[raw_operand as usize]);
-                    Ok(operand)
-                }
-            },
-            InstructionMode::Absolute => {
-                if raw_operand <= 0xFF {
-                    Err(Interrupt::IllegalMemory)
-                } else {
-                    let operand = Operand::Memory(raw_operand, cpu.memory[raw_operand as usize]);
-                    Ok(operand)
-                }
-            }
+            InstructionMode::Implied => Self::implied(raw_operand, cpu),
+            InstructionMode::ZeroPage => Self::zero_page(raw_operand, cpu),
+            InstructionMode::Absolute => Self::absolute(raw_operand, cpu),
         }
+    }
+
+    fn implied(register: u16, cpu: &CPU) -> CPUResult<Self> {
+        let register = RegisterId::try_from(register)?;
+        let value = cpu.get_register(register);
+
+        Ok(Operand::Register(register, value))
+    }
+
+    fn zero_page(address: u16, cpu: &CPU) -> CPUResult<Self> {
+        if address > 0xFF {
+            return Err(Interrupt::IllegalMemory);
+        }
+
+        let value = cpu.memory[address as usize];
+        Ok(Operand::ZeroPage(address, value))
+    }
+
+    fn absolute(address: u16, cpu: &CPU) -> CPUResult<Self> {
+        if address <= 0xFF {
+            return Err(Interrupt::IllegalMemory);
+        }
+
+        let value = cpu.memory[address as usize];
+        Ok(Operand::ZeroPage(address, value))
     }
 
     pub fn disassemble(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> String {

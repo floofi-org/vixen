@@ -2,36 +2,30 @@ pub mod stack;
 pub mod decoder;
 
 use crate::core::register_id::RegisterId;
-use crate::core::registers::CPURegisters;
-use crate::core::status_register::CPUStatusRegister;
-use crate::cpu::stack::CPUStack;
+use crate::core::registers::Registers;
+use crate::core::status_register::StatusRegister;
+use crate::cpu::stack::Stack;
 
 #[derive(Debug)]
 pub struct CPU {
-    pub registers: CPURegisters,
-    pub sp: u16,
-    pub pc: u16,
-    pub sr: CPUStatusRegister,
+    pub registers: Registers,
+    pub stack_pointer: u16,
+    pub program_counter: u16,
+    pub status_register: StatusRegister,
     pub memory: [u8; 0xFFFF]
 }
 
 impl CPU {
-    pub fn new(rom: &[u8]) -> Self {
-        let mut cpu = Self {
-            registers: CPURegisters::new(),
-            sp: 0x0100,
-            pc: 0xE000,
-            sr: CPUStatusRegister::new(),
-            memory: [0; 0xFFFF]
-        };
-        /*for (index, value) in cpu.memory.iter_mut().enumerate() {
-            if 0xE000 <= index && index <= 0xFF00 && index - 0xE000 < rom.len() {
-                *value = rom[index - 0xE000];
-            }
-        }*/
-        cpu.memory[0xE000..(0xE000 + rom.len())].copy_from_slice(rom);
-        cpu.stack_push_dword(0xE000).unwrap();
-        cpu
+    pub fn load_rom(&mut self, rom: &[u8]) {
+        let base_address = 0xE000;
+        let end_address = 0xE000 + rom.len();
+        let rom_region = base_address..end_address;
+
+        self.memory[rom_region].copy_from_slice(rom);
+
+        // Reset stack pointer to the start of the stack
+        self.stack_pointer = 0x0100;
+        self.stack_push_dword(0xE000).unwrap();
     }
 
     pub fn get_register(&self, register_id: RegisterId) -> u8 {
@@ -47,6 +41,18 @@ impl CPU {
             RegisterId::R5 => self.registers.r5,
             RegisterId::R6 => self.registers.r6,
             RegisterId::R7 => self.registers.r7
+        }
+    }
+}
+
+impl Default for CPU {
+    fn default() -> Self {
+        Self {
+            registers: Registers::default(),
+            stack_pointer: 0x0100,
+            program_counter: 0xE000,
+            status_register: StatusRegister::default(),
+            memory: [0; 0xFFFF]
         }
     }
 }

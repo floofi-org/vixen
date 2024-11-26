@@ -6,13 +6,13 @@ use crate::core::operand::Operand;
 use crate::cpu::CPU;
 use crate::CPUResult;
 
-pub trait CPUDecoder {
+pub trait Decoder {
     fn extract_instruction(&self, position: u16) -> ExtractedBinaryData;
     fn read_instruction(&self, position: u16) -> CPUResult<Instruction>;
     fn read_instruction_string(&self, position: u16) -> String;
 }
 
-impl CPUDecoder for CPU {
+impl Decoder for CPU {
     fn extract_instruction(&self, position: u16) -> ExtractedBinaryData {
         let index = position as usize;
         ExtractedBinaryData(&self.memory[index..index + 6])

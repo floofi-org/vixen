@@ -1,40 +1,22 @@
 use core::fmt::{Display, Formatter};
 
-#[derive(Debug)]
-pub struct CPUStatusRegister {
+#[derive(Debug, Default)]
+pub struct StatusRegister {
     pub zero: bool,
     pub carry: bool,
     pub overflow: bool
 }
 
-impl Display for CPUStatusRegister {
+impl Display for StatusRegister {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{zero}{carry}{overflow}",
-               zero = if self.zero {
-                   "z"
-               } else {
-                   "-"
-               },
-               carry = if self.carry {
-                   "c"
-               } else {
-                   "-"
-               },
-               overflow = if self.overflow {
-                   "o"
-               } else {
-                   "-"
-               }
-        )
+        let zero = get_flag_char('z', self.zero);
+        let carry = get_flag_char('c', self.carry);
+        let overflow = get_flag_char('o', self.overflow);
+
+        write!(f, "{zero}{carry}{overflow}")
     }
 }
 
-impl CPUStatusRegister {
-    pub fn new() -> Self {
-        Self {
-            zero: false,
-            carry: false,
-            overflow: false,
-        }
-    }
+fn get_flag_char(flag: char, state: bool) -> char {
+    if state { flag } else { '-' }
 }

@@ -1,4 +1,18 @@
-use crate::{isa, CPUResult, Interrupt};
+use crate::{CPUResult, Interrupt};
+
+macro_rules! isa {
+    ( $value: expr, $( $x: expr => $y: ident ),+ ) => {
+        {
+            match $value {
+            $(
+                $x => Ok(Self::$y),
+            )*
+                _ => Err(Interrupt::IllegalInstruction)
+            }
+        }
+    };
+}
+
 
 #[derive(Debug, Clone, Copy)]
 pub enum InstructionOperation {
@@ -12,7 +26,19 @@ pub enum InstructionOperation {
 }
 
 impl InstructionOperation {
-    pub fn try_from(value: u16) -> CPUResult<Self> {
+    pub fn disassemble(value: u16, mode: u8) -> String {
+        if let Ok(operation) = InstructionOperation::try_from(value) {
+            format!("{operation:?} ").to_lowercase()
+        } else {
+            format!("??({value:0>3X}{mode:0>1X}) ")
+        }
+    }
+}
+
+impl TryFrom<u16> for InstructionOperation {
+    type Error = Interrupt;
+
+    fn try_from(value: u16) -> CPUResult<Self> {
         isa! {
             value,
 
@@ -100,11 +126,4 @@ impl InstructionOperation {
         }
     }
 
-    pub fn disassemble(value: u16, mode: u8) -> String {
-        if let Ok(operation) = InstructionOperation::try_from(value) {
-            format!("{operation:?} ").to_lowercase()
-        } else {
-            format!("??({value:0>3X}{mode:0>1X}) ")
-        }
-    }
 }
