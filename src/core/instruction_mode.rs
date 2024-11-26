@@ -8,8 +8,10 @@ pub enum InstructionMode {
     Absolute
 }
 
-impl InstructionMode {
-    pub fn try_from(value: u8) -> CPUResult<Self> {
+impl TryFrom<u8> for InstructionMode {
+    type Error = Interrupt;
+
+    fn try_from(value: u8) -> CPUResult<Self> {
         match value {
             0 => Ok(InstructionMode::Immediate),
             1 => Ok(InstructionMode::Implied),
