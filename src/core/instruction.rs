@@ -2,6 +2,7 @@ use crate::core::instruction_mode::InstructionMode;
 use crate::core::instruction_operation::InstructionOperation;
 use crate::core::operand::Operand;
 use crate::{instructions, InstructionResult};
+use crate::core::interrupt::Interrupt;
 use crate::cpu::CPU;
 
 #[derive(Debug)]
@@ -12,10 +13,11 @@ pub struct Instruction {
 }
 
 impl Instruction {
-    pub fn execute(&self, cpu: &CPU) -> InstructionResult {
+    pub fn execute(&mut self, cpu: &mut CPU) -> InstructionResult {
         match self.operation {
-            InstructionOperation::Add => instructions::arithmetic::add(&self.operands, cpu),
-            _ => todo!("Instruction is not implemented"),
+            InstructionOperation::Add => instructions::arithmetic::add(self.mode, &self.operands, cpu),
+            InstructionOperation::Mov => instructions::data_movement::mov(self.mode, &mut self.operands, cpu),
+            _ => Err(Interrupt::Failure),
         }
     }
 }
