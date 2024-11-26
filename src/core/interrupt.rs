@@ -76,7 +76,7 @@ impl Interrupt {
 
 impl Display for Interrupt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let str = match self {
+        write!(f, "{}", match self {
             Interrupt::Rtc => "0x00 (Real-time clock tick)",
             Interrupt::AsyncIO => "0x01 (Asynchronous I/O event)",
             Interrupt::Hardware => "0x02 (General hardware fault)",
@@ -105,8 +105,6 @@ impl Display for Interrupt {
             Interrupt::User16 => "0xEF (User-defined interrupt 16)",
             Interrupt::Failure => "0xFE (Internal system failure)",
             Interrupt::Reset => "0xFF (System reset)",
-        };
-
-        write!(f, "{}", str)
+        })
     }
 }
