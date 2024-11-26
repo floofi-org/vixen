@@ -15,8 +15,8 @@ pub enum Interrupt {
 
 impl Interrupt {
     pub fn stack_trace(self, cpu: CPU) {
-        let zero_page = Self::get_byte_dump(&cpu.memory[0x0000..0x0100]);
-        let stack = Self::get_byte_dump(&cpu.memory[0x0100..0x0200]);
+        let zero_page = Self::get_byte_dump(&cpu.memory[0x0000..0x0100], 32, 8);
+        let stack = Self::get_byte_dump(&cpu.memory[0x0100..0x0200], 32, 8);
         let stack_trace = Self::get_stack_trace(&cpu.memory[0x0100..0x01FF]);
 
         println!(
@@ -44,16 +44,15 @@ impl Interrupt {
         )
     }
 
-    // I have no idea what goes on with these two
-    fn get_byte_dump(bytes: &[u8]) -> String {
+    fn get_byte_dump(bytes: &[u8], line_size: usize, padding: usize) -> String {
         let mut dump = String::new();
 
         for (index, byte) in bytes.iter().enumerate() {
             write!(&mut dump, "{:0>2X}", byte).unwrap();
             write!(&mut dump, " ").unwrap();
 
-            if (index + 1) % 32 == 0 && index != 255 {
-                write!(&mut dump, "\n        ").unwrap();
+            if (index + 1) % line_size == 0 && index != bytes.len() - 1 {
+                write!(&mut dump, "\n{}", " ".repeat(padding)).unwrap();
             }
         }
 
