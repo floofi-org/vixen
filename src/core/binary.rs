@@ -4,11 +4,13 @@ pub struct ExtractedBinaryData<'a>(pub(crate) &'a [u8]);
 
 impl<'a> Display for ExtractedBinaryData<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        let mut hex = String::new();
-        for (index, byte) in self.0.iter().enumerate() {
-            hex.push_str(&format!("{:0>2X}", byte));
-            hex.push(' ');
+        let second_to_last = self.0.len() - 1;
+        let bytes = &self.0[..second_to_last];
+
+        for byte in bytes {
+            write!(f, "{:0>2X} ", byte)?;
         }
-        write!(f, "{}", hex.trim())
+
+        write!(f, "{:0>2X}", self.0.last().unwrap())
     }
 }
