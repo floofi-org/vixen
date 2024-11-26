@@ -1,4 +1,18 @@
-use crate::{isa, CPUResult, Interrupt};
+use crate::{CPUResult, Interrupt};
+
+macro_rules! isa {
+    ( $value: expr, $( $x: expr => $y: ident ),+ ) => {
+        {
+            match $value {
+            $(
+                $x => Ok(Self::$y),
+            )*
+                _ => Err(Interrupt::IllegalInstruction)
+            }
+        }
+    };
+}
+
 
 #[derive(Debug, Clone, Copy)]
 pub enum InstructionOperation {

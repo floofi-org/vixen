@@ -85,17 +85,3 @@ impl Instruction {
         }
     }
 }
-
-#[macro_export]
-macro_rules! isa {
-    ( $value: expr, $( $x: expr => $y: ident ),+ ) => {
-        {
-            match $value {
-            $(
-                $x => Ok(Self::$y),
-            )*
-                _ => Err(Interrupt::IllegalInstruction)
-            }
-        }
-    };
-}
