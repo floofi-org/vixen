@@ -3,12 +3,5 @@
 version = 3
 
 [[package]]
-name = "vixen"
-version = "0.1.0"
-
-[[package]]
 name = "vixen-emulator"
 version = "0.1.0"
-dependencies = [
- "vixen",
-]

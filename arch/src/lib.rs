@@ -1,3 +1,6 @@
+#![no_std]
+extern crate alloc;
+
 pub mod core;
 pub mod cpu;
 mod instructions;

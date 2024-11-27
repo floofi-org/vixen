@@ -8,7 +8,7 @@ pub struct StatusRegister {
 }
 
 impl Display for StatusRegister {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let zero = get_flag_char('z', self.zero);
         let carry = get_flag_char('c', self.carry);
         let overflow = get_flag_char('o', self.overflow);

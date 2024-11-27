@@ -1,0 +1,7 @@
+[package]
+name = "vixen-emulator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vixen = { path = "../arch" }

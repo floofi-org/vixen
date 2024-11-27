@@ -11,10 +11,15 @@ pub fn add(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
     }
 
     let number1 = operand[0].read()?;
+    let number1_negative = number1 >> 7 == 1;
     let number2 = operand[1].read()?;
+    let number2_negative = number2 >> 7 == 1;
 
     let sum = number1.overflowing_add(number2);
-    cpu.status_register.overflow = sum.1;
+    let sum_negative = sum.0 >> 7 == 1;
+
+    cpu.status_register.carry = sum.1;
+    cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
     cpu.registers.a = sum.0;
 
     Ok(())

@@ -1,3 +1,5 @@
+use alloc::format;
+use alloc::string::String;
 use crate::{CPUResult, Interrupt};
 
 macro_rules! isa {

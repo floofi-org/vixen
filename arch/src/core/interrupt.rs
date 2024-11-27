@@ -1,5 +1,7 @@
-use std::fmt::{Display, Formatter};
-use std::fmt::Write;
+use alloc::format;
+use alloc::string::String;
+use core::fmt::{Display, Formatter};
+use core::fmt::Write;
 use crate::cpu::CPU;
 use crate::cpu::decoder::Decoder;
 
@@ -14,12 +16,12 @@ pub enum Interrupt {
 }
 
 impl Interrupt {
-    pub fn stack_trace(self, cpu: CPU) {
+    pub fn stack_trace(self, cpu: CPU) -> String {
         let zero_page = Self::get_byte_dump(&cpu.memory[0x0000..0x0100], 32, 8);
         let stack = Self::get_byte_dump(&cpu.memory[0x0100..0x0200], 32, 8);
         let stack_trace = Self::get_stack_trace(&cpu.memory[0x0100..0x01FF]);
 
-        println!(
+        format!(
             include!("interrupt/stack_trace.rs"),
             interrupt = self,
             a = cpu.registers.a,
@@ -74,7 +76,7 @@ impl Interrupt {
 }
 
 impl Display for Interrupt {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", match self {
             Interrupt::Rtc => "0x00 (Real-time clock tick)",
             Interrupt::AsyncIO => "0x01 (Asynchronous I/O event)",
