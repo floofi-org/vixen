@@ -1,14 +1,10 @@
 pub mod stack;
 pub mod decoder;
 
-use alloc::string::String;
-use crate::core::interrupt::Interrupt;
 use crate::core::register_id::RegisterId;
 use crate::core::registers::Registers;
 use crate::core::status_register::StatusRegister;
-use crate::cpu::decoder::Decoder;
 use crate::cpu::stack::Stack;
-use crate::CPUResult;
 
 #[derive(Debug)]
 pub struct CPU {
@@ -45,23 +41,6 @@ impl CPU {
             RegisterId::R5 => self.registers.r5,
             RegisterId::R6 => self.registers.r6,
             RegisterId::R7 => self.registers.r7
-        }
-    }
-
-    fn cpu_main_loop(&mut self) -> CPUResult<Interrupt> {
-        loop {
-            let pc = self.program_counter;
-            let mut instruction =  self.read_instruction(pc)?;
-            instruction.execute(self)?;
-            self.program_counter += 6;
-        }
-    }
-
-    pub fn run(mut self) -> Option<String> {
-        if let Err(interrupt) = self.cpu_main_loop() {
-            Some(interrupt.stack_trace(self))
-        } else {
-            None
         }
     }
 }

@@ -1,6 +1,6 @@
 use core::fmt::{Display, Formatter};
 
-pub struct ExtractedBinaryData<'a>(pub(crate) &'a [u8]);
+pub struct ExtractedBinaryData<'a>(pub &'a [u8]);
 
 impl<'a> Display for ExtractedBinaryData<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {

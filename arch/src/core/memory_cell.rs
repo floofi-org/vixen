@@ -40,9 +40,13 @@ impl MemoryCell for Operand {
                 Ok(())
             },
             Operand::ZeroPage(addr, initial_value) | Operand::Memory(addr, initial_value) => {
-                cpu.memory[*addr as usize] = value;
-                *initial_value = value;
-                Ok(())
+                if (0x0200..0xDFFF).contains(addr) {
+                    cpu.memory[*addr as usize] = value;
+                    *initial_value = value;
+                    Ok(())
+                } else {
+                    Err(Interrupt::IllegalMemory)
+                }
             }
         }
     }

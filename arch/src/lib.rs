@@ -3,7 +3,7 @@ extern crate alloc;
 
 pub mod core;
 pub mod cpu;
-mod instructions;
+pub mod instructions;
 
 use crate::core::interrupt::Interrupt;
 pub type CPUResult<T> = Result<T, Interrupt>;

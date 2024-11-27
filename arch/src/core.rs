@@ -8,3 +8,4 @@ pub mod instruction_mode;
 pub mod instruction_operation;
 pub mod interrupt;
 pub mod memory_cell;
+pub mod stack_trace;

@@ -17,6 +17,7 @@ impl Instruction {
         match self.operation {
             InstructionOperation::Add => instructions::arithmetic::add(self.mode, &self.operands, cpu),
             InstructionOperation::Mov => instructions::data_movement::mov(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Int => instructions::control_flow::int(self.mode, &self.operands, cpu),
             _ => Err(Interrupt::Failure),
         }
     }

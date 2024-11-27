@@ -1,9 +1,6 @@
-use alloc::format;
 use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::fmt::Write;
-use crate::cpu::CPU;
-use crate::cpu::decoder::Decoder;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Interrupt {
@@ -16,37 +13,7 @@ pub enum Interrupt {
 }
 
 impl Interrupt {
-    pub fn stack_trace(self, cpu: CPU) -> String {
-        let zero_page = Self::get_byte_dump(&cpu.memory[0x0000..0x0100], 32, 8);
-        let stack = Self::get_byte_dump(&cpu.memory[0x0100..0x0200], 32, 8);
-        let stack_trace = Self::get_stack_trace(&cpu.memory[0x0100..0x01FF]);
-
-        format!(
-            include!("interrupt/stack_trace.rs"),
-            interrupt = self,
-            a = cpu.registers.a,
-            x = cpu.registers.x,
-            y = cpu.registers.y,
-            r0 = cpu.registers.r0,
-            r1 = cpu.registers.r1,
-            r2 = cpu.registers.r2,
-            r3 = cpu.registers.r3,
-            r4 = cpu.registers.r4,
-            r5 = cpu.registers.r5,
-            r6 = cpu.registers.r6,
-            r7 = cpu.registers.r7,
-            sp = cpu.stack_pointer,
-            sr = cpu.status_register,
-            pc = cpu.program_counter,
-            state = cpu.extract_instruction(cpu.program_counter),
-            disassembler = cpu.read_instruction_string(cpu.program_counter),
-            zero_page = zero_page,
-            stack = stack,
-            stack_trace = stack_trace,
-        )
-    }
-
-    fn get_byte_dump(bytes: &[u8], line_size: usize, padding: usize) -> String {
+    pub fn get_byte_dump(bytes: &[u8], line_size: usize, padding: usize) -> String {
         let mut dump = String::new();
 
         for (index, byte) in bytes.iter().enumerate() {
@@ -61,7 +28,7 @@ impl Interrupt {
         dump
     }
 
-    fn get_stack_trace(stack: &[u8]) -> String {
+    pub fn get_stack_trace(stack: &[u8]) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
 
