@@ -1,14 +1,11 @@
 use std::fs;
 use vixen::core::stack_trace::StackTrace;
 use vixen::cpu::CPU;
-use vixen::cpu::decoder::Decoder;
 use vixen::CPUResult;
 
 fn run_cpu(cpu: &mut CPU) -> CPUResult<()> {
     loop {
-        let pc = cpu.program_counter;
-        let mut instruction =  cpu.read_instruction(pc)?;
-        instruction.execute(cpu)?;
+        cpu.tick()?;
         cpu.program_counter += 6;
     }
 }

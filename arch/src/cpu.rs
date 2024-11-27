@@ -1,10 +1,12 @@
 pub mod stack;
 pub mod decoder;
 
-use crate::core::register_id::RegisterId;
+use crate::core::registers::register_id::RegisterId;
 use crate::core::registers::Registers;
-use crate::core::status_register::StatusRegister;
+use crate::core::registers::status_register::StatusRegister;
+use crate::cpu::decoder::Decoder;
 use crate::cpu::stack::Stack;
+use crate::InstructionResult;
 
 #[derive(Debug)]
 pub struct CPU {
@@ -41,6 +43,30 @@ impl CPU {
             RegisterId::R5 => self.registers.r5,
             RegisterId::R6 => self.registers.r6,
             RegisterId::R7 => self.registers.r7
+        }
+    }
+
+    pub fn tick_unhandled(&mut self) -> InstructionResult {
+        let mut instruction = self.read_instruction(self.program_counter)?;
+        instruction.execute_unhandled(self)
+    }
+
+    pub fn tick(&mut self) -> InstructionResult {
+        if self.status_register.double_fault || (self.memory[0x00FE] == 0 && self.memory[0x00FF] == 0) {
+            self.tick_unhandled()
+        } else if self.tick_unhandled().is_err() {
+            self.stack_push_dword(self.program_counter)?;
+            if self.status_register.interrupt {
+                self.status_register.double_fault = true;
+                self.program_counter = 0xF0F0;
+            } else {
+                self.status_register.interrupt = true;
+                let address = u16::from_le_bytes([self.memory[0x00FE], self.memory[0x00FF]]);
+                self.program_counter = address;
+            }
+            self.tick()
+        } else {
+            Ok(())
         }
     }
 }

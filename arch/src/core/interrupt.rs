@@ -1,6 +1,7 @@
 use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::fmt::Write;
+use crate::core::registers::status_register::StatusRegister;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Interrupt {
@@ -28,13 +29,25 @@ impl Interrupt {
         dump
     }
 
-    pub fn get_stack_trace(stack: &[u8]) -> String {
+    pub fn get_stack_trace(stack: &[u8], status_register: &StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
+        
+        let mut was_handling_interrupt = status_register.interrupt;
+        let mut was_handling_double_fault = status_register.double_fault;
 
         for frame in frames {
             if frame != [0, 0] && frame != [0] {
-                writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}", frame[1], frame[0]).unwrap();
+                if was_handling_interrupt && was_handling_double_fault {
+                    was_handling_interrupt = false;
+                    writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}: <double fault cause>", frame[1], frame[0]).unwrap();
+                } else if was_handling_interrupt || was_handling_double_fault {
+                    was_handling_interrupt = false;
+                    was_handling_double_fault = false;
+                    writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}: <root cause>", frame[1], frame[0]).unwrap();
+                } else {
+                    writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}", frame[1], frame[0]).unwrap();
+                }
             }
         }
 

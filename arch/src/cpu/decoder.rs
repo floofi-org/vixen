@@ -1,8 +1,8 @@
 use alloc::string::String;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::instruction::Instruction;
-use crate::core::instruction_mode::InstructionMode;
-use crate::core::instruction_operation::InstructionOperation;
+use crate::core::instruction::instruction_mode::InstructionMode;
+use crate::core::instruction::instruction_operation::InstructionOperation;
 use crate::core::operand::Operand;
 use crate::cpu::CPU;
 use crate::CPUResult;

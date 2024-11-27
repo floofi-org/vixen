@@ -1,3 +1,6 @@
+pub mod register_id;
+pub mod status_register;
+
 #[derive(Debug, Default)]
 pub struct Registers {
     pub a: u8,

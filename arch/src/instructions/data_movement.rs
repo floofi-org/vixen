@@ -1,4 +1,4 @@
-use crate::core::instruction_mode::InstructionMode;
+use crate::core::instruction::instruction_mode::InstructionMode;
 use crate::core::interrupt::Interrupt;
 use crate::core::memory_cell::MemoryCell;
 use crate::core::operand::Operand;

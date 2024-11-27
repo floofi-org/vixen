@@ -1,11 +1,7 @@
 pub mod binary;
 pub mod registers;
-pub mod status_register;
 pub mod instruction;
 pub mod operand;
-pub mod register_id;
-pub mod instruction_mode;
-pub mod instruction_operation;
 pub mod interrupt;
 pub mod memory_cell;
 pub mod stack_trace;

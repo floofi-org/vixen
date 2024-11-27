@@ -1,8 +1,8 @@
 use alloc::format;
 use alloc::string::String;
-use crate::core::instruction_mode::InstructionMode;
+use crate::core::instruction::instruction_mode::InstructionMode;
 use crate::core::interrupt::Interrupt;
-use crate::core::register_id::RegisterId;
+use crate::core::registers::register_id::RegisterId;
 use crate::cpu::CPU;
 use crate::CPUResult;
 
