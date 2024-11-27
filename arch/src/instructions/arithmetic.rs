@@ -20,6 +20,7 @@ pub fn add(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
 
     cpu.status_register.carry = sum.1;
     cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
+    cpu.status_register.zero = sum.0 == 0;
     cpu.registers.a = sum.0;
 
     Ok(())
