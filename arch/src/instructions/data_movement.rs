@@ -6,13 +6,12 @@ use crate::cpu::CPU;
 use crate::InstructionResult;
 
 pub fn mov(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate = mode {
-        return Err(Interrupt::IllegalInstruction);
+    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+        let value = operands[0].read_word()?;
+        operands[1].write_word(cpu, value)?;
+        operands[0].write_word(cpu, 0)?;
+        Ok(())
+    } else {
+        Err(Interrupt::IllegalInstruction)
     }
-    
-    let value = operands[0].read()?;
-    operands[1].write(cpu, value)?;
-    operands[0].write(cpu, 0)?;
-
-    Ok(())
 }

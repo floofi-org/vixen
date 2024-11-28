@@ -5,7 +5,8 @@ pub enum InstructionMode {
     Immediate,
     Implied,
     ZeroPage,
-    Absolute
+    Absolute,
+    Relative
 }
 
 impl TryFrom<u8> for InstructionMode {
@@ -13,10 +14,11 @@ impl TryFrom<u8> for InstructionMode {
 
     fn try_from(value: u8) -> CPUResult<Self> {
         match value {
-            0 => Ok(InstructionMode::Immediate),
-            1 => Ok(InstructionMode::Implied),
-            2 => Ok(InstructionMode::ZeroPage),
-            3 => Ok(InstructionMode::Absolute),
+            0x0 => Ok(InstructionMode::Immediate),
+            0x1 => Ok(InstructionMode::Implied),
+            0x2 => Ok(InstructionMode::ZeroPage),
+            0x3 => Ok(InstructionMode::Absolute),
+            0x4 => Ok(InstructionMode::Relative),
             _ => Err(Interrupt::IllegalInstruction)
         }
     }

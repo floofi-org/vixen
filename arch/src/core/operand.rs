@@ -10,8 +10,8 @@ use crate::CPUResult;
 pub enum Operand {
     Literal(u16),
     Register(RegisterId, u8),
-    ZeroPage(u16, u8),
-    Memory(u16, u8)
+    ZeroPage(u16, u8, u8),
+    Memory(u16, u8, u8)
 }
 
 impl Operand {
@@ -20,7 +20,20 @@ impl Operand {
             InstructionMode::Immediate => Ok(Operand::Literal(raw_operand)),
             InstructionMode::Implied => Self::implied(raw_operand, cpu),
             InstructionMode::ZeroPage => Self::zero_page(raw_operand, cpu),
-            InstructionMode::Absolute => Self::absolute(raw_operand, cpu),
+            InstructionMode::Absolute => Self::memory(raw_operand, cpu),
+            InstructionMode::Relative => {
+                let offset = raw_operand as i16;
+                let target = if offset > 0 {
+                    cpu.program_counter + offset.unsigned_abs()
+                } else {
+                    cpu.program_counter - offset.unsigned_abs()
+                };
+                if target < 0xFF {
+                    Err(Interrupt::IllegalMemory)
+                } else {
+                    Self::memory(target, cpu)
+                }
+            },
         }
     }
 
@@ -36,17 +49,19 @@ impl Operand {
             return Err(Interrupt::IllegalMemory);
         }
 
-        let value = cpu.memory[address as usize];
-        Ok(Operand::ZeroPage(address, value))
+        let high_value = cpu.memory[address as usize];
+        let low_value = cpu.memory[address as usize + 1];
+        Ok(Operand::ZeroPage(address, high_value, low_value))
     }
 
-    fn absolute(address: u16, cpu: &CPU) -> CPUResult<Self> {
+    fn memory(address: u16, cpu: &CPU) -> CPUResult<Self> {
         if address <= 0xFF {
             return Err(Interrupt::IllegalMemory);
         }
 
-        let value = cpu.memory[address as usize];
-        Ok(Operand::ZeroPage(address, value))
+        let high_value = cpu.memory[address as usize];
+        let low_value = cpu.memory[address as usize + 1];
+        Ok(Operand::Memory(address, high_value, low_value))
     }
 
     pub fn disassemble(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> String {
@@ -61,8 +76,8 @@ impl Operand {
         match self {
             Self::Literal(value) => format!("#${value:X}"),
             Self::Register(id, _) => format!("{id:?}"),
-            Self::ZeroPage(address, _) => format!("${address:0>2X}"),
-            Self::Memory(address, _) => format!("${address:0>4X}"),
+            Self::ZeroPage(address, _, _) => format!("${address:0>2X}"),
+            Self::Memory(address, _, _) => format!("${address:0>4X}"),
         }
     }
 }
