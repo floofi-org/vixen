@@ -1,4 +1,4 @@
-"{reason}: {interrupt}
+"Unhandled {reason}: {interrupt}
 
 a = {a:0>2X}; x = {x:0>2X}; y = {y:0>2X},
 r0 = {r0:0>2X}; r1 = {r1:0>2X}; r2 = {r2:0>2X}; r3 = {r3:0>2X}; \

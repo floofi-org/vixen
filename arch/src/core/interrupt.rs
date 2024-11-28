@@ -67,22 +67,15 @@ impl Interrupt {
     pub fn get_stack_trace(stack: &[u8], status_register: &StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
-        
-        let mut was_handling_interrupt = status_register.interrupt;
-        let mut was_handling_double_fault = status_register.double_fault;
 
-        for frame in frames {
+        for (i, frame) in frames.filter(|i| *i != [0, 0] && *i != [0]).enumerate() {
             if frame != [0, 0] && frame != [0] {
-                if was_handling_interrupt && was_handling_double_fault {
-                    was_handling_interrupt = false;
-                    writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}: <double fault cause>", frame[1], frame[0]).unwrap();
-                } else if was_handling_interrupt || was_handling_double_fault {
-                    was_handling_interrupt = false;
-                    was_handling_double_fault = false;
-                    writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}: <root cause>", frame[1], frame[0]).unwrap();
-                } else {
-                    writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}", frame[1], frame[0]).unwrap();
-                }
+                let cause = match (i, status_register.interrupt, status_register.double_fault) {
+                    (0, _, true) => ": <double fault cause>",
+                    (1, _, true) | (0, true, _) => ": <root cause>",
+                    (_, _, _) => ""
+                };
+                writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}{cause}", frame[1], frame[0]).unwrap();
             }
         }
 
@@ -96,7 +89,7 @@ impl Display for Interrupt {
             Interrupt::Rtc => "0x00 (Real-time clock tick)",
             Interrupt::AsyncIO => "0x01 (Asynchronous I/O event)",
             Interrupt::Hardware => "0x02 (General hardware fault)",
-            Interrupt::External => "0x03 (External hardware interrupt)",
+            Interrupt::External => "0x03 (External hardware handling_interrupt)",
             Interrupt::Breakpoint => "0x10 (Breakpoint hit)",
             Interrupt::IllegalInstruction => "0x11 (Illegal instruction)",
             Interrupt::IllegalMemory => "0x12 (Illegal memory access)",

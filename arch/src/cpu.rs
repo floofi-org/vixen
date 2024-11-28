@@ -1,6 +1,7 @@
 pub mod stack;
 pub mod decoder;
 
+use crate::core::interrupt::Interrupt;
 use crate::core::registers::register_id::RegisterId;
 use crate::core::registers::Registers;
 use crate::core::registers::status_register::StatusRegister;
@@ -46,28 +47,45 @@ impl CPU {
         }
     }
 
+    fn has_interrupt_handler(&self) -> bool {
+        self.memory[0x00FE] != 0 || self.memory[0x00FF] != 0
+    }
+
     pub fn tick_unhandled(&mut self) -> InstructionResult {
         let mut instruction = self.read_instruction(self.program_counter)?;
         instruction.execute_unhandled(self)
     }
 
-    pub fn tick(&mut self) -> InstructionResult {
-        if self.status_register.double_fault || (self.memory[0x00FE] == 0 && self.memory[0x00FF] == 0) {
-            self.tick_unhandled()
-        } else if let Err(interrupt) = self.tick_unhandled() {
-            self.stack_push_dword(self.program_counter)?;
-            if self.status_register.interrupt {
-                self.status_register.double_fault = true;
-                self.registers.r7 = interrupt.into();
-                self.program_counter = 0xF0F0;
-            } else {
-                self.status_register.interrupt = true;
-                let address = u16::from_le_bytes([self.memory[0x00FE], self.memory[0x00FF]]);
-                self.program_counter = address;
-            }
-            self.tick()
+    fn handle_interrupt(&mut self, interrupt: Interrupt) -> InstructionResult {
+        self.stack_push_dword(self.program_counter)?;
+
+        // If we are already handling interrupt, use ROM-provided double fault handler
+        if self.status_register.interrupt {
+            self.status_register.double_fault = true;
+            self.registers.r7 = interrupt.into();
+            self.program_counter = 0xF0F0;
+        // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
-            Ok(())
+            self.status_register.interrupt = true;
+            let address = u16::from_le_bytes([self.memory[0x00FE], self.memory[0x00FF]]);
+            self.program_counter = address;
+        }
+
+        Ok(())
+    }
+
+    pub fn tick(&mut self) -> InstructionResult {
+        // If we are in a triple fault or no interrupt handler is configured
+        if self.status_register.double_fault || !self.has_interrupt_handler() {
+            self.tick_unhandled()
+        } else {
+            match self.tick_unhandled() {
+                Ok(_) => Ok(()),
+                Err(interrupt) => {
+                    self.handle_interrupt(interrupt)?;
+                    self.tick()
+                }
+            }
         }
     }
 }
