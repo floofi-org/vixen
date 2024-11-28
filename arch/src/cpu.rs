@@ -54,10 +54,11 @@ impl CPU {
     pub fn tick(&mut self) -> InstructionResult {
         if self.status_register.double_fault || (self.memory[0x00FE] == 0 && self.memory[0x00FF] == 0) {
             self.tick_unhandled()
-        } else if self.tick_unhandled().is_err() {
+        } else if let Err(interrupt) = self.tick_unhandled() {
             self.stack_push_dword(self.program_counter)?;
             if self.status_register.interrupt {
                 self.status_register.double_fault = true;
+                self.registers.r7 = interrupt.into();
                 self.program_counter = 0xF0F0;
             } else {
                 self.status_register.interrupt = true;

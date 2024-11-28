@@ -13,6 +13,41 @@ pub enum Interrupt {
     Failure, Reset
 }
 
+impl From<Interrupt> for u8 {
+    fn from(value: Interrupt) -> Self {
+        match value {
+            Interrupt::Rtc => 0x00,
+            Interrupt::AsyncIO => 0x01,
+            Interrupt::Hardware => 0x02,
+            Interrupt::External => 0x03,
+            Interrupt::Breakpoint => 0x10,
+            Interrupt::IllegalInstruction => 0x11,
+            Interrupt::IllegalMemory => 0x12,
+            Interrupt::DivideByZero => 0x13,
+            Interrupt::StackOverflow => 0x20,
+            Interrupt::StackUnderflow => 0x21,
+            Interrupt::User1 => 0xE0,
+            Interrupt::User2 => 0xE1,
+            Interrupt::User3 => 0xE2,
+            Interrupt::User4 => 0xE3,
+            Interrupt::User5 => 0xE4,
+            Interrupt::User6 => 0xE5,
+            Interrupt::User7 => 0xE6,
+            Interrupt::User8 => 0xE7,
+            Interrupt::User9 => 0xE8,
+            Interrupt::User10 => 0xE9,
+            Interrupt::User11 => 0xEA,
+            Interrupt::User12 => 0xEB,
+            Interrupt::User13 => 0xEC,
+            Interrupt::User14 => 0xED,
+            Interrupt::User15 => 0xEE,
+            Interrupt::User16 => 0xEF,
+            Interrupt::Failure => 0xFE,
+            Interrupt::Reset => 0xFF,
+        }
+    }
+}
+
 impl Interrupt {
     pub fn get_byte_dump(bytes: &[u8], line_size: usize, padding: usize) -> String {
         let mut dump = String::new();

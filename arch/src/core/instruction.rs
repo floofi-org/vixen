@@ -4,7 +4,6 @@ use crate::core::operand::Operand;
 use crate::{instructions, InstructionResult};
 use crate::core::interrupt::Interrupt;
 use crate::cpu::CPU;
-use crate::cpu::stack::Stack;
 
 pub mod instruction_mode;
 pub mod instruction_operation;
