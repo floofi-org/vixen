@@ -24,8 +24,15 @@ impl Instruction {
             // 0x02?? - Logic Instructions - 0/11 implemented
             // - nothing for now -
 
-            // 0x03?? - Counting Instructions - 0/8 implemented
-            // - nothing for now -
+            // 0x03?? - Counting Instructions - Complete
+            InstructionOperation::Inc => instructions::counting::inc(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Dec => instructions::counting::dec(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Ina => instructions::counting::ina(self.mode, &self.operands, cpu),
+            InstructionOperation::Dea => instructions::counting::dea(self.mode, &self.operands, cpu),
+            InstructionOperation::Inx => instructions::counting::inx(self.mode, &self.operands, cpu),
+            InstructionOperation::Dex => instructions::counting::dex(self.mode, &self.operands, cpu),
+            InstructionOperation::Iny => instructions::counting::iny(self.mode, &self.operands, cpu),
+            InstructionOperation::Dey => instructions::counting::dey(self.mode, &self.operands, cpu),
 
             // 0x04?? - Comparison Instructions - 0/8 implemented
             // - nothing for now -
