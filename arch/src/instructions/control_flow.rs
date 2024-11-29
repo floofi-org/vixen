@@ -3,7 +3,7 @@ use crate::core::interrupt::Interrupt;
 use crate::core::memory_cell::MemoryCell;
 use crate::core::operand::Operand;
 use crate::cpu::CPU;
-use crate::cpu::stack::Stack;
+use crate::cpu::stack::SystemStack;
 use crate::InstructionResult;
 
 pub fn jmp(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
@@ -19,7 +19,7 @@ pub fn jmp(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
 pub fn jsr(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let InstructionMode::Absolute = mode {
         let position = &operands[0].read_dword()?;
-        cpu.stack_push_dword(*position)?;
+        cpu.system_stack_save_state()?;
         cpu.program_counter = position - 6;
         Ok(())
     } else {
@@ -29,7 +29,7 @@ pub fn jsr(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
 
 pub fn ret(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let InstructionMode::Implied = mode {
-        let position = cpu.stack_pull_dword()?;
+        let position = cpu.system_stack_pull_dword()?;
         cpu.program_counter = position - 6;
         Ok(())
     } else {

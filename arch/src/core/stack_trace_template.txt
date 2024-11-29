@@ -10,5 +10,6 @@ pc = {pc:0>4X}: {state}: {disassembler}
 zerop = {zero_page}
 
 stack = {stack}
-            - _interrupt (????): <not handled>
+
+    Addr    Context               Status    Symbol
 {stack_trace}"

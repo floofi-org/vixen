@@ -1,12 +1,14 @@
 pub mod stack;
 pub mod decoder;
 
+use alloc::vec;
+use alloc::vec::Vec;
 use crate::core::interrupt::Interrupt;
 use crate::core::registers::register_id::RegisterId;
 use crate::core::registers::Registers;
 use crate::core::registers::status_register::StatusRegister;
 use crate::cpu::decoder::Decoder;
-use crate::cpu::stack::Stack;
+use crate::cpu::stack::SystemStack;
 use crate::InstructionResult;
 
 #[derive(Debug)]
@@ -15,7 +17,8 @@ pub struct CPU {
     pub stack_pointer: u16,
     pub program_counter: u16,
     pub status_register: StatusRegister,
-    pub memory: [u8; 0xFFFF]
+    pub memory: [u8; 0xFFFF],
+    pub system_stack: Vec<u16>
 }
 
 impl CPU {
@@ -28,7 +31,7 @@ impl CPU {
 
         // Reset stack pointer to the start of the stack
         self.stack_pointer = 0x0100;
-        self.stack_push_dword(0xE000).unwrap();
+        self.system_stack_save_state().unwrap();
     }
 
     pub fn get_register(&self, register_id: RegisterId) -> u8 {
@@ -53,11 +56,19 @@ impl CPU {
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
         let mut instruction = self.read_instruction(self.program_counter)?;
-        instruction.execute_unhandled(self)
+        if let Err(interrupt) = instruction.execute_unhandled(self) {
+            if self.status_register.interrupt_disable && interrupt.is_maskable() {
+                Ok(())
+            } else {
+                Err(interrupt)
+            }
+        } else {
+            Ok(())
+        }
     }
 
     fn handle_interrupt(&mut self, interrupt: Interrupt) -> InstructionResult {
-        self.stack_push_dword(self.program_counter)?;
+        self.system_stack_save_state()?;
 
         // If we are already handling interrupt, use ROM-provided double fault handler
         if self.status_register.interrupt {
@@ -97,7 +108,8 @@ impl Default for CPU {
             stack_pointer: 0x0100,
             program_counter: 0xE000,
             status_register: StatusRegister::default(),
-            memory: [0; 0xFFFF]
+            memory: [0; 0xFFFF],
+            system_stack: vec![],
         }
     }
 }

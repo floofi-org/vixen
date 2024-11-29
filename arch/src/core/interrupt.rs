@@ -49,6 +49,10 @@ impl From<Interrupt> for u8 {
 }
 
 impl Interrupt {
+    pub fn is_maskable(&self) -> bool {
+        matches!(self, Interrupt::Rtc | Interrupt::AsyncIO | Interrupt::IllegalInstruction)
+    }
+
     pub fn get_byte_dump(bytes: &[u8], line_size: usize, padding: usize) -> String {
         let mut dump = String::new();
 
@@ -64,19 +68,18 @@ impl Interrupt {
         dump
     }
 
-    pub fn get_stack_trace(stack: &[u8], status_register: &StatusRegister) -> String {
+    pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
 
-        for (i, frame) in frames.filter(|i| *i != [0, 0] && *i != [0]).enumerate() {
-            if frame != [0, 0] && frame != [0] {
-                let cause = match (i, status_register.interrupt, status_register.double_fault) {
-                    (0, _, true) => ": <double fault cause>",
-                    (1, _, true) | (0, true, _) => ": <root cause>",
-                    (_, _, _) => ""
-                };
-                writeln!(&mut trace, "            - ??: 0x{:0>2X}{:0>2X}{cause}", frame[1], frame[0]).unwrap();
-            }
+        for (i, frame) in frames.enumerate() {
+            let cause = match (i, status_register.interrupt, status_register.double_fault) {
+                (0, _, true) => "<double fault cause>",
+                (1, _, true) | (0, true, _) => "<root cause>",
+                (_, _, _) => "-"
+            };
+            writeln!(&mut trace, "->  0x{:0>4X}  {cause: <20}  {: <8}  ??",
+                     frame[1], StatusRegister::from(frame[0] as u8)).unwrap();
         }
 
         trace
