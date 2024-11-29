@@ -53,8 +53,12 @@ impl Instruction {
             InstructionOperation::Int => instructions::control_flow::int(self.mode, &self.operands, cpu),
             InstructionOperation::Irt => instructions::control_flow::irt(self.mode, &self.operands, cpu),
             InstructionOperation::Nop => instructions::control_flow::nop(self.mode, &self.operands, cpu),
+            InstructionOperation::Jam => instructions::control_flow::jam(self.mode, &self.operands, cpu),
 
             // 0x07?? - Stack Instructions - 0/8 implemented
+            // - nothing for now -
+
+            // 0x08?? - MOS 6502 Compatibility Extensions - 0/16 implemented
             // - nothing for now -
 
             // If an instruction isn't implemented yet

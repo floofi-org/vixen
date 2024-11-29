@@ -151,3 +151,12 @@ pub fn nop(mode: InstructionMode, _operands: &[Operand; 2], _cpu: &mut CPU) -> I
         Err(Interrupt::IllegalInstruction)
     }
 }
+
+pub fn jam(mode: InstructionMode, _operands: &[Operand; 2], _cpu: &mut CPU) -> InstructionResult {
+    if let InstructionMode::Implied = mode {
+        #[allow(clippy::empty_loop)]
+        loop {}
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}

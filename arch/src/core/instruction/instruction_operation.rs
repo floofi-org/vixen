@@ -21,10 +21,11 @@ pub enum InstructionOperation {
     /* 0x01?? */ Add, Sub, Mul, Div, Mod, Sqt, Cbt, Sqr, Cbe, Min, Max,
     /* 0x02?? */ And, Or,  Xor, Nor, Nad, Imp, Not, Shl, Shr, Rol, Ror,
     /* 0x03?? */ Inc, Dec, Ina, Dea, Inx, Dex, Iny, Dey,
-    /* 0x04?? */ Cmp, Cpx, Cpy, Lte, Gte, Sez, Sec, Seo,
+    /* 0x04?? */ Cmp, Cpx, Cpy, Lte, Gte, Srz, Src, Sro,
     /* 0x05?? */ Lda, Ldx, Ldy, Ldz, Sta, Stx, Sty, Mov, Swp, Clr,
-    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop,
-    /* 0x07?? */ Pha, Pla, Phx, Plx, Phy, Ply, Psh, Pll
+    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam,
+    /* 0x07?? */ Pha, Pla, Phx, Plx, Phy, Ply, Psh, Pll,
+    /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Bit, Asl, Asr, Sec, Clc, Sei, Cli, Sed, Cld, Clv, Php, Plp
 }
 
 impl InstructionOperation {
@@ -86,9 +87,9 @@ impl TryFrom<u16> for InstructionOperation {
             0x042 => Cpy,
             0x043 => Lte,
             0x044 => Gte,
-            0x045 => Sez,
-            0x046 => Sec,
-            0x047 => Seo,
+            0x045 => Srz,
+            0x046 => Src,
+            0x047 => Sro,
 
             // 0x05?? - Data Movement Instructions
             0x050 => Lda,
@@ -115,6 +116,7 @@ impl TryFrom<u16> for InstructionOperation {
             0x069 => Int,
             0x06A => Irt,
             0x06B => Nop,
+            0x06C => Jam,
 
             // 0x07?? - Stack Instructions
             0x070 => Pha,
@@ -124,8 +126,25 @@ impl TryFrom<u16> for InstructionOperation {
             0x074 => Phy,
             0x075 => Ply,
             0x076 => Psh,
-            0x077 => Pll
+            0x077 => Pll,
+
+            // 0x08?? - MOS 6502 Compatibility Extensions
+            0x080 => Bpl,
+            0x081 => Bmi,
+            0x082 => Adc,
+            0x083 => Sbc,
+            0x084 => Bit,
+            0x085 => Asl,
+            0x086 => Asr,
+            0x087 => Sec,
+            0x088 => Clc,
+            0x089 => Sei,
+            0x08A => Cli,
+            0x08B => Sed,
+            0x08C => Cld,
+            0x08D => Clv,
+            0x08E => Php,
+            0x0BF => Plp
         }
     }
-
 }
