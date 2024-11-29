@@ -9,7 +9,7 @@ use crate::core::registers::Registers;
 use crate::core::registers::status_register::StatusRegister;
 use crate::cpu::decoder::Decoder;
 use crate::cpu::stack::SystemStack;
-use crate::InstructionResult;
+use crate::{InstructionResult, CPU_SPECIFICATION};
 
 #[derive(Debug)]
 pub struct CPU {
@@ -24,10 +24,15 @@ pub struct CPU {
 impl CPU {
     pub fn load_rom(&mut self, rom: &[u8]) {
         let base_address = 0xE000;
-        let end_address = 0xE000 + rom.len();
+        let end_address = base_address + rom.len();
         let rom_region = base_address..end_address;
-
         self.memory[rom_region].copy_from_slice(rom);
+
+        let specification: Vec<u8> = CPU_SPECIFICATION.into();
+        let base_address = 0xFE00;
+        let end_address = base_address + specification.len();
+        let specification_region = base_address..end_address;
+        self.memory[specification_region].copy_from_slice(specification.as_slice());
 
         // Reset stack pointer to the start of the stack
         self.stack_pointer = 0x0100;

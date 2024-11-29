@@ -50,8 +50,17 @@ impl Instruction {
             // 0x04?? - Comparison Instructions - 0/8 implemented
             // - nothing for now -
 
-            // 0x05?? - Data Movement Instructions - 1/10 implemented
+            // 0x05?? - Data Movement Instructions - Complete
+            InstructionOperation::Lda => instructions::data_movement::lda(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Ldx => instructions::data_movement::ldx(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Ldy => instructions::data_movement::ldy(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Ldz => instructions::data_movement::ldz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Sta => instructions::data_movement::sta(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Stx => instructions::data_movement::stx(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Sty => instructions::data_movement::sty(self.mode, &mut self.operands, cpu),
             InstructionOperation::Mov => instructions::data_movement::mov(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Swp => instructions::data_movement::swp(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Clr => instructions::data_movement::clr(self.mode, &mut self.operands, cpu),
 
             // 0x06?? - Control Flow Instructions - Complete
             InstructionOperation::Jmp => instructions::control_flow::jmp(self.mode, &self.operands, cpu),
