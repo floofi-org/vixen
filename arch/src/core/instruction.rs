@@ -18,11 +18,24 @@ pub struct Instruction {
 impl Instruction {
     pub fn execute_unhandled(&mut self, cpu: &mut CPU) -> InstructionResult {
         match self.operation {
-            // 0x01?? - Arithmetic and Algebric Instructions - 1/11 implemented
+            // 0x01?? - Arithmetic and Algebric Instructions - 4/11 implemented
             InstructionOperation::Add => instructions::arithmetic::add(self.mode, &self.operands, cpu),
+            InstructionOperation::Sub => instructions::arithmetic::sub(self.mode, &self.operands, cpu),
+            InstructionOperation::Min => instructions::arithmetic::min(self.mode, &self.operands, cpu),
+            InstructionOperation::Max => instructions::arithmetic::max(self.mode, &self.operands, cpu),
 
-            // 0x02?? - Logic Instructions - 0/11 implemented
-            // - nothing for now -
+            // 0x02?? - Logic Instructions - 7/11 implemented
+            InstructionOperation::And => instructions::logic::and(self.mode, &self.operands, cpu),
+            InstructionOperation::Or => instructions::logic::or(self.mode, &self.operands, cpu),
+            InstructionOperation::Xor => instructions::logic::xor(self.mode, &self.operands, cpu),
+            InstructionOperation::Nor => instructions::logic::nor(self.mode, &self.operands, cpu),
+            InstructionOperation::Nad => instructions::logic::nad(self.mode, &self.operands, cpu),
+            InstructionOperation::Imp => instructions::logic::imp(self.mode, &self.operands, cpu),
+            InstructionOperation::Not => instructions::logic::not(self.mode, &self.operands, cpu),
+            InstructionOperation::Shl => instructions::logic::shl(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Shr => instructions::logic::shr(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Rol => instructions::logic::rol(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Ror => instructions::logic::ror(self.mode, &mut self.operands, cpu),
 
             // 0x03?? - Counting Instructions - Complete
             InstructionOperation::Inc => instructions::counting::inc(self.mode, &mut self.operands, cpu),

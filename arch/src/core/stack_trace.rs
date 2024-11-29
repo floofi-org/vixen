@@ -20,8 +20,6 @@ impl StackTrace {
 impl Display for StackTrace {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         let cpu = &self.cpu;
-        let zero_page = Interrupt::get_byte_dump(&cpu.memory[0x0000..0x0100], 32, 8);
-        let stack = Interrupt::get_byte_dump(&cpu.memory[0x0100..0x0200], 32, 8);
         let stack_trace = Interrupt::get_stack_trace(&cpu.system_stack, cpu.status_register);
 
         write!(f, include!("stack_trace_template.txt"),
@@ -47,8 +45,6 @@ impl Display for StackTrace {
             pc = cpu.program_counter,
             state = cpu.extract_instruction(cpu.program_counter),
             disassembler = cpu.read_instruction_string(cpu.program_counter),
-            zero_page = zero_page,
-            stack = stack,
             stack_trace = stack_trace,
         )
     }

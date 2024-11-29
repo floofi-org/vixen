@@ -53,21 +53,6 @@ impl Interrupt {
         matches!(self, Interrupt::Rtc | Interrupt::AsyncIO | Interrupt::IllegalInstruction)
     }
 
-    pub fn get_byte_dump(bytes: &[u8], line_size: usize, padding: usize) -> String {
-        let mut dump = String::new();
-
-        for (index, byte) in bytes.iter().enumerate() {
-            write!(&mut dump, "{:0>2X}", byte).unwrap();
-            write!(&mut dump, " ").unwrap();
-
-            if (index + 1) % line_size == 0 && index != bytes.len() - 1 {
-                write!(&mut dump, "\n{}", " ".repeat(padding)).unwrap();
-            }
-        }
-
-        dump
-    }
-
     pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
