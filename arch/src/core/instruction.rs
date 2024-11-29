@@ -24,7 +24,7 @@ impl Instruction {
             InstructionOperation::Min => instructions::arithmetic::min(self.mode, &self.operands, cpu),
             InstructionOperation::Max => instructions::arithmetic::max(self.mode, &self.operands, cpu),
 
-            // 0x02?? - Logic Instructions - 7/11 implemented
+            // 0x02?? - Logic Instructions - Complete
             InstructionOperation::And => instructions::logic::and(self.mode, &self.operands, cpu),
             InstructionOperation::Or => instructions::logic::or(self.mode, &self.operands, cpu),
             InstructionOperation::Xor => instructions::logic::xor(self.mode, &self.operands, cpu),
