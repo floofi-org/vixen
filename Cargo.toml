@@ -1,5 +1,6 @@
 [workspace]
 members = ["arch", "emulator"]
+default-members = ["emulator"]
 resolver = "2"
 
 [profile.release]
