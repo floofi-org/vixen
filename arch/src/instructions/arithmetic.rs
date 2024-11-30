@@ -78,6 +78,8 @@ pub fn div(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
 
+        if number2 == 0 { return Err(Interrupt::DivideByZero); }
+
         let result = number1.overflowing_div(number2);
         let result_negative = result.0 >> 7 == 1;
 
@@ -97,6 +99,8 @@ pub fn mod_(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> In
     if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
+
+        if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
         let result = number1 % number2;
         let result_negative = result >> 7 == 1;
