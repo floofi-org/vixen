@@ -19,9 +19,9 @@ cargo build --release
 
 And run the emulator:
 ```
-./target/release/vixen-emulator
+./target/release/vixen-emulator rom.bin
 ```
 
-(or `cargo run -p vixen-emulator`)
+(or `cargo run -- rom.bin`)
 
 This will use the file `rom.bin` as a system ROM and boot from it.
