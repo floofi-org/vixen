@@ -3,13 +3,13 @@ use crate::core::interrupt::Interrupt;
 use crate::cpu::CPU;
 use crate::cpu::decoder::Decoder;
 
-pub struct StackTrace {
-    cpu: CPU,
+pub struct StackTrace<'a> {
+    cpu: &'a CPU,
     interrupt: Interrupt
 }
 
-impl StackTrace {
-    pub fn new(interrupt: Interrupt, cpu: CPU) -> Self {
+impl<'a> StackTrace<'a> {
+    pub fn new(interrupt: Interrupt, cpu: &'a CPU) -> Self {
         Self {
             cpu,
             interrupt
@@ -17,9 +17,9 @@ impl StackTrace {
     }
 }
 
-impl Display for StackTrace {
+impl Display for StackTrace<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        let cpu = &self.cpu;
+        let cpu = self.cpu;
         let stack_trace = Interrupt::get_stack_trace(&cpu.system_stack, cpu.status_register);
 
         write!(f, include!("stack_trace_template.txt"),
