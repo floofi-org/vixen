@@ -5,3 +5,4 @@ pub mod counting;
 pub mod logic;
 pub mod stack;
 pub mod mos6502;
+pub mod comparison;

@@ -47,8 +47,15 @@ impl Instruction {
             InstructionOperation::Iny => instructions::counting::iny(self.mode, &self.operands, cpu),
             InstructionOperation::Dey => instructions::counting::dey(self.mode, &self.operands, cpu),
 
-            // 0x04?? - Comparison Instructions - 0/8 implemented
-            // - nothing for now -
+            // 0x04?? - Comparison Instructions
+            InstructionOperation::Cmp => instructions::comparison::srz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Cpx => instructions::comparison::srz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Cpy => instructions::comparison::srz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Lte => instructions::comparison::srz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Gte => instructions::comparison::srz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Srz => instructions::comparison::srz(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Src => instructions::comparison::src(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Sro => instructions::comparison::sro(self.mode, &mut self.operands, cpu),
 
             // 0x05?? - Data Movement Instructions
             InstructionOperation::Lda => instructions::data_movement::lda(self.mode, &mut self.operands, cpu),
