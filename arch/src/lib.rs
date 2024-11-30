@@ -8,7 +8,8 @@ pub const CPU_SPECIFICATION: Specification = Specification {
     microarchitecture_name: "Goupil",
     data_width: 8,
     address_width: 16,
-    max_ram: 32768
+    max_ram: 52735,
+    microcode: 0x0001
 };
 
 pub mod core;

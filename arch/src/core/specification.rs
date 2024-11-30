@@ -7,7 +7,8 @@ pub struct Specification<'a> {
     pub microarchitecture_name: &'a str,
     pub data_width: u8,
     pub address_width: u8,
-    pub max_ram: u16
+    pub max_ram: u16,
+    pub microcode: u16
 }
 
 impl From<Specification<'_>> for Vec<u8> {
@@ -21,6 +22,7 @@ impl From<Specification<'_>> for Vec<u8> {
         let data_width = value.data_width;
         let address_width = value.address_width;
         let max_ram_bytes = value.max_ram.to_le_bytes();
+        let microcode_bytes = value.microcode.to_le_bytes();
 
         bytes.push(name_bytes.len() as u8);
         bytes.extend_from_slice(name_bytes);
@@ -32,6 +34,7 @@ impl From<Specification<'_>> for Vec<u8> {
         bytes.push(data_width);
         bytes.push(address_width);
         bytes.extend_from_slice(&max_ram_bytes);
+        bytes.extend_from_slice(&microcode_bytes);
 
         bytes
     }

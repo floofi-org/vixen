@@ -2,7 +2,6 @@ use crate::core::instruction::instruction_mode::InstructionMode;
 use crate::core::instruction::instruction_operation::InstructionOperation;
 use crate::core::operand::Operand;
 use crate::{instructions, InstructionResult};
-use crate::core::interrupt::Interrupt;
 use crate::cpu::CPU;
 
 pub mod instruction_mode;
@@ -18,9 +17,16 @@ pub struct Instruction {
 impl Instruction {
     pub fn execute_unhandled(&mut self, cpu: &mut CPU) -> InstructionResult {
         match self.operation {
-            // 0x01?? - Arithmetic and Algebric Instructions - 4/11 implemented
+            // 0x01?? - Arithmetic and Algebric Instructions - 10/11 implemented
             InstructionOperation::Add => instructions::arithmetic::add(self.mode, &self.operands, cpu),
             InstructionOperation::Sub => instructions::arithmetic::sub(self.mode, &self.operands, cpu),
+            InstructionOperation::Mul => instructions::arithmetic::mul(self.mode, &self.operands, cpu),
+            InstructionOperation::Div => instructions::arithmetic::div(self.mode, &self.operands, cpu),
+            InstructionOperation::Mod => instructions::arithmetic::mod_(self.mode, &self.operands, cpu),
+            InstructionOperation::Sqt => instructions::arithmetic::sqt(self.mode, &self.operands, cpu),
+            InstructionOperation::Cbt => instructions::arithmetic::cbt(self.mode, &self.operands, cpu),
+            InstructionOperation::Sqr => instructions::arithmetic::sqr(self.mode, &self.operands, cpu),
+            InstructionOperation::Cbe => instructions::arithmetic::cbe(self.mode, &self.operands, cpu),
             InstructionOperation::Min => instructions::arithmetic::min(self.mode, &self.operands, cpu),
             InstructionOperation::Max => instructions::arithmetic::max(self.mode, &self.operands, cpu),
 
@@ -109,10 +115,7 @@ impl Instruction {
             InstructionOperation::Cld => instructions::mos6502::cld(self.mode, &self.operands, cpu),
             InstructionOperation::Clv => instructions::mos6502::clv(self.mode, &self.operands, cpu),
             InstructionOperation::Php => instructions::mos6502::php(self.mode, &self.operands, cpu),
-            InstructionOperation::Plp => instructions::mos6502::plp(self.mode, &self.operands, cpu),
-
-            // If an instruction isn't implemented yet
-            _ => Err(Interrupt::Failure),
+            InstructionOperation::Plp => instructions::mos6502::plp(self.mode, &self.operands, cpu)
         }
     }
 }
