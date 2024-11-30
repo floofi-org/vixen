@@ -3,7 +3,7 @@ use crate::core::interrupt::Interrupt;
 use crate::core::memory_cell::MemoryCell;
 use crate::core::operand::Operand;
 use crate::cpu::CPU;
-use crate::cpu::stack::SystemStack;
+use crate::cpu::system_stack::SystemStack;
 use crate::InstructionResult;
 
 pub fn jmp(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {

@@ -18,6 +18,7 @@ pub fn add(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
         cpu.status_register.carry = sum.1;
         cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
         cpu.status_register.zero = sum.0 == 0;
+        cpu.status_register.negative = sum_negative;
         cpu.registers.a = sum.0;
 
         Ok(())
@@ -34,11 +35,12 @@ pub fn sub(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
         let number2_negative = number2 >> 7 == 1;
 
         let diff = number1.overflowing_sub(number2);
-        let sum_negative = diff.0 >> 7 == 1;
+        let diff_negative = diff.0 >> 7 == 1;
 
         cpu.status_register.carry = diff.1;
-        cpu.status_register.overflow = (number1_negative != number2_negative) && (sum_negative != number1_negative);
+        cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
         cpu.status_register.zero = diff.0 == 0;
+        cpu.status_register.negative = diff_negative;
         cpu.registers.a = diff.0;
 
         Ok(())

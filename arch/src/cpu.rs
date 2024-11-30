@@ -1,4 +1,5 @@
-pub mod stack;
+pub mod system_stack;
+pub mod user_stack;
 pub mod decoder;
 
 use alloc::vec;
@@ -8,7 +9,7 @@ use crate::core::registers::register_id::RegisterId;
 use crate::core::registers::Registers;
 use crate::core::registers::status_register::StatusRegister;
 use crate::cpu::decoder::Decoder;
-use crate::cpu::stack::SystemStack;
+use crate::cpu::system_stack::SystemStack;
 use crate::{InstructionResult, CPU_SPECIFICATION};
 
 #[derive(Debug)]

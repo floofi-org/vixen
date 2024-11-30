@@ -24,7 +24,7 @@ impl Instruction {
             InstructionOperation::Min => instructions::arithmetic::min(self.mode, &self.operands, cpu),
             InstructionOperation::Max => instructions::arithmetic::max(self.mode, &self.operands, cpu),
 
-            // 0x02?? - Logic Instructions - Complete
+            // 0x02?? - Logic Instructions
             InstructionOperation::And => instructions::logic::and(self.mode, &self.operands, cpu),
             InstructionOperation::Or => instructions::logic::or(self.mode, &self.operands, cpu),
             InstructionOperation::Xor => instructions::logic::xor(self.mode, &self.operands, cpu),
@@ -37,7 +37,7 @@ impl Instruction {
             InstructionOperation::Rol => instructions::logic::rol(self.mode, &mut self.operands, cpu),
             InstructionOperation::Ror => instructions::logic::ror(self.mode, &mut self.operands, cpu),
 
-            // 0x03?? - Counting Instructions - Complete
+            // 0x03?? - Counting Instructions
             InstructionOperation::Inc => instructions::counting::inc(self.mode, &mut self.operands, cpu),
             InstructionOperation::Dec => instructions::counting::dec(self.mode, &mut self.operands, cpu),
             InstructionOperation::Ina => instructions::counting::ina(self.mode, &self.operands, cpu),
@@ -50,7 +50,7 @@ impl Instruction {
             // 0x04?? - Comparison Instructions - 0/8 implemented
             // - nothing for now -
 
-            // 0x05?? - Data Movement Instructions - Complete
+            // 0x05?? - Data Movement Instructions
             InstructionOperation::Lda => instructions::data_movement::lda(self.mode, &mut self.operands, cpu),
             InstructionOperation::Ldx => instructions::data_movement::ldx(self.mode, &mut self.operands, cpu),
             InstructionOperation::Ldy => instructions::data_movement::ldy(self.mode, &mut self.operands, cpu),
@@ -62,7 +62,7 @@ impl Instruction {
             InstructionOperation::Swp => instructions::data_movement::swp(self.mode, &mut self.operands, cpu),
             InstructionOperation::Clr => instructions::data_movement::clr(self.mode, &mut self.operands, cpu),
 
-            // 0x06?? - Control Flow Instructions - Complete
+            // 0x06?? - Control Flow Instructions
             InstructionOperation::Jmp => instructions::control_flow::jmp(self.mode, &self.operands, cpu),
             InstructionOperation::Jsr => instructions::control_flow::jsr(self.mode, &self.operands, cpu),
             InstructionOperation::Ret => instructions::control_flow::ret(self.mode, &self.operands, cpu),
@@ -77,11 +77,32 @@ impl Instruction {
             InstructionOperation::Nop => instructions::control_flow::nop(self.mode, &self.operands, cpu),
             InstructionOperation::Jam => instructions::control_flow::jam(self.mode, &self.operands, cpu),
 
-            // 0x07?? - Stack Instructions - 0/8 implemented
-            // - nothing for now -
+            // 0x07?? - Stack Instructions
+            InstructionOperation::Pha => instructions::stack::pha(self.mode, &self.operands, cpu),
+            InstructionOperation::Pla => instructions::stack::pla(self.mode, &self.operands, cpu),
+            InstructionOperation::Phx => instructions::stack::phx(self.mode, &self.operands, cpu),
+            InstructionOperation::Plx => instructions::stack::plx(self.mode, &self.operands, cpu),
+            InstructionOperation::Phy => instructions::stack::phy(self.mode, &self.operands, cpu),
+            InstructionOperation::Ply => instructions::stack::ply(self.mode, &self.operands, cpu),
+            InstructionOperation::Psh => instructions::stack::psh(self.mode, &self.operands, cpu),
+            InstructionOperation::Pll => instructions::stack::pll(self.mode, &mut self.operands, cpu),
 
-            // 0x08?? - MOS 6502 Compatibility Extensions - 0/16 implemented
-            // - nothing for now -
+            // 0x08?? - MOS 6502 Compatibility Extensions
+            InstructionOperation::Bpl => instructions::mos6502::bpl(self.mode, &self.operands, cpu),
+            InstructionOperation::Bmi => instructions::mos6502::bmi(self.mode, &self.operands, cpu),
+            InstructionOperation::Adc => instructions::mos6502::adc(self.mode, &self.operands, cpu),
+            InstructionOperation::Sbc => instructions::mos6502::sbc(self.mode, &self.operands, cpu),
+            InstructionOperation::Bit => instructions::mos6502::bit(self.mode, &self.operands, cpu),
+            InstructionOperation::Asr => instructions::mos6502::asr(self.mode, &mut self.operands, cpu),
+            InstructionOperation::Sec => instructions::mos6502::sec(self.mode, &self.operands, cpu),
+            InstructionOperation::Clc => instructions::mos6502::clc(self.mode, &self.operands, cpu),
+            InstructionOperation::Sei => instructions::mos6502::sei(self.mode, &self.operands, cpu),
+            InstructionOperation::Cli => instructions::mos6502::cli(self.mode, &self.operands, cpu),
+            InstructionOperation::Sed => instructions::mos6502::sed(self.mode, &self.operands, cpu),
+            InstructionOperation::Cld => instructions::mos6502::cld(self.mode, &self.operands, cpu),
+            InstructionOperation::Clv => instructions::mos6502::clv(self.mode, &self.operands, cpu),
+            InstructionOperation::Php => instructions::mos6502::php(self.mode, &self.operands, cpu),
+            InstructionOperation::Plp => instructions::mos6502::plp(self.mode, &self.operands, cpu),
 
             // If an instruction isn't implemented yet
             _ => Err(Interrupt::Failure),
