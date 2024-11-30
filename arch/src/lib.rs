@@ -2,10 +2,10 @@
 extern crate alloc;
 
 pub const CPU_SPECIFICATION: Specification = Specification {
-    name: "Floofi(TM) Vixen(TM) Arctic",
+    name: b"Floofi(TM) Vixen(TM) Arctic",
     id: 0x0001,
-    microarchitecture: "vx1",
-    microarchitecture_name: "Goupil",
+    microarchitecture: b"vx1",
+    microarchitecture_name: b"Goupil",
     data_width: 8,
     address_width: 16,
     max_ram: 52735,
