@@ -11,14 +11,15 @@ pub enum Operand {
     Literal(u16),
     Register(RegisterId, u8),
     ZeroPage(u16, u8, u8),
-    Memory(u16, u8, u8)
+    Memory(u16, u8, u8),
+    Void
 }
 
 impl Operand {
     pub fn decode(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> CPUResult<Operand> {
         match &mode {
-            InstructionMode::Immediate => Ok(Operand::Literal(raw_operand)),
-            InstructionMode::Implied => Self::implied(raw_operand, cpu),
+            InstructionMode::Immediate => Ok(Self::Literal(raw_operand)),
+            InstructionMode::Direct => Self::direct(raw_operand, cpu),
             InstructionMode::ZeroPage => Self::zero_page(raw_operand, cpu),
             InstructionMode::Absolute => Self::memory(raw_operand, cpu),
             InstructionMode::Relative => {
@@ -34,10 +35,11 @@ impl Operand {
                     Self::memory(target, cpu)
                 }
             },
+            InstructionMode::Implied => Ok(Self::Void)
         }
     }
 
-    fn implied(register: u16, cpu: &CPU) -> CPUResult<Self> {
+    fn direct(register: u16, cpu: &CPU) -> CPUResult<Self> {
         let register = RegisterId::try_from(register)?;
         let value = cpu.get_register(register);
 
@@ -78,6 +80,7 @@ impl Operand {
             Self::Register(id, _) => format!("{id:?}"),
             Self::ZeroPage(address, _, _) => format!("${address:0>2X}"),
             Self::Memory(address, _, _) => format!("${address:0>4X}"),
+            Self::Void => String::new(),
         }
     }
 }

@@ -18,6 +18,7 @@ impl MemoryCell for Operand {
         Ok(match self {
             Operand::Literal(value) => *value as u8,
             Operand::Register(_, value) | Operand::ZeroPage(_, value, _) | Operand::Memory(_, value, _) => *value,
+            Operand::Void => return Err(Interrupt::IllegalMemory)
         })
     }
 
@@ -28,6 +29,7 @@ impl MemoryCell for Operand {
             Operand::ZeroPage(_, high_value, low_value) |
                 Operand::Memory(_, high_value, low_value) =>
                     u16::from_le_bytes([*high_value, *low_value]),
+            Operand::Void => return Err(Interrupt::IllegalMemory)
         })
     }
 
@@ -59,7 +61,8 @@ impl MemoryCell for Operand {
                 } else {
                     Err(Interrupt::IllegalMemory)
                 }
-            }
+            },
+            Operand::Void => Err(Interrupt::IllegalMemory)
         }
     }
 
@@ -95,16 +98,18 @@ impl MemoryCell for Operand {
                 } else {
                     Err(Interrupt::IllegalMemory)
                 }
-            }
+            },
+            Operand::Void => Err(Interrupt::IllegalMemory)
         }
     }
 
     fn mode(&self) -> InstructionMode {
         match self {
             Operand::Literal(_) => InstructionMode::Immediate,
-            Operand::Register(_, _) => InstructionMode::Implied,
+            Operand::Register(_, _) => InstructionMode::Direct,
             Operand::ZeroPage(_, _, _) => InstructionMode::ZeroPage,
-            Operand::Memory(_, _, _) => InstructionMode::Absolute
+            Operand::Memory(_, _, _) => InstructionMode::Absolute,
+            Operand::Void => InstructionMode::Implied
         }
     }
 }

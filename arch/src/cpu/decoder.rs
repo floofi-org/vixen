@@ -1,4 +1,5 @@
 use alloc::string::String;
+use core::cmp::PartialEq;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::instruction::Instruction;
 use crate::core::instruction::instruction_mode::InstructionMode;
@@ -52,13 +53,17 @@ impl Decoder for CPU {
         disassembled.push_str(&InstructionOperation::disassemble(instruction, mode));
 
         if let Ok(mode) = InstructionMode::try_from(opcode[4] & 0x0F) {
-            disassembled.push_str(&Operand::disassemble(
-                opcode[3] as u16 * 0x100 + opcode[2] as u16,
-                self, mode));
-            disassembled.push_str(", ");
-            disassembled.push_str(&Operand::disassemble(
-                opcode[1] as u16 * 0x100 + opcode[0] as u16,
-                self, mode));
+            if mode != InstructionMode::Implied {
+                disassembled.push_str(&Operand::disassemble(
+                    opcode[3] as u16 * 0x100 + opcode[2] as u16,
+                    self, mode));
+                if mode == InstructionMode::Immediate || opcode[1] as u16 * 0x100 + opcode[0] as u16 != 0 {
+                    disassembled.push_str(", ");
+                    disassembled.push_str(&Operand::disassemble(
+                        opcode[1] as u16 * 0x100 + opcode[0] as u16,
+                        self, mode));
+                }
+            }
         } else {
             disassembled.push_str("<invalid memory mode>");
         }

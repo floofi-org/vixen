@@ -51,10 +51,11 @@ There are multiple ways one can read or write data. This mode is defined in nibb
 | Operation code | Name      | Description                                                               | Assembly syntax           |
 |----------------|-----------|---------------------------------------------------------------------------|---------------------------|
 | `0x...0`       | Immediate | Uses literal values or no values at all.                                  | `#<value>`                |
-| `0x...1`       | Implied   | Uses a register within the CPU.                                           | `<name>`                  |
+| `0x...1`       | Direct    | Uses a register within the CPU.                                           | `<name>`                  |
 | `0x...2`       | Zero Page | Uses a memory location from the zero page (`0x0000` to `0x00FF`)          | `<address>`               |
 | `0x...3`       | Absolute  | Uses an absolute memory location starting from `0x0000`                   | `<address>`               |
 | `0x...4`       | Relative  | Uses a memory location relative to the current location (program counter) | `<offset>` or `-<offset>` |
+| `0x...5`       | Implied   | Uses no operands or implicit operands                                     | -                         |
 
 In assembly code, numbers can be in different formats:
 

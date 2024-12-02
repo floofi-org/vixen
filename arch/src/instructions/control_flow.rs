@@ -135,7 +135,7 @@ pub fn int(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
 }
 
 pub fn irt(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
+    if let InstructionMode::Direct = mode {
         cpu.status_register.interrupt = false;
         cpu.status_register.double_fault = false;
         ret(mode, operands, cpu)

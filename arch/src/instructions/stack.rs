@@ -61,7 +61,7 @@ pub fn ply(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
 }
 
 pub fn psh(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Immediate | InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         cpu.user_stack_push_word(operands[0].read_word()?)?;
         Ok(())
     } else {
@@ -70,7 +70,7 @@ pub fn psh(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
 }
 
 pub fn pll(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let word = cpu.user_stack_pull_word()?;
         operands[0].write_word(cpu, word)?;
         Ok(())

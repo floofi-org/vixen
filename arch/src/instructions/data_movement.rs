@@ -36,7 +36,7 @@ pub fn ldy(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
 }
 
 pub fn ldz(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
+    if let InstructionMode::Direct = mode {
         operands[0].write_word(cpu, 0)?;
         cpu.status_register.zero = true;
         Ok(())
@@ -73,7 +73,7 @@ pub fn sty(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
 }
 
 pub fn mov(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value = operands[0].read_word()?;
         operands[1].write_word(cpu, value)?;
         operands[0].write_word(cpu, 0)?;
@@ -84,7 +84,7 @@ pub fn mov(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
 }
 
 pub fn swp(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value1 = operands[0].read_word()?;
         let value2 = operands[1].read_word()?;
         operands[1].write_word(cpu, value1)?;

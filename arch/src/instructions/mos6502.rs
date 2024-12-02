@@ -90,7 +90,7 @@ pub fn bit(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
 }
 
 pub fn asr(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         // For this instruction, we convert the 8-bit word to a signed integer and then do an arithmetic
         // shift right on that (>> does ASR on i8, LSR on u8), and then convert it back to an 8-bit
         // word and update memory.
@@ -170,7 +170,7 @@ pub fn clv(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
 
 
 pub fn php(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Implied = mode {
         cpu.user_stack_push_word(cpu.status_register.into())?;
         Ok(())
     } else {
@@ -179,7 +179,7 @@ pub fn php(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
 }
 
 pub fn plp(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Implied = mode {
         let word = cpu.user_stack_pull_word()?;
         cpu.status_register = StatusRegister::from(word);
         Ok(())

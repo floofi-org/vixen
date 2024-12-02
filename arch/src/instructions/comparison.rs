@@ -6,7 +6,7 @@ use crate::cpu::CPU;
 use crate::InstructionResult;
 
 pub fn cmp(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Immediate | InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value1 = cpu.registers.a;
         let value2 = operand[0].read_word()?;
 
@@ -21,7 +21,7 @@ pub fn cmp(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
 }
 
 pub fn cpx(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Immediate | InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value1 = cpu.registers.x;
         let value2 = operand[0].read_word()?;
 
@@ -36,7 +36,7 @@ pub fn cpx(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
 }
 
 pub fn cpy(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Immediate | InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value1 = cpu.registers.y;
         let value2 = operand[0].read_word()?;
 
@@ -51,7 +51,7 @@ pub fn cpy(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
 }
 
 pub fn lte(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Immediate | InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value1 = cpu.registers.a;
         let value2 = operand[0].read_word()?;
 
@@ -66,7 +66,7 @@ pub fn lte(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
 }
 
 pub fn gte(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+    if let InstructionMode::Immediate | InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
         let value1 = cpu.registers.a;
         let value2 = operand[0].read_word()?;
 
@@ -81,7 +81,7 @@ pub fn gte(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
 }
 
 pub fn srz(mode: InstructionMode, operand: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
+    if let InstructionMode::Direct = mode {
         operand[0].write_word(cpu, if cpu.status_register.zero { 1 } else { 0 })?;
         Ok(())
     } else {
@@ -90,7 +90,7 @@ pub fn srz(mode: InstructionMode, operand: &mut [Operand; 2], cpu: &mut CPU) -> 
 }
 
 pub fn src(mode: InstructionMode, operand: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
+    if let InstructionMode::Direct = mode {
         operand[0].write_word(cpu, if cpu.status_register.carry { 1 } else { 0 })?;
         Ok(())
     } else {
@@ -99,7 +99,7 @@ pub fn src(mode: InstructionMode, operand: &mut [Operand; 2], cpu: &mut CPU) -> 
 }
 
 pub fn sro(mode: InstructionMode, operand: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
+    if let InstructionMode::Direct = mode {
         operand[0].write_word(cpu, if cpu.status_register.overflow { 1 } else { 0 })?;
         Ok(())
     } else {

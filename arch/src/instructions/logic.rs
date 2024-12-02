@@ -106,7 +106,7 @@ pub fn not(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
 }
 
 pub fn shl(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number << 1;
 
@@ -120,7 +120,7 @@ pub fn shl(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
 }
 
 pub fn shr(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number >> 1;
 
@@ -134,7 +134,7 @@ pub fn shr(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
 }
 
 pub fn rol(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number.rotate_left(1);
 
@@ -148,7 +148,7 @@ pub fn rol(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
 }
 
 pub fn ror(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number.rotate_right(1);
 
