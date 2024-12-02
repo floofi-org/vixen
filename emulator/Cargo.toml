@@ -1,5 +1,5 @@
 [package]
-name = "vixen-emulator"
+name = "vxemu"
 version = "0.1.0"
 edition = "2021"
 

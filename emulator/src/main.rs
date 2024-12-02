@@ -9,7 +9,7 @@ use vixen::CPUResult;
 
 fn main() {
     let path = get_rom_path().unwrap_or_else(|| {
-        eprintln!("Usage: vixen-emulator {{rom}}");
+        eprintln!("Usage: vxemu {{rom}}");
         eprintln!("Please provide path to ROM.");
 
         exit(-1);
