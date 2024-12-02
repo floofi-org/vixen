@@ -25,7 +25,7 @@ pub enum InstructionOperation {
     /* 0x05?? */ Lda, Ldx, Ldy, Ldz, Sta, Stx, Sty, Mov, Swp, Clr,
     /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam,
     /* 0x07?? */ Pha, Pla, Phx, Plx, Phy, Ply, Psh, Pll,
-    /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Bit, Asr, Sec, Clc, Sei, Cli, Sed, Cld, Clv, Php, Plp
+    /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Bit, Asr, Sec, Clc, Sei, Cli, Clv, Php, Plp
 }
 
 impl InstructionOperation {
@@ -139,11 +139,9 @@ impl TryFrom<u16> for InstructionOperation {
             0x087 => Clc,
             0x088 => Sei,
             0x089 => Cli,
-            0x08A => Sed,
-            0x08B => Cld,
-            0x08C => Clv,
-            0x08D => Php,
-            0x0BE => Plp
+            0x08A => Clv,
+            0x08B => Php,
+            0x0BC => Plp
         }
     }
 }

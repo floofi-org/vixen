@@ -111,8 +111,6 @@ impl Instruction {
             InstructionOperation::Clc => instructions::mos6502::clc(self.mode, &self.operands, cpu),
             InstructionOperation::Sei => instructions::mos6502::sei(self.mode, &self.operands, cpu),
             InstructionOperation::Cli => instructions::mos6502::cli(self.mode, &self.operands, cpu),
-            InstructionOperation::Sed => instructions::mos6502::sed(self.mode, &self.operands, cpu),
-            InstructionOperation::Cld => instructions::mos6502::cld(self.mode, &self.operands, cpu),
             InstructionOperation::Clv => instructions::mos6502::clv(self.mode, &self.operands, cpu),
             InstructionOperation::Php => instructions::mos6502::php(self.mode, &self.operands, cpu),
             InstructionOperation::Plp => instructions::mos6502::plp(self.mode, &self.operands, cpu)

@@ -1,5 +1,4 @@
 use alloc::string::String;
-use core::cmp::PartialEq;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::instruction::Instruction;
 use crate::core::instruction::instruction_mode::InstructionMode;

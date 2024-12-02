@@ -8,24 +8,24 @@ Vixen currently supports up to **64 kibibytes (65536 bytes)** of virtual memory.
 
 The following table lists all the registers, the internal ID used to refer to them, how large they are, and whether they are readable and/or writeable.
 
-| Name | Internal ID       | Size    | Description                                                                                                | Readable | Writable |
-|------|-------------------|---------|------------------------------------------------------------------------------------------------------------|----------|----------|
-| `A`  | `0x0001`          | 8 bits  | Accumulator register, used for arithmetic results                                                          | x        | x        |
-| `X`  | `0x0011`          | 8 bits  | Index register 1, for loops and memory indexing                                                            | x        | x        |
-| `Y`  | `0x0012`          | 8 bits  | Index register 1, for loops and memory indexing                                                            | x        | x        |
-| `R0` | `0x1000`          | 8 bits  | General-purpose register 1                                                                                 | x        | x        |
-| `R1` | `0x1001`          | 8 bits  | General-purpose register 2                                                                                 | x        | x        |
-| `R2` | `0x1002`          | 8 bits  | General-purpose register 3                                                                                 | x        | x        |
-| `R3` | `0x1003`          | 8 bits  | General-purpose register 4                                                                                 | x        | x        |
-| `R4` | `0x1004`          | 8 bits  | General-purpose register 5                                                                                 | x        | x        |
-| `R5` | `0x1005`          | 8 bits  | General-purpose register 6                                                                                 | x        | x        |
-| `R6` | `0x1006`          | 8 bits  | General-purpose register 7                                                                                 | x        | x        |
-| `R7` | `0x1007`          | 8 bits  | General-purpose register 8                                                                                 | x        | x        |
-| `PC` | `program_counter` | 16 bits | Address of current instruction in memory                                                                   | x        | x        |
-| `SR` | `system_register` | 16 bits | Status register: zero, carry, overflow, interrupt/break, double fault, decimal and interrupt disable flags | *        | *        |
-| `UP` | `stack_pointer`   | 8 bits  | Pointer to the top of the user stack                                                                       | *        | *        |
-| `SS` | `system_stack`    | -       | Internal stack used for interrupt handling and subroutines                                                 |          |          |
-| `SP` | -                 | -       | Pointer to the top of the system stack                                                                     |          |          |
+| Name | Internal ID       | Size    | Description                                                                                       | Readable | Writable |
+|------|-------------------|---------|---------------------------------------------------------------------------------------------------|----------|----------|
+| `A`  | `0x0001`          | 8 bits  | Accumulator register, used for arithmetic results                                                 | x        | x        |
+| `X`  | `0x0011`          | 8 bits  | Index register 1, for loops and memory indexing                                                   | x        | x        |
+| `Y`  | `0x0012`          | 8 bits  | Index register 1, for loops and memory indexing                                                   | x        | x        |
+| `R0` | `0x1000`          | 8 bits  | General-purpose register 1                                                                        | x        | x        |
+| `R1` | `0x1001`          | 8 bits  | General-purpose register 2                                                                        | x        | x        |
+| `R2` | `0x1002`          | 8 bits  | General-purpose register 3                                                                        | x        | x        |
+| `R3` | `0x1003`          | 8 bits  | General-purpose register 4                                                                        | x        | x        |
+| `R4` | `0x1004`          | 8 bits  | General-purpose register 5                                                                        | x        | x        |
+| `R5` | `0x1005`          | 8 bits  | General-purpose register 6                                                                        | x        | x        |
+| `R6` | `0x1006`          | 8 bits  | General-purpose register 7                                                                        | x        | x        |
+| `R7` | `0x1007`          | 8 bits  | General-purpose register 8                                                                        | x        | x        |
+| `PC` | `program_counter` | 16 bits | Address of current instruction in memory                                                          | x        | x        |
+| `SR` | `system_register` | 16 bits | Status register: zero, carry, overflow, interrupt/break, double fault and interrupt disable flags | *        | *        |
+| `UP` | `stack_pointer`   | 8 bits  | Pointer to the top of the user stack                                                              | *        | *        |
+| `SS` | `system_stack`    | -       | Internal stack used for interrupt handling and subroutines                                        |          |          |
+| `SP` | -                 | -       | Pointer to the top of the system stack                                                            |          |          |
 
 \* There are instructions that might allow for reading/writing to these registers, but they cannot be directly read from/written to.
 

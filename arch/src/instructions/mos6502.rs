@@ -141,24 +141,6 @@ pub fn cli(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
     }
 }
 
-pub fn sed(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
-        cpu.status_register.decimal = true;
-        Ok(())
-    } else {
-        Err(Interrupt::IllegalInstruction)
-    }
-}
-
-pub fn cld(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
-        cpu.status_register.decimal = false;
-        Ok(())
-    } else {
-        Err(Interrupt::IllegalInstruction)
-    }
-}
-
 pub fn clv(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let InstructionMode::Implied = mode {
         cpu.status_register.overflow = false;
