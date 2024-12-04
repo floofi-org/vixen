@@ -1,5 +1,5 @@
 [workspace]
-members = ["arch", "emulator"]
+members = ["arch", "emulator", "vasm"]
 default-members = ["emulator"]
 resolver = "2"
 
