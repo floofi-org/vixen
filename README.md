@@ -1,3 +1,3 @@
 # Welcome to Vixen!
 
-* [Get started](docs/index.md)
+* [Get started](../../wiki)
