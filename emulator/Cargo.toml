@@ -1,5 +1,5 @@
 [package]
-name = "vxemu"
+name = "vemu"
 version = "0.1.0"
 edition = "2021"
 
