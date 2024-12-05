@@ -9,15 +9,15 @@ use vixen::CPUResult;
 
 fn main() {
     let path = get_rom_path().unwrap_or_else(|| {
-        eprintln!("Usage: vxemu {{rom}}");
-        eprintln!("Please provide path to ROM.");
+        eprintln!("\u{1b}[33mUsage: vxemu {{rom}}\u{1b}[0m");
+        eprintln!("\u{1b}[33mPlease provide path to ROM.\u{1b}[0m");
 
         exit(-1);
     });
 
     let rom = fs::read(path);
     let rom = rom.unwrap_or_else(|e| {
-        eprintln!("Failed reading ROM file: {e}");
+        eprintln!("\u{1b}[33mFailed to read ROM file: {e}\u{1b}[0m");
         exit(-1);
     });
 
@@ -43,11 +43,11 @@ fn run_cpu(cpu: &mut CPU) -> CPUResult<()> {
 }
 
 fn on_unhandled_interrupt(cpu: &CPU, interrupt: Interrupt) {
-    println!("{}", StackTrace::new(interrupt, cpu));
+    println!("\u{1b}[33m{}\u{1b}[0m", StackTrace::new(interrupt, cpu));
 
     let result = fs::write("./memory.bin", cpu.memory);
     match result {
-        Ok(_) => println!("Core dumped to 'memory.bin'."),
-        Err(e) => println!("Failed to dump memory: {e}"),
+        Ok(_) => println!("\u{1b}[33mCore dumped to 'memory.bin'.\u{1b}[0m"),
+        Err(e) => println!("\u{1b}[33mFailed to dump memory: {e}\u{1b}[0m"),
     }
 }

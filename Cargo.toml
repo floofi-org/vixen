@@ -1,5 +1,5 @@
 [workspace]
-members = ["arch", "emulator"]
+members = ["arch", "emulator", "debugger"]
 default-members = ["emulator"]
 resolver = "2"
 

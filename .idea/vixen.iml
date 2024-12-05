@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/arch/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/emulator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/assembler/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/debugger/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
