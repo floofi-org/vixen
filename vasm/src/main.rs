@@ -1,8 +1,8 @@
-use vasm::Scanner;
+use vasm::scanner::Scanner;
 
-const program: &str = "
+const PROGRAM: &str = "
 main:                   ; Our main program
-        add 1 , 1        ; Run some arbitrary calculation
+        add 1, 1        ; Run some arbitrary calculation
         pll X           ; This should cause a stack underflow
         jmp main        ; Otherwise repeat infinitely
 
@@ -12,6 +12,9 @@ handle_interrupt:
 ";
 
 fn main() {
-    let tokens = Scanner::new(program).scan();
-    println!("{tokens:?}")
+    let tokens = Scanner::new(PROGRAM).scan();
+
+    println!("{PROGRAM}");
+    println!();
+    println!("{tokens:#?}");
 }
