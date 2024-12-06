@@ -23,8 +23,8 @@ impl Operand {
             Addressing::ZeroPage => Self::zero_page(raw_operand, cpu),
             Addressing::Absolute => Self::memory(raw_operand, cpu),
             Addressing::Relative => {
-                // Relative offsets are stored as u16 internally but need to be interpreted as
-                // i16.
+                // Relative offsets are stored as u16 internally
+                // but need to be interpreted as i16.
                 #[allow(clippy::cast_possible_wrap)]
                 let offset = raw_operand as i16;
                 let target = if offset > 0 {
