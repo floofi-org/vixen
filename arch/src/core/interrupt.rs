@@ -1,7 +1,7 @@
 use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::fmt::Write;
-use crate::core::registers::status_register::StatusRegister;
+use crate::core::registers::StatusRegister;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Interrupt {

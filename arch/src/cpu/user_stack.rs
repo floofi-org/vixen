@@ -1,6 +1,6 @@
-use crate::core::interrupt::Interrupt;
-use crate::core::registers::status_register::StatusRegister;
-use crate::cpu::CPU;
+use crate::core::Interrupt;
+use crate::core::registers::StatusRegister;
+use crate::CPU;
 use crate::CPUResult;
 
 pub trait UserStack {

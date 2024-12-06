@@ -1,10 +1,10 @@
-use crate::core::instruction::mode::Addressing;
-use crate::core::interrupt::Interrupt;
-use crate::core::memory_cell::MemoryCell;
-use crate::core::operand::Operand;
-use crate::core::registers::status_register::StatusRegister;
-use crate::cpu::CPU;
-use crate::cpu::user_stack::UserStack;
+use crate::core::instruction::Addressing;
+use crate::core::Interrupt;
+use crate::core::MemoryCell;
+use crate::core::Operand;
+use crate::core::registers::StatusRegister;
+use crate::CPU;
+use crate::cpu::UserStack;
 use crate::InstructionResult;
 use crate::instructions::control_flow::jmp;
 

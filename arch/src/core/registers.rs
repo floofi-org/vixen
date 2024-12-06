@@ -1,6 +1,9 @@
 pub mod register_id;
 pub mod status_register;
 
+pub use register_id::RegisterId;
+pub use status_register::StatusRegister;
+
 #[derive(Debug, Default)]
 pub struct Registers {
     pub a: u8,

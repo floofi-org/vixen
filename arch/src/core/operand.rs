@@ -1,9 +1,9 @@
 use alloc::format;
 use alloc::string::String;
-use crate::core::instruction::mode::Addressing;
-use crate::core::interrupt::Interrupt;
-use crate::core::registers::register_id::RegisterId;
-use crate::cpu::CPU;
+use crate::core::instruction::Addressing;
+use crate::core::Interrupt;
+use crate::core::registers::RegisterId;
+use crate::CPU;
 use crate::CPUResult;
 
 #[derive(Debug)]

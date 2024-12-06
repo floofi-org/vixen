@@ -1,10 +1,10 @@
 use alloc::string::String;
 use crate::core::binary::ExtractedBinaryData;
-use crate::core::instruction::Instruction;
-use crate::core::instruction::mode::Addressing;
-use crate::core::instruction::operation::Operation;
-use crate::core::operand::Operand;
-use crate::cpu::CPU;
+use crate::core::Instruction;
+use crate::core::instruction::Addressing;
+use crate::core::instruction::Operation;
+use crate::core::Operand;
+use crate::CPU;
 use crate::CPUResult;
 
 pub trait Decoder {

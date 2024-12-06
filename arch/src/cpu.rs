@@ -2,14 +2,16 @@ pub mod system_stack;
 pub mod user_stack;
 pub mod decoder;
 
+pub use decoder::Decoder;
+pub use system_stack::SystemStack;
+pub use user_stack::UserStack;
+
 use alloc::vec;
 use alloc::vec::Vec;
-use crate::core::interrupt::Interrupt;
-use crate::core::registers::register_id::RegisterId;
-use crate::core::registers::Registers;
-use crate::core::registers::status_register::StatusRegister;
-use crate::cpu::decoder::Decoder;
-use crate::cpu::system_stack::SystemStack;
+use crate::core::Interrupt;
+use crate::core::registers::RegisterId;
+use crate::core::Registers;
+use crate::core::registers::StatusRegister;
 use crate::{CPUResult, InstructionResult, CPU_SPECIFICATION};
 
 #[derive(Debug)]
@@ -38,7 +40,7 @@ impl CPU {
         // Reset stack pointer to the start of the stack
         self.stack_pointer = 0x0100;
         self.system_stack_save_state()?;
-        
+
         Ok(())
     }
 

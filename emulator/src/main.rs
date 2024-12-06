@@ -2,9 +2,9 @@ use std::ffi::OsString;
 use std::process::exit;
 use std::{env, fs};
 
-use vixen::core::interrupt::Interrupt;
-use vixen::core::stack_trace::StackTrace;
-use vixen::cpu::CPU;
+use vixen::core::Interrupt;
+use vixen::core::StackTrace;
+use vixen::CPU;
 use vixen::CPUResult;
 
 fn main() {

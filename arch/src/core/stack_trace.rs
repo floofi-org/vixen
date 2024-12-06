@@ -1,7 +1,7 @@
 use core::fmt::{Display, Formatter};
-use crate::core::interrupt::Interrupt;
-use crate::cpu::CPU;
-use crate::cpu::decoder::Decoder;
+use crate::core::Interrupt;
+use crate::CPU;
+use crate::cpu::Decoder;
 
 pub struct StackTrace<'a> {
     cpu: &'a CPU,

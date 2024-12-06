@@ -1,9 +1,9 @@
-use crate::core::instruction::mode::Addressing;
-use crate::core::interrupt::Interrupt;
-use crate::core::memory_cell::MemoryCell;
-use crate::core::operand::Operand;
-use crate::cpu::CPU;
-use crate::cpu::system_stack::SystemStack;
+use crate::core::instruction::Addressing;
+use crate::core::Interrupt;
+use crate::core::MemoryCell;
+use crate::core::Operand;
+use crate::CPU;
+use crate::cpu::SystemStack;
 use crate::InstructionResult;
 
 pub fn jmp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {

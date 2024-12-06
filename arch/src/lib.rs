@@ -16,8 +16,10 @@ pub mod core;
 pub mod cpu;
 pub mod instructions;
 
-use crate::core::interrupt::Interrupt;
-use crate::core::specification::Specification;
+pub use cpu::CPU;
+
+use crate::core::Interrupt;
+use crate::core::Specification;
 
 pub type CPUResult<T> = Result<T, Interrupt>;
 pub type InstructionResult = CPUResult<()>;
