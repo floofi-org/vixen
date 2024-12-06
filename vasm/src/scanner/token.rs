@@ -25,9 +25,7 @@ pub struct Span {
 #[derive(Debug)]
 pub enum Token {
     Colon,
-    Dollar,
     Hash,
-    Percent,
     Minus,
     Plus,
     Dot,
@@ -48,9 +46,7 @@ impl TokenWithSpan {
 
         match char {
             ':' => Some(Self::simple(scanner, Token::Colon)),
-            '$' => Some(Self::simple(scanner, Token::Dollar)),
             '#' => Some(Self::simple(scanner, Token::Hash)),
-            '%' => Some(Self::simple(scanner, Token::Dollar)),
             '-' => Some(Self::simple(scanner, Token::Minus)),
             '+' => Some(Self::simple(scanner, Token::Plus)),
             '.' => Some(Self::simple(scanner, Token::Dot)),
@@ -58,8 +54,18 @@ impl TokenWithSpan {
             ';' => Self::comment(scanner),
             '\n' | '\r' => Self::linebreak(scanner),
 
-            '0'..='9' => Self::literal(scanner, Literal::number),
             'a'..='z' | 'A'..='Z' | '_' => Self::literal(scanner, Literal::identifier),
+
+            '0'..='9' => Self::literal(scanner, |s| Literal::number(s, 10)),
+            '$' => {
+                scanner.next();
+                Self::literal(scanner, |s| Literal::number(s, 16))
+            },
+
+            '%' => {
+                scanner.next();
+                Self::literal(scanner, |s| Literal::number(s, 2))
+            },
 
             ' ' | '\t' => {
                 scanner.next(); // Ignore whitespace
