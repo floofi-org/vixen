@@ -6,5 +6,9 @@ edition = "2021"
 [dependencies]
 vixen = { path = "../arch" }
 
+[lints.rust]
+unsafe_code = "forbid"
+rust_2024_compatibility = "warn"
+
 [lints.clippy]
 pedantic = "warn"
