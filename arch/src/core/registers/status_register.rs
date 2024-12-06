@@ -1,8 +1,8 @@
 use core::fmt::{Display, Formatter};
 
 #[derive(Debug, Default, Copy, Clone)]
-#[allow(clippy::struct_excessive_bools)]
 // Enums cannot be used here
+#[allow(clippy::struct_excessive_bools)]
 pub struct StatusRegister {
     pub negative: bool,
     pub overflow: bool,
@@ -43,8 +43,8 @@ impl From<StatusRegister> for u8 {
 
 impl From<u8> for StatusRegister {
     fn from(value: u8) -> Self {
-        #[allow(clippy::unreadable_literal)]
         // They literally are just 8-bit binary numbers
+        #[allow(clippy::unreadable_literal)]
         StatusRegister {
             negative: (value & 0b10000000) == 0b10000000,
             overflow: (value & 0b01000000) == 0b01000000,

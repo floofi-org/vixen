@@ -115,8 +115,8 @@ pub fn mod_(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 // Square root should be unsigned and 8-bit, this is intended
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
@@ -133,8 +133,8 @@ pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 // Cube root should be unsigned and 8-bit, this is intended
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
@@ -151,7 +151,8 @@ pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-#[allow(clippy::cast_possible_wrap)] // Overflow is (by definition) for signed operations
+// Overflow is (by definition) for signed operations
+#[allow(clippy::cast_possible_wrap)]
 pub fn sqr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
@@ -172,7 +173,8 @@ pub fn sqr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-#[allow(clippy::cast_possible_wrap)] // Overflow is (by definition) for signed operations
+// Overflow is (by definition) for signed operations
+#[allow(clippy::cast_possible_wrap)]
 pub fn cbe(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;

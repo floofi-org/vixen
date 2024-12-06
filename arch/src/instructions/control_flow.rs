@@ -111,8 +111,8 @@ pub fn bno(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 
 pub fn int(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        #[allow(clippy::unreadable_literal)]
         // They literally are just 8-bit binary numbers
+        #[allow(clippy::unreadable_literal)]
         Err(match cpu.registers.a & 0b00001111 {
             0x0 => Interrupt::User1,
             0x1 => Interrupt::User2,

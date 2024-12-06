@@ -108,8 +108,8 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
         "r" | "run" => {
             state.running = true;
         },
-        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
         // We want to get a valid memory address at the end, this is intended
+        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
         "l" | "location" => {
             let start = (f32::from(cpu.program_counter) / 32.0).round() as usize * 32 - 32;
             let end = (f32::from(cpu.program_counter) / 32.0).round() as usize * 32 + 32;
@@ -140,8 +140,8 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
         },
         _ => {
             if let Ok(number) = u16::from_str_radix(line, 16) {
-                #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
                 // We want to get a valid memory address at the end, this is intended
+                #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
                 if number == 0xFFFF {
                     println!("\u{1b}[33mInvalid memory address.\u{1b}[0m");
                 } else {

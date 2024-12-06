@@ -36,8 +36,8 @@ impl SystemStack for CPU {
         if self.system_stack.is_empty() {
             Err(Interrupt::StackUnderflow)
         } else {
-            #[allow(clippy::cast_possible_truncation)]
             // This is intended as the system stack can store both u16 and u8 values
+            #[allow(clippy::cast_possible_truncation)]
             match self.system_stack.pop().ok_or(Interrupt::IllegalMemory) {
                 Ok(v) => Ok(v as u8),
                 Err(i) => Err(i)

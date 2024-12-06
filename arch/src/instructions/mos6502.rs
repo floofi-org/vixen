@@ -79,8 +79,8 @@ pub fn sbc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 }
 
 pub fn bit(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    #[allow(clippy::unreadable_literal)]
     // They literally are just 8-bit binary numbers
+    #[allow(clippy::unreadable_literal)]
     if let Addressing::ZeroPage | Addressing::Absolute = mode {
         let result = cpu.registers.a & operands[0].read_word()?;
         cpu.status_register.negative = (result & 0b10000000) == 0b10000000;
@@ -91,8 +91,8 @@ pub fn bit(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-#[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 // u8 <-> i8 conversion is intended, see comment below
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 pub fn asr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
         // For this instruction, we convert the 8-bit word to a signed integer and then do an arithmetic

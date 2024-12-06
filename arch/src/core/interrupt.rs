@@ -65,8 +65,8 @@ impl Interrupt {
                 (1, _, true) | (0, true, _) => "<root cause>",
                 (_, _, _) => "-"
             };
-            #[allow(clippy::cast_possible_truncation)]
             // Status register dump in stack frame is 8-bit
+            #[allow(clippy::cast_possible_truncation)]
             writeln!(&mut trace, "->  0x{:0>4X}  {cause: <20}  {: <8}  ??",
                      frame[1], StatusRegister::from(frame[0] as u8)).unwrap();
         }

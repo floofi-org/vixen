@@ -16,8 +16,8 @@ pub trait MemoryCell {
 impl MemoryCell for Operand {
     fn read_word(&self) -> CPUResult<u8> {
         Ok(match self {
-            #[allow(clippy::cast_possible_truncation)]
             // Literals should only be 8-bit
+            #[allow(clippy::cast_possible_truncation)]
             Operand::Literal(value) => *value as u8,
             Operand::Register(_, value) | Operand::ZeroPage(_, value, _) | Operand::Memory(_, value, _) => *value,
             Operand::Void => return Err(Interrupt::IllegalMemory)
@@ -70,8 +70,8 @@ impl MemoryCell for Operand {
     fn write_dword(&mut self, cpu: &mut CPU, value: u16) -> CPUResult<()> {
         match self {
             Operand::Literal(_) | Operand::Void => Err(Interrupt::IllegalMemory),
-            #[allow(clippy::cast_possible_truncation)]
             // Registers are 8-bit and cannot have 16-bit data written to them
+            #[allow(clippy::cast_possible_truncation)]
             Operand::Register(id, initial_value) => {
                 match id {
                     RegisterId::A => cpu.registers.a = value as u8,
