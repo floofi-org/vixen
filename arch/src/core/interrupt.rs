@@ -49,11 +49,11 @@ impl From<Interrupt> for u8 {
 }
 
 impl Interrupt {
-    pub fn is_maskable(&self) -> bool {
+    #[must_use] pub fn is_maskable(&self) -> bool {
         matches!(self, Interrupt::Rtc | Interrupt::AsyncIO | Interrupt::IllegalInstruction)
     }
 
-    pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
+    #[must_use] pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
 
@@ -63,6 +63,8 @@ impl Interrupt {
                 (1, _, true) | (0, true, _) => "<root cause>",
                 (_, _, _) => "-"
             };
+            #[allow(clippy::cast_possible_truncation)]
+            // Status register dump in stack frame is 8-bit
             writeln!(&mut trace, "->  0x{:0>4X}  {cause: <20}  {: <8}  ??",
                      frame[1], StatusRegister::from(frame[0] as u8)).unwrap();
         }

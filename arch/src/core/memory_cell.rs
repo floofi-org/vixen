@@ -1,4 +1,4 @@
-use crate::core::instruction::instruction_mode::InstructionMode;
+use crate::core::instruction::mode::Addressing;
 use crate::core::interrupt::Interrupt;
 use crate::core::operand::Operand;
 use crate::core::registers::register_id::RegisterId;
@@ -10,12 +10,14 @@ pub trait MemoryCell {
     fn read_dword(&self) -> CPUResult<u16>;
     fn write_word(&mut self, cpu: &mut CPU, value: u8) -> CPUResult<()>;
     fn write_dword(&mut self, cpu: &mut CPU, value: u16) -> CPUResult<()>;
-    fn mode(&self) -> InstructionMode;
+    fn mode(&self) -> Addressing;
 }
 
 impl MemoryCell for Operand {
     fn read_word(&self) -> CPUResult<u8> {
         Ok(match self {
+            #[allow(clippy::cast_possible_truncation)]
+            // Literals should only be 8-bit
             Operand::Literal(value) => *value as u8,
             Operand::Register(_, value) | Operand::ZeroPage(_, value, _) | Operand::Memory(_, value, _) => *value,
             Operand::Void => return Err(Interrupt::IllegalMemory)
@@ -25,7 +27,7 @@ impl MemoryCell for Operand {
     fn read_dword(&self) -> CPUResult<u16> {
         Ok(match self {
             Operand::Literal(value) => *value,
-            Operand::Register(_, value) => *value as u16,
+            Operand::Register(_, value) => u16::from(*value),
             Operand::ZeroPage(_, high_value, low_value) |
                 Operand::Memory(_, high_value, low_value) =>
                     u16::from_le_bytes([*high_value, *low_value]),
@@ -35,7 +37,7 @@ impl MemoryCell for Operand {
 
     fn write_word(&mut self, cpu: &mut CPU, value: u8) -> CPUResult<()> {
         match self {
-            Operand::Literal(_) => Err(Interrupt::IllegalMemory),
+            Operand::Literal(_) | Operand::Void => Err(Interrupt::IllegalMemory),
             Operand::Register(id, initial_value) => {
                 match id {
                     RegisterId::A => cpu.registers.a = value,
@@ -61,14 +63,15 @@ impl MemoryCell for Operand {
                 } else {
                     Err(Interrupt::IllegalMemory)
                 }
-            },
-            Operand::Void => Err(Interrupt::IllegalMemory)
+            }
         }
     }
 
     fn write_dword(&mut self, cpu: &mut CPU, value: u16) -> CPUResult<()> {
         match self {
-            Operand::Literal(_) => Err(Interrupt::IllegalMemory),
+            Operand::Literal(_) | Operand::Void => Err(Interrupt::IllegalMemory),
+            #[allow(clippy::cast_possible_truncation)]
+            // Registers are 8-bit and cannot have 16-bit data written to them
             Operand::Register(id, initial_value) => {
                 match id {
                     RegisterId::A => cpu.registers.a = value as u8,
@@ -98,18 +101,17 @@ impl MemoryCell for Operand {
                 } else {
                     Err(Interrupt::IllegalMemory)
                 }
-            },
-            Operand::Void => Err(Interrupt::IllegalMemory)
+            }
         }
     }
 
-    fn mode(&self) -> InstructionMode {
+    fn mode(&self) -> Addressing {
         match self {
-            Operand::Literal(_) => InstructionMode::Immediate,
-            Operand::Register(_, _) => InstructionMode::Direct,
-            Operand::ZeroPage(_, _, _) => InstructionMode::ZeroPage,
-            Operand::Memory(_, _, _) => InstructionMode::Absolute,
-            Operand::Void => InstructionMode::Implied
+            Operand::Literal(_) => Addressing::Immediate,
+            Operand::Register(_, _) => Addressing::Direct,
+            Operand::ZeroPage(_, _, _) => Addressing::ZeroPage,
+            Operand::Memory(_, _, _) => Addressing::Absolute,
+            Operand::Void => Addressing::Implied
         }
     }
 }

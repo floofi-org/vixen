@@ -22,7 +22,10 @@ fn main() {
     });
 
     let mut cpu = CPU::default();
-    cpu.load_rom(&rom);
+    if let Err(e) = cpu.load_rom(&rom) {
+        eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
+        exit(2);
+    }
 
     if let Err(interrupt) = run_cpu(&mut cpu) {
         on_unhandled_interrupt(&cpu, interrupt);
@@ -47,7 +50,7 @@ fn on_unhandled_interrupt(cpu: &CPU, interrupt: Interrupt) {
 
     let result = fs::write("./memory.bin", cpu.memory);
     match result {
-        Ok(_) => println!("\u{1b}[33mCore dumped to 'memory.bin'.\u{1b}[0m"),
+        Ok(()) => println!("\u{1b}[33mCore dumped to 'memory.bin'.\u{1b}[0m"),
         Err(e) => println!("\u{1b}[33mFailed to dump memory: {e}\u{1b}[0m"),
     }
 }

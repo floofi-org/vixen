@@ -1,8 +1,8 @@
 use alloc::string::String;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::instruction::Instruction;
-use crate::core::instruction::instruction_mode::InstructionMode;
-use crate::core::instruction::instruction_operation::InstructionOperation;
+use crate::core::instruction::mode::Addressing;
+use crate::core::instruction::operation::Operation;
 use crate::core::operand::Operand;
 use crate::cpu::CPU;
 use crate::CPUResult;
@@ -22,16 +22,16 @@ impl Decoder for CPU {
     fn read_instruction(&self, position: u16) -> CPUResult<Instruction> {
         let opcode = self.extract_instruction(position).0;
 
-        let instruction = opcode[5] as u16 * 0x10 + (opcode[4] >> 4) as u16;
-        let mode = InstructionMode::try_from(opcode[4] & 0x0F)?;
-        let operation = InstructionOperation::try_from(instruction)?;
+        let instruction = u16::from(opcode[5]) * 0x10 + u16::from(opcode[4] >> 4);
+        let mode = Addressing::try_from(opcode[4] & 0x0F)?;
+        let operation = Operation::try_from(instruction)?;
 
         let operand1 = Operand::decode(
-            opcode[3] as u16 * 0x100 + opcode[2] as u16,
+            u16::from(opcode[3]) * 0x100 + u16::from(opcode[2]),
             self, mode
         )?;
         let operand2 = Operand::decode(
-            opcode[1] as u16 * 0x100 + opcode[0] as u16,
+            u16::from(opcode[1]) * 0x100 + u16::from(opcode[0]),
             self, mode
         )?;
 
@@ -46,20 +46,20 @@ impl Decoder for CPU {
         let mut disassembled = String::new();
 
         let opcode = self.extract_instruction(position).0;
-        let instruction = opcode[5] as u16 * 0x10 + (opcode[4] >> 4) as u16;
+        let instruction = u16::from(opcode[5]) * 0x10 + u16::from(opcode[4] >> 4);
         let mode = opcode[4] & 0x0F;
 
-        disassembled.push_str(&InstructionOperation::disassemble(instruction, mode));
+        disassembled.push_str(&Operation::disassemble(instruction, mode));
 
-        if let Ok(mode) = InstructionMode::try_from(opcode[4] & 0x0F) {
-            if mode != InstructionMode::Implied {
+        if let Ok(mode) = Addressing::try_from(opcode[4] & 0x0F) {
+            if mode != Addressing::Implied {
                 disassembled.push_str(&Operand::disassemble(
-                    opcode[3] as u16 * 0x100 + opcode[2] as u16,
+                    u16::from(opcode[3]) * 0x100 + u16::from(opcode[2]),
                     self, mode));
-                if mode == InstructionMode::Immediate || opcode[1] as u16 * 0x100 + opcode[0] as u16 != 0 {
+                if mode == Addressing::Immediate || u16::from(opcode[1]) * 0x100 + u16::from(opcode[0]) != 0 {
                     disassembled.push_str(", ");
                     disassembled.push_str(&Operand::disassemble(
-                        opcode[1] as u16 * 0x100 + opcode[0] as u16,
+                        u16::from(opcode[1]) * 0x100 + u16::from(opcode[0]),
                         self, mode));
                 }
             }

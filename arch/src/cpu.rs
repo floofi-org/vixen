@@ -10,7 +10,7 @@ use crate::core::registers::Registers;
 use crate::core::registers::status_register::StatusRegister;
 use crate::cpu::decoder::Decoder;
 use crate::cpu::system_stack::SystemStack;
-use crate::{InstructionResult, CPU_SPECIFICATION};
+use crate::{CPUResult, InstructionResult, CPU_SPECIFICATION};
 
 #[derive(Debug)]
 pub struct CPU {
@@ -23,7 +23,7 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn load_rom(&mut self, rom: &[u8]) {
+    pub fn load_rom(&mut self, rom: &[u8]) -> CPUResult<()> {
         let base_address = 0xE000;
         let end_address = base_address + rom.len();
         let rom_region = base_address..end_address;
@@ -37,10 +37,12 @@ impl CPU {
 
         // Reset stack pointer to the start of the stack
         self.stack_pointer = 0x0100;
-        self.system_stack_save_state().unwrap();
+        self.system_stack_save_state()?;
+        
+        Ok(())
     }
 
-    pub fn get_register(&self, register_id: RegisterId) -> u8 {
+    #[must_use] pub fn get_register(&self, register_id: RegisterId) -> u8 {
         match register_id {
             RegisterId::A => self.registers.a,
             RegisterId::X => self.registers.x,
@@ -97,7 +99,7 @@ impl CPU {
             self.tick_unhandled()
         } else {
             match self.tick_unhandled() {
-                Ok(_) => Ok(()),
+                Ok(()) => Ok(()),
                 Err(interrupt) => {
                     self.handle_interrupt(interrupt)?;
                     self.tick()

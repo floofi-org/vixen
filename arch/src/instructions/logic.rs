@@ -1,12 +1,12 @@
-use crate::core::instruction::instruction_mode::InstructionMode;
+use crate::core::instruction::mode::Addressing;
 use crate::core::interrupt::Interrupt;
 use crate::core::memory_cell::MemoryCell;
 use crate::core::operand::Operand;
 use crate::cpu::CPU;
 use crate::InstructionResult;
 
-pub fn and(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn and(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = number1 & number2;
@@ -20,8 +20,8 @@ pub fn and(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn or(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn or(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = number1 | number2;
@@ -35,8 +35,8 @@ pub fn or(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn xor(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn xor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = number1 ^ number2;
@@ -50,8 +50,8 @@ pub fn xor(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn nor(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn nor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = !(number1 | number2);
@@ -65,8 +65,8 @@ pub fn nor(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn nad(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn nad(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = !(number1 & number2);
@@ -80,8 +80,8 @@ pub fn nad(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn imp(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn imp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = (!number1) | number2;
@@ -95,8 +95,8 @@ pub fn imp(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn not(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Implied = mode {
+pub fn not(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode {
         cpu.registers.a = !cpu.registers.a;
         cpu.status_register.zero = cpu.registers.a == 0;
         Ok(())
@@ -105,8 +105,8 @@ pub fn not(mode: InstructionMode, _operands: &[Operand; 2], cpu: &mut CPU) -> In
     }
 }
 
-pub fn shl(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn shl(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number << 1;
 
@@ -119,8 +119,8 @@ pub fn shl(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn shr(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn shr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number >> 1;
 
@@ -133,8 +133,8 @@ pub fn shr(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn rol(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn rol(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number.rotate_left(1);
 
@@ -147,8 +147,8 @@ pub fn rol(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn ror(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn ror(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let result = number.rotate_right(1);
 

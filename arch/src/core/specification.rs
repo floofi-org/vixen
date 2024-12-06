@@ -12,6 +12,8 @@ pub struct Specification<'a> {
 }
 
 impl From<Specification<'_>> for Vec<u8> {
+    #[allow(clippy::cast_possible_truncation)]
+    // Strings in the specification are truncated to max 255 chars
     fn from(value: Specification) -> Self {
         let mut bytes: Vec<u8> = Vec::with_capacity(511);
 

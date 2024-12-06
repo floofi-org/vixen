@@ -28,9 +28,12 @@ fn main() {
         exit(-1);
     });
     let mut cpu = CPU::default();
-    cpu.load_rom(&rom);
+    if let Err(e) = cpu.load_rom(&rom) {
+        eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
+        exit(2);
+    }
 
-    debug_cpu(&mut cpu, rom.len())
+    debug_cpu(&mut cpu, rom.len());
 }
 
 fn get_rom_path() -> Option<OsString> {
@@ -44,7 +47,7 @@ fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
     let mut position = start;
 
     while position < end {
-        print!("\u{1b}[0m{:0>4X}:  ", position);
+        print!("\u{1b}[0m{position:0>4X}:  ");
         for _ in 0..16 {
             let focus_start = focus.unwrap_or(cpu.program_counter as usize);
             let focus_end = focus_start + if focus.is_some() { 1 } else { 6 };
@@ -105,9 +108,11 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
         "r" | "run" => {
             state.running = true;
         },
+        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+        // We want to get a valid memory address at the end, this is intended
         "l" | "location" => {
-            let start = (cpu.program_counter as f32 / 32.0).round() as usize * 32 - 32;
-            let end = (cpu.program_counter as f32 / 32.0).round() as usize * 32 + 32;
+            let start = (f32::from(cpu.program_counter) / 32.0).round() as usize * 32 - 32;
+            let end = (f32::from(cpu.program_counter) / 32.0).round() as usize * 32 + 32;
             dump_memory(cpu, start, end, None);
         },
         "g" | "registers" => {
@@ -135,11 +140,13 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
         },
         _ => {
             if let Ok(number) = u16::from_str_radix(line, 16) {
+                #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+                // We want to get a valid memory address at the end, this is intended
                 if number == 0xFFFF {
                     println!("\u{1b}[33mInvalid memory address.\u{1b}[0m");
                 } else {
-                    let start = (number.clamp(32, 65503) as f32 / 32.0).round() as usize * 32 - 32;
-                    let end = (number.clamp(32, 65503) as f32 / 32.0).round() as usize * 32 + 32;
+                    let start = (f32::from(number.clamp(32, 65503)) / 32.0).round() as usize * 32 - 32;
+                    let end = (f32::from(number.clamp(32, 65503)) / 32.0).round() as usize * 32 + 32;
                     dump_memory(cpu, start, end, Some(number as usize));
                 }
             } else {
