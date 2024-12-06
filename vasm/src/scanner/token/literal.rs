@@ -21,9 +21,9 @@ pub enum Literal {
 impl Literal {
     /// # Panics
     /// Panics when parsing number fails
-    pub fn number(scanner: &mut Scanner) -> Option<Self> {
+    pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Self> {
         let number = scanner.next_while(literal_filter)?;
-        let number = number.parse()
+        let number = u16::from_str_radix(&number, radix)
             .expect("Your number is silly");
 
         Some(Self::Number(number))
