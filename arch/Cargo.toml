@@ -5,3 +5,11 @@ edition = "2021"
 
 [dependencies]
 libm = "0.2.11"
+
+[lints.rust]
+unsafe_code = "forbid"
+rust_2024_compatibility = "warn"
+
+[lints.clippy]
+pedantic = "warn"
+missing_errors_doc = "allow"

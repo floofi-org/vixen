@@ -1,7 +1,7 @@
 use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::fmt::Write;
-use crate::core::registers::status_register::StatusRegister;
+use crate::core::registers::StatusRegister;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Interrupt {
@@ -49,10 +49,12 @@ impl From<Interrupt> for u8 {
 }
 
 impl Interrupt {
+    #[must_use]
     pub fn is_maskable(&self) -> bool {
         matches!(self, Interrupt::Rtc | Interrupt::AsyncIO | Interrupt::IllegalInstruction)
     }
 
+    #[must_use]
     pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
@@ -63,6 +65,8 @@ impl Interrupt {
                 (1, _, true) | (0, true, _) => "<root cause>",
                 (_, _, _) => "-"
             };
+            // Status register dump in stack frame is 8-bit
+            #[allow(clippy::cast_possible_truncation)]
             writeln!(&mut trace, "->  0x{:0>4X}  {cause: <20}  {: <8}  ??",
                      frame[1], StatusRegister::from(frame[0] as u8)).unwrap();
         }

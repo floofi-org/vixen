@@ -1,4 +1,4 @@
-use crate::core::interrupt::Interrupt;
+use crate::core::Interrupt;
 use crate::CPUResult;
 
 #[derive(Debug, Clone, Copy)]

@@ -1,6 +1,6 @@
-use crate::core::interrupt::Interrupt;
-use crate::core::registers::status_register::StatusRegister;
-use crate::cpu::CPU;
+use crate::core::Interrupt;
+use crate::core::registers::StatusRegister;
+use crate::CPU;
 use crate::CPUResult;
 
 pub trait SystemStack {
@@ -18,7 +18,7 @@ impl SystemStack for CPU {
         if self.system_stack.len() > 256 {
             Err(Interrupt::StackOverflow)
         } else {
-            self.system_stack.push(value as u16);
+            self.system_stack.push(u16::from(value));
             Ok(())
         }
     }
@@ -36,6 +36,8 @@ impl SystemStack for CPU {
         if self.system_stack.is_empty() {
             Err(Interrupt::StackUnderflow)
         } else {
+            // This is intended as the system stack can store both u16 and u8 values
+            #[allow(clippy::cast_possible_truncation)]
             match self.system_stack.pop().ok_or(Interrupt::IllegalMemory) {
                 Ok(v) => Ok(v as u8),
                 Err(i) => Err(i)

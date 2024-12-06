@@ -2,6 +2,7 @@ use alloc::format;
 use alloc::string::String;
 use crate::{CPUResult, Interrupt};
 
+#[allow(edition_2024_expr_fragment_specifier)]
 macro_rules! isa {
     ( $value: expr, $( $x: expr => $y: ident ),+ ) => {
         {
@@ -17,7 +18,7 @@ macro_rules! isa {
 
 
 #[derive(Debug, Clone, Copy)]
-pub enum InstructionOperation {
+pub enum Operation {
     /* 0x01?? */ Add, Sub, Mul, Div, Mod, Sqt, Cbt, Sqr, Cbe, Min, Max,
     /* 0x02?? */ And, Or,  Xor, Nor, Nad, Imp, Not, Shl, Shr, Rol, Ror,
     /* 0x03?? */ Inc, Dec, Ina, Dea, Inx, Dex, Iny, Dey,
@@ -28,9 +29,10 @@ pub enum InstructionOperation {
     /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Bit, Asr, Sec, Clc, Sei, Cli, Clv, Php, Plp
 }
 
-impl InstructionOperation {
+impl Operation {
+    #[must_use]
     pub fn disassemble(value: u16, mode: u8) -> String {
-        if let Ok(operation) = InstructionOperation::try_from(value) {
+        if let Ok(operation) = Operation::try_from(value) {
             format!("{operation:?} ").to_lowercase()
         } else {
             format!("??({value:0>3X}{mode:0>1X}) ")
@@ -38,7 +40,7 @@ impl InstructionOperation {
     }
 }
 
-impl TryFrom<u16> for InstructionOperation {
+impl TryFrom<u16> for Operation {
     type Error = Interrupt;
 
     fn try_from(value: u16) -> CPUResult<Self> {

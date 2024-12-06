@@ -1,12 +1,12 @@
-use crate::core::instruction::instruction_mode::InstructionMode;
-use crate::core::interrupt::Interrupt;
-use crate::core::memory_cell::MemoryCell;
-use crate::core::operand::Operand;
-use crate::cpu::CPU;
+use crate::core::instruction::Addressing;
+use crate::core::Interrupt;
+use crate::core::MemoryCell;
+use crate::core::Operand;
+use crate::CPU;
 use crate::InstructionResult;
 
-pub fn lda(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn lda(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         cpu.registers.a = operands[0].read_word()?;
         cpu.status_register.zero = cpu.registers.a == 0;
         Ok(())
@@ -15,8 +15,8 @@ pub fn lda(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn ldx(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn ldx(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         cpu.registers.x = operands[0].read_word()?;
         cpu.status_register.zero = cpu.registers.x == 0;
         Ok(())
@@ -25,8 +25,8 @@ pub fn ldx(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn ldy(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn ldy(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         cpu.registers.y = operands[0].read_word()?;
         cpu.status_register.zero = cpu.registers.y == 0;
         Ok(())
@@ -35,8 +35,8 @@ pub fn ldy(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn ldz(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct = mode {
+pub fn ldz(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct = mode {
         operands[0].write_word(cpu, 0)?;
         cpu.status_register.zero = true;
         Ok(())
@@ -45,8 +45,8 @@ pub fn ldz(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn sta(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn sta(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         operands[0].write_word(cpu, cpu.registers.a)?;
         Ok(())
     } else {
@@ -54,8 +54,8 @@ pub fn sta(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn stx(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn stx(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         operands[0].write_word(cpu, cpu.registers.x)?;
         Ok(())
     } else {
@@ -63,8 +63,8 @@ pub fn stx(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn sty(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn sty(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         operands[0].write_word(cpu, cpu.registers.y)?;
         Ok(())
     } else {
@@ -72,8 +72,8 @@ pub fn sty(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn mov(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn mov(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
         let value = operands[0].read_word()?;
         operands[1].write_word(cpu, value)?;
         operands[0].write_word(cpu, 0)?;
@@ -83,8 +83,8 @@ pub fn mov(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn swp(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Direct | InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn swp(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
         let value1 = operands[0].read_word()?;
         let value2 = operands[1].read_word()?;
         operands[1].write_word(cpu, value1)?;
@@ -95,8 +95,8 @@ pub fn swp(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) ->
     }
 }
 
-pub fn clr(mode: InstructionMode, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::ZeroPage | InstructionMode::Absolute = mode {
+pub fn clr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::ZeroPage | Addressing::Absolute = mode {
         operands[0].write_word(cpu, 0)?;
         cpu.status_register.zero = true;
         Ok(())

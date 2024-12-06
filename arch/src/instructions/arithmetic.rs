@@ -1,13 +1,13 @@
-use crate::core::instruction::instruction_mode::InstructionMode;
-use crate::core::interrupt::Interrupt;
-use crate::core::memory_cell::MemoryCell;
-use crate::core::operand::Operand;
-use crate::cpu::CPU;
+use crate::core::instruction::Addressing;
+use crate::core::Interrupt;
+use crate::core::MemoryCell;
+use crate::core::Operand;
+use crate::CPU;
 use crate::InstructionResult;
 use libm::{sqrtf, cbrtf};
 
-pub fn add(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn add(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number1_negative = number1 >> 7 == 1;
         let number2 = operands[1].read_word()?;
@@ -28,8 +28,8 @@ pub fn add(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn sub(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn sub(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number1_negative = number1 >> 7 == 1;
         let number2 = operands[1].read_word()?;
@@ -50,8 +50,8 @@ pub fn sub(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn mul(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn mul(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number1_negative = number1 >> 7 == 1;
         let number2 = operands[1].read_word()?;
@@ -73,8 +73,8 @@ pub fn mul(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn div(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn div(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
 
@@ -95,8 +95,8 @@ pub fn div(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn mod_(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn mod_(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
 
@@ -115,10 +115,12 @@ pub fn mod_(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> In
     }
 }
 
-pub fn sqt(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+// Square root should be unsigned and 8-bit, this is intended
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
-        let result = sqrtf(number as f32) as u8;
+        let result = sqrtf(f32::from(number)) as u8;
         let result_negative = result >> 7 == 1;
 
         cpu.status_register.zero = result == 0;
@@ -131,10 +133,12 @@ pub fn sqt(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn cbt(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+// Cube root should be unsigned and 8-bit, this is intended
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
-        let result = cbrtf(number as f32) as u8;
+        let result = cbrtf(f32::from(number)) as u8;
         let result_negative = result >> 7 == 1;
 
         cpu.status_register.zero = result == 0;
@@ -147,8 +151,10 @@ pub fn cbt(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn sqr(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+// Overflow is (by definition) for signed operations
+#[allow(clippy::cast_possible_wrap)]
+pub fn sqr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let number_abs = (number as i8).unsigned_abs();
 
@@ -167,8 +173,10 @@ pub fn sqr(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn cbe(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+// Overflow is (by definition) for signed operations
+#[allow(clippy::cast_possible_wrap)]
+pub fn cbe(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let number_abs = (number as i8).unsigned_abs();
 
@@ -187,8 +195,8 @@ pub fn cbe(mode: InstructionMode, operands: &[Operand; 2], cpu: &mut CPU) -> Ins
     }
 }
 
-pub fn min(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn min(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operand[0].read_word()?;
         let number2 = operand[1].read_word()?;
 
@@ -204,8 +212,8 @@ pub fn min(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn max(mode: InstructionMode, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let InstructionMode::Immediate | InstructionMode::ZeroPage | InstructionMode::Relative = mode {
+pub fn max(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number1 = operand[0].read_word()?;
         let number2 = operand[1].read_word()?;
 

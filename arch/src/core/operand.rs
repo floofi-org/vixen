@@ -1,9 +1,9 @@
 use alloc::format;
 use alloc::string::String;
-use crate::core::instruction::instruction_mode::InstructionMode;
-use crate::core::interrupt::Interrupt;
-use crate::core::registers::register_id::RegisterId;
-use crate::cpu::CPU;
+use crate::core::instruction::Addressing;
+use crate::core::Interrupt;
+use crate::core::registers::RegisterId;
+use crate::CPU;
 use crate::CPUResult;
 
 #[derive(Debug)]
@@ -16,13 +16,16 @@ pub enum Operand {
 }
 
 impl Operand {
-    pub fn decode(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> CPUResult<Operand> {
+    pub fn decode(raw_operand: u16, cpu: &CPU, mode: Addressing) -> CPUResult<Operand> {
         match &mode {
-            InstructionMode::Immediate => Ok(Self::Literal(raw_operand)),
-            InstructionMode::Direct => Self::direct(raw_operand, cpu),
-            InstructionMode::ZeroPage => Self::zero_page(raw_operand, cpu),
-            InstructionMode::Absolute => Self::memory(raw_operand, cpu),
-            InstructionMode::Relative => {
+            Addressing::Immediate => Ok(Self::Literal(raw_operand)),
+            Addressing::Direct => Self::direct(raw_operand, cpu),
+            Addressing::ZeroPage => Self::zero_page(raw_operand, cpu),
+            Addressing::Absolute => Self::memory(raw_operand, cpu),
+            Addressing::Relative => {
+                // Relative offsets are stored as u16 internally
+                // but need to be interpreted as i16.
+                #[allow(clippy::cast_possible_wrap)]
                 let offset = raw_operand as i16;
                 let target = if offset > 0 {
                     cpu.program_counter + offset.unsigned_abs()
@@ -35,7 +38,7 @@ impl Operand {
                     Self::memory(target, cpu)
                 }
             },
-            InstructionMode::Implied => Ok(Self::Void)
+            Addressing::Implied => Ok(Self::Void)
         }
     }
 
@@ -66,7 +69,8 @@ impl Operand {
         Ok(Operand::Memory(address, high_value, low_value))
     }
 
-    pub fn disassemble(raw_operand: u16, cpu: &CPU, mode: InstructionMode) -> String {
+    #[must_use]
+    pub fn disassemble(raw_operand: u16, cpu: &CPU, mode: Addressing) -> String {
         if let Ok(operand) = Operand::decode(raw_operand, cpu, mode) {
             operand.disassemble_self()
         } else {
@@ -74,6 +78,7 @@ impl Operand {
         }
     }
 
+    #[must_use]
     pub fn disassemble_self(&self) -> String {
         match self {
             Self::Literal(value) => format!("#${value:X}"),

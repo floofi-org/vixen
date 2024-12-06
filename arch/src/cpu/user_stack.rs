@@ -1,6 +1,6 @@
-use crate::core::interrupt::Interrupt;
-use crate::core::registers::status_register::StatusRegister;
-use crate::cpu::CPU;
+use crate::core::Interrupt;
+use crate::core::registers::StatusRegister;
+use crate::CPU;
 use crate::CPUResult;
 
 pub trait UserStack {
@@ -49,7 +49,7 @@ impl UserStack for CPU {
             Err(Interrupt::StackUnderflow)
         } else {
             self.stack_pointer += 2;
-            Ok((self.memory[(self.stack_pointer + 2) as usize] as u16) * 0x100 + (self.memory[(self.stack_pointer + 1) as usize] as u16))
+            Ok(u16::from(self.memory[(self.stack_pointer + 2) as usize]) * 0x100 + u16::from(self.memory[(self.stack_pointer + 1) as usize]))
         }
     }
 
