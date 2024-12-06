@@ -44,7 +44,8 @@ impl CPU {
         Ok(())
     }
 
-    #[must_use] pub fn get_register(&self, register_id: RegisterId) -> u8 {
+    #[must_use]
+    pub fn get_register(&self, register_id: RegisterId) -> u8 {
         match register_id {
             RegisterId::A => self.registers.a,
             RegisterId::X => self.registers.x,

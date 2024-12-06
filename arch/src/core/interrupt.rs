@@ -49,11 +49,13 @@ impl From<Interrupt> for u8 {
 }
 
 impl Interrupt {
-    #[must_use] pub fn is_maskable(&self) -> bool {
+    #[must_use]
+    pub fn is_maskable(&self) -> bool {
         matches!(self, Interrupt::Rtc | Interrupt::AsyncIO | Interrupt::IllegalInstruction)
     }
 
-    #[must_use] pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
+    #[must_use]
+    pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
 

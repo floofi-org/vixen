@@ -69,7 +69,8 @@ impl Operand {
         Ok(Operand::Memory(address, high_value, low_value))
     }
 
-    #[must_use] pub fn disassemble(raw_operand: u16, cpu: &CPU, mode: Addressing) -> String {
+    #[must_use]
+    pub fn disassemble(raw_operand: u16, cpu: &CPU, mode: Addressing) -> String {
         if let Ok(operand) = Operand::decode(raw_operand, cpu, mode) {
             operand.disassemble_self()
         } else {
@@ -77,7 +78,8 @@ impl Operand {
         }
     }
 
-    #[must_use] pub fn disassemble_self(&self) -> String {
+    #[must_use]
+    pub fn disassemble_self(&self) -> String {
         match self {
             Self::Literal(value) => format!("#${value:X}"),
             Self::Register(id, _) => format!("{id:?}"),

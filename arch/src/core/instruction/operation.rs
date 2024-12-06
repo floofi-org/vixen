@@ -30,7 +30,8 @@ pub enum Operation {
 }
 
 impl Operation {
-    #[must_use] pub fn disassemble(value: u16, mode: u8) -> String {
+    #[must_use]
+    pub fn disassemble(value: u16, mode: u8) -> String {
         if let Ok(operation) = Operation::try_from(value) {
             format!("{operation:?} ").to_lowercase()
         } else {

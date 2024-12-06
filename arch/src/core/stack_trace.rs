@@ -9,7 +9,8 @@ pub struct StackTrace<'a> {
 }
 
 impl<'a> StackTrace<'a> {
-    #[must_use] pub fn new(interrupt: Interrupt, cpu: &'a CPU) -> Self {
+    #[must_use]
+    pub fn new(interrupt: Interrupt, cpu: &'a CPU) -> Self {
         Self {
             cpu,
             interrupt
