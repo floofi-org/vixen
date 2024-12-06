@@ -1,6 +1,5 @@
 [workspace]
-members = ["arch", "emulator", "vasm"]
-default-members = ["emulator"]
+members = ["arch", "emulator", "assembler"]
 resolver = "2"
 
 [profile.release]
