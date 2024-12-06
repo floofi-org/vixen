@@ -2,6 +2,9 @@ use crate::scanner::Scanner;
 
 const FORBIDDEN_LITERAL_CHARS: &[char] = &[
     ':',
+    '$',
+    '#',
+    '%',
     '-',
     '+',
     '.',
