@@ -15,7 +15,7 @@ const FORBIDDEN_LITERAL_CHARS: &[char] = &[
 #[derive(Debug)]
 pub enum Literal {
     Identifier(String),
-    Number(i8),
+    Number(u16),
 }
 
 impl Literal {
