@@ -54,9 +54,9 @@ fn run_cpu(cpu: &mut CPU) -> CPUResult<()> {
 fn on_unhandled_interrupt(cpu: &CPU, interrupt: Interrupt) {
     println!("\u{1b}[33m{}\u{1b}[0m", StackTrace::new(interrupt, cpu));
 
-    let result = fs::write("./memory.bin", &cpu.memory);
+    /*let result = fs::write("./memory.bin", &cpu.memory);
     match result {
         Ok(()) => println!("\u{1b}[33mCore dumped to 'memory.bin'.\u{1b}[0m"),
         Err(e) => println!("\u{1b}[33mFailed to dump memory: {e}\u{1b}[0m"),
-    }
+    }*/
 }

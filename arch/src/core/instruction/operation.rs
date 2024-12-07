@@ -20,14 +20,13 @@ macro_rules! isa {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Operation {
-    /* 0x01?? */ Add, Sub, Mul, Div, Mod, Sqt, Cbt, Sqr, Cbe, Min, Max,
+    /* 0x01?? */ Add, Sub, Mul, Div, Mod, Sqt, Cbt, Sqr, Cbe, Min, Max, Adc, Sbc, Asr,
     /* 0x02?? */ And, Or,  Xor, Nor, Nad, Imp, Not, Shl, Shr, Rol, Ror,
-    /* 0x03?? */ Inc, Dec, Ina, Dea, Inx, Dex, Iny, Dey,
-    /* 0x04?? */ Cmp, Cpx, Cpy, Lte, Gte, Srz, Src, Sro,
-    /* 0x05?? */ Lda, Ldx, Ldy, Ldz, Sta, Stx, Sty, Mov, Swp, Clr,
-    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam,
-    /* 0x07?? */ Pha, Pla, Phx, Plx, Phy, Ply, Psh, Pll,
-    /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Asr, Sec, Clc, Sei, Cli, Clv, Php, Plp
+    /* 0x03?? */ Inc, Dec,
+    /* 0x04?? */ Cmp, Lte, Gte, Srz, Src, Sro,
+    /* 0x05?? */ Ldr, Str, Mov, Swp, Clr, Sec, Clc, Sei, Cli, Clv,
+    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam, Bpl, Bmi,
+    /* 0x07?? */ Psh, Pll, Php, Plp
 }
 
 impl Display for Operation {
@@ -92,39 +91,26 @@ impl TryFrom<u16> for Operation {
             // 0x03?? - Counting Instructions
             0x030 => Inc,
             0x031 => Dec,
-            0x032 => Ina,
-            0x033 => Dea,
-            0x034 => Inx,
-            0x035 => Dex,
-            0x036 => Iny,
-            0x037 => Dey,
 
             // 0x04?? - Comparison Instructions
             0x040 => Cmp,
-            0x041 => Cpx,
-            0x042 => Cpy,
-            0x043 => Lte,
-            0x044 => Gte,
-            0x045 => Srz,
-            0x046 => Src,
-            0x047 => Sro,
+            0x041 => Lte,
+            0x042 => Gte,
+            0x043 => Srz,
+            0x044 => Src,
+            0x045 => Sro,
 
             // 0x05?? - Data Movement Instructions
-            0x050 => Lda,
-            0x051 => Ldx,
-            0x052 => Ldy,
-            0x053 => Ldz,
-            0x054 => Sta,
-            0x055 => Stx,
-            0x056 => Sty,
-            0x057 => Mov,
-            0x058 => Swp,
-            0x059 => Clr,
-            0x05A => Sec,
-            0x05B => Clc,
-            0x05C => Sei,
-            0x05D => Cli,
-            0x05E => Clv,
+            0x050 => Ldr,
+            0x051 => Str,
+            0x052 => Mov,
+            0x053 => Swp,
+            0x054 => Clr,
+            0x055 => Sec,
+            0x056 => Clc,
+            0x057 => Sei,
+            0x058 => Cli,
+            0x059 => Clv,
 
             // 0x06?? - Control Flow Instructions
             0x060 => Jmp,
@@ -144,16 +130,10 @@ impl TryFrom<u16> for Operation {
             0x06E => Bmi,
 
             // 0x07?? - Stack Instructions
-            0x070 => Pha,
-            0x071 => Pla,
-            0x072 => Phx,
-            0x073 => Plx,
-            0x074 => Phy,
-            0x075 => Ply,
-            0x076 => Psh,
-            0x077 => Pll,
-            0x078 => Php,
-            0x079 => Plp
+            0x070 => Psh,
+            0x071 => Pll,
+            0x072 => Php,
+            0x073 => Plp
         }
     }
 }

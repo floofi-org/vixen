@@ -76,7 +76,7 @@ impl Operand {
     pub fn disassemble_self(&self) -> String {
         match self {
             Self::Literal(value) => format!("#${value:X}"),
-            Self::Register(id, _) => format!("{id:?}"),
+            Self::Register(id, _) => format!("{id:?}").to_lowercase(),
             Self::Memory(address, _) => format!("${address:0>8x}"),
             Self::Void => String::new(),
         }

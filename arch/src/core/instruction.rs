@@ -30,6 +30,9 @@ impl Instruction {
             Operation::Cbe => instructions::cbe(self.mode, &self.operands, cpu),
             Operation::Min => instructions::min(self.mode, &self.operands, cpu),
             Operation::Max => instructions::max(self.mode, &self.operands, cpu),
+            Operation::Adc => instructions::adc(self.mode, &self.operands, cpu),
+            Operation::Sbc => instructions::sbc(self.mode, &self.operands, cpu),
+            Operation::Asr => instructions::asr(self.mode, &mut self.operands, cpu),
 
             // 0x02?? - Logic Instructions
             Operation::And => instructions::and(self.mode, &self.operands, cpu),
@@ -47,17 +50,9 @@ impl Instruction {
             // 0x03?? - Counting Instructions
             Operation::Inc => instructions::inc(self.mode, &mut self.operands, cpu),
             Operation::Dec => instructions::dec(self.mode, &mut self.operands, cpu),
-            Operation::Ina => instructions::ina(self.mode, &self.operands, cpu),
-            Operation::Dea => instructions::dea(self.mode, &self.operands, cpu),
-            Operation::Inx => instructions::inx(self.mode, &self.operands, cpu),
-            Operation::Dex => instructions::dex(self.mode, &self.operands, cpu),
-            Operation::Iny => instructions::iny(self.mode, &self.operands, cpu),
-            Operation::Dey => instructions::dey(self.mode, &self.operands, cpu),
 
             // 0x04?? - Comparison Instructions
             Operation::Cmp => instructions::cmp(self.mode, &self.operands, cpu),
-            Operation::Cpx => instructions::cpx(self.mode, &self.operands, cpu),
-            Operation::Cpy => instructions::cpy(self.mode, &self.operands, cpu),
             Operation::Lte => instructions::lte(self.mode, &self.operands, cpu),
             Operation::Gte => instructions::gte(self.mode, &self.operands, cpu),
             Operation::Srz => instructions::srz(self.mode, &mut self.operands, cpu),
@@ -65,16 +60,16 @@ impl Instruction {
             Operation::Sro => instructions::sro(self.mode, &mut self.operands, cpu),
 
             // 0x05?? - Data Movement Instructions
-            Operation::Lda => instructions::lda(self.mode, &mut self.operands, cpu),
-            Operation::Ldx => instructions::ldx(self.mode, &mut self.operands, cpu),
-            Operation::Ldy => instructions::ldy(self.mode, &mut self.operands, cpu),
-            Operation::Ldz => instructions::ldz(self.mode, &mut self.operands, cpu),
-            Operation::Sta => instructions::sta(self.mode, &mut self.operands, cpu),
-            Operation::Stx => instructions::stx(self.mode, &mut self.operands, cpu),
-            Operation::Sty => instructions::sty(self.mode, &mut self.operands, cpu),
+            Operation::Ldr => instructions::ldr(self.mode, &mut self.operands, cpu),
+            Operation::Str => instructions::str(self.mode, &mut self.operands, cpu),
             Operation::Mov => instructions::mov(self.mode, &mut self.operands, cpu),
             Operation::Swp => instructions::swp(self.mode, &mut self.operands, cpu),
             Operation::Clr => instructions::clr(self.mode, &mut self.operands, cpu),
+            Operation::Sec => instructions::sec(self.mode, &self.operands, cpu),
+            Operation::Clc => instructions::clc(self.mode, &self.operands, cpu),
+            Operation::Sei => instructions::sei(self.mode, &self.operands, cpu),
+            Operation::Cli => instructions::cli(self.mode, &self.operands, cpu),
+            Operation::Clv => instructions::clv(self.mode, &self.operands, cpu),
 
             // 0x06?? - Control Flow Instructions
             Operation::Jmp => instructions::jmp(self.mode, &self.operands, cpu),
@@ -90,28 +85,12 @@ impl Instruction {
             Operation::Irt => instructions::irt(self.mode, &self.operands, cpu),
             Operation::Nop => instructions::nop(self.mode, &self.operands, cpu),
             Operation::Jam => instructions::jam(self.mode, &self.operands, cpu),
-
-            // 0x07?? - Stack Instructions
-            Operation::Pha => instructions::pha(self.mode, &self.operands, cpu),
-            Operation::Pla => instructions::pla(self.mode, &self.operands, cpu),
-            Operation::Phx => instructions::phx(self.mode, &self.operands, cpu),
-            Operation::Plx => instructions::plx(self.mode, &self.operands, cpu),
-            Operation::Phy => instructions::phy(self.mode, &self.operands, cpu),
-            Operation::Ply => instructions::ply(self.mode, &self.operands, cpu),
-            Operation::Psh => instructions::psh(self.mode, &self.operands, cpu),
-            Operation::Pll => instructions::pll(self.mode, &mut self.operands, cpu),
-
-            // 0x08?? - MOS 6502 Compatibility Extensions
             Operation::Bpl => instructions::bpl(self.mode, &self.operands, cpu),
             Operation::Bmi => instructions::bmi(self.mode, &self.operands, cpu),
-            Operation::Adc => instructions::adc(self.mode, &self.operands, cpu),
-            Operation::Sbc => instructions::sbc(self.mode, &self.operands, cpu),
-            Operation::Asr => instructions::asr(self.mode, &mut self.operands, cpu),
-            Operation::Sec => instructions::sec(self.mode, &self.operands, cpu),
-            Operation::Clc => instructions::clc(self.mode, &self.operands, cpu),
-            Operation::Sei => instructions::sei(self.mode, &self.operands, cpu),
-            Operation::Cli => instructions::cli(self.mode, &self.operands, cpu),
-            Operation::Clv => instructions::clv(self.mode, &self.operands, cpu),
+
+            // 0x07?? - Stack Instructions
+            Operation::Psh => instructions::psh(self.mode, &self.operands, cpu),
+            Operation::Pll => instructions::pll(self.mode, &mut self.operands, cpu),
             Operation::Php => instructions::php(self.mode, &self.operands, cpu),
             Operation::Plp => instructions::plp(self.mode, &self.operands, cpu)
         }
