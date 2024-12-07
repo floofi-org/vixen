@@ -50,7 +50,7 @@ fn get_rom_path() -> Option<OsString> {
 
 fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
     let start = start.max(0);
-    let end = end.min(65535);
+    let end = end.min(0xffff_ffff);
     let mut position = start;
 
     while position < end {
@@ -59,7 +59,7 @@ fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
             let focus_start = focus.unwrap_or(cpu.program_counter as usize);
             let focus_end = focus_start + if focus.is_some() { 1 } else { 10 };
             match position {
-                x if x > 65534 => (),
+                x if x > 0xffff_fffe => (),
                 x if x == focus_end - 1 => print!("\u{1b}[43m{:0>2x}\u{1b}[0m ", cpu.memory[position]),
                 x if (focus_start..focus_end).contains(&x) => print!("\u{1b}[43m{:0>2x} ", cpu.memory[position]),
                 _ => print!("{:0>2x} ", cpu.memory[position])

@@ -88,7 +88,7 @@ impl Decoder for CPU {
         }
 
         if disassembler_mode {
-            disassembled = format!("{disassembled:<32}; {position:0>8x}: {}",
+            disassembled = format!("{disassembled:<48}; {position:0>8x}: {}",
                                    self.extract_instruction(position));
         }
 
