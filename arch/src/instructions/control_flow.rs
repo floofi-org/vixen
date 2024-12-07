@@ -113,7 +113,7 @@ pub fn int(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     if let Addressing::Implied = mode {
         // They literally are just 8-bit binary numbers
         #[allow(clippy::unreadable_literal)]
-        Err(match cpu.registers.r0 & 0b00001111 {
+        Err(match cpu.registers.r13 & 0b00001111 {
             0x0 => Interrupt::User1,
             0x1 => Interrupt::User2,
             0x2 => Interrupt::User3,
