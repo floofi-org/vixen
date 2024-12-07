@@ -27,13 +27,13 @@ pub struct CPU {
 
 impl CPU {
     pub fn load_rom(&mut self, rom: &[u8]) -> CPUResult<()> {
-        let base_address = 0x0e00_0000;
+        let base_address = 0xe000_0000;
         let end_address = base_address + rom.len();
         let rom_region = base_address..end_address;
         self.memory[rom_region].copy_from_slice(rom);
 
         let specification: Vec<u8> = CPU_SPECIFICATION.into();
-        let base_address = 0x0fff_fe00;
+        let base_address = 0xffff_fe00;
         let end_address = base_address + specification.len();
         let specification_region = base_address..end_address;
         self.memory[specification_region].copy_from_slice(specification.as_slice());
@@ -121,9 +121,9 @@ impl Default for CPU {
         Self {
             registers: Registers::default(),
             stack_pointer: 0x0000_0000,
-            program_counter: 0x0e00_0000,
+            program_counter: 0xe000_0000,
             status_register: StatusRegister::default(),
-            memory: vec![0u8; 0x0fff_ffff].into_boxed_slice(),
+            memory: vec![0u8; 0xffff_ffff].into_boxed_slice(),
             system_stack: vec![],
         }
     }

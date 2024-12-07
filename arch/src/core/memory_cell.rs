@@ -41,7 +41,7 @@ impl MemoryCell for Operand {
                 Ok(())
             },
             Operand::ZeroPage(addr, initial_value) | Operand::Memory(addr, initial_value) => {
-                if (0x0200..0xDFFF).contains(addr) {
+                if (0x0000_0000..0xdfff_ffff).contains(addr) {
                     let bytes = value.to_le_bytes();
                     cpu.memory[(*addr as usize)..(*addr as usize + 4)].copy_from_slice(&bytes);
                     *initial_value = value;
