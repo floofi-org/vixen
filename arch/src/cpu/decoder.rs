@@ -1,3 +1,4 @@
+use alloc::format;
 use alloc::string::String;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::Instruction;
@@ -10,7 +11,7 @@ use crate::CPUResult;
 pub trait Decoder {
     fn extract_instruction(&self, position: u16) -> ExtractedBinaryData;
     fn read_instruction(&self, position: u16) -> CPUResult<Instruction>;
-    fn read_instruction_string(&self, position: u16) -> String;
+    fn read_instruction_string(&self, position: u16, disassembler_mode: bool) -> String;
 }
 
 impl Decoder for CPU {
@@ -42,29 +43,38 @@ impl Decoder for CPU {
         })
     }
 
-    fn read_instruction_string(&self, position: u16) -> String {
+    fn read_instruction_string(&self, position: u16, disassembler_mode: bool) -> String {
         let mut disassembled = String::new();
 
         let opcode = self.extract_instruction(position).0;
         let instruction = u16::from(opcode[5]) * 0x10 + u16::from(opcode[4] >> 4);
         let mode = opcode[4] & 0x0F;
 
-        disassembled.push_str(&Operation::disassemble(instruction, mode));
+        disassembled.push_str(&Operation::disassemble(instruction, mode, disassembler_mode));
 
         if let Ok(mode) = Addressing::try_from(opcode[4] & 0x0F) {
             if mode != Addressing::Implied {
                 disassembled.push_str(&Operand::disassemble(
                     u16::from(opcode[3]) * 0x100 + u16::from(opcode[2]),
-                    self, mode));
+                    self, mode, disassembler_mode));
                 if mode == Addressing::Immediate || u16::from(opcode[1]) * 0x100 + u16::from(opcode[0]) != 0 {
                     disassembled.push_str(", ");
                     disassembled.push_str(&Operand::disassemble(
                         u16::from(opcode[1]) * 0x100 + u16::from(opcode[0]),
-                        self, mode));
+                        self, mode, disassembler_mode));
                 }
             }
         } else {
-            disassembled.push_str("<invalid memory mode>");
+            disassembled.push_str(if disassembler_mode {
+                "<unk>"
+            } else {
+                "<invalid memory mode>"
+            });
+        }
+
+        if disassembler_mode {
+            disassembled = format!("{disassembled:<32}; {position:0>4X}: {}",
+                                   self.extract_instruction(position));
         }
 
         disassembled

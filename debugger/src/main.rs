@@ -16,7 +16,7 @@ struct DebuggerState {
 
 fn main() {
     let path = get_rom_path().unwrap_or_else(|| {
-        eprintln!("\u{1b}[33mUsage: vxdbg {{rom}}\u{1b}[0m");
+        eprintln!("\u{1b}[33mUsage: vdbg {{rom}}\u{1b}[0m");
         eprintln!("\u{1b}[33mPlease provide path to ROM.\u{1b}[0m");
 
         exit(-1);
@@ -27,6 +27,13 @@ fn main() {
         eprintln!("\u{1b}[33mFailed to read ROM file: {e}\u{1b}[0m");
         exit(-1);
     });
+
+    if rom.len() > 8192 {
+        eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
+        (8192 bytes).\u{1b}[0m", rom.len());
+        exit(2);
+    }
+
     let mut cpu = CPU::default();
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
@@ -97,7 +104,7 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
                 cpu.tick()?;
                 cpu.program_counter += 6;
                 println!("\u{1b}[33mProgram at {:0>4X}: {}\u{1b}[0m",
-                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
+                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
             }
         },
         "b" | "unblock" => {
@@ -165,14 +172,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
 fn debug_cpu(cpu: &mut CPU, rom_size: usize) {
     println!("\u{1b}[33mLoaded {rom_size} bytes of system ROM.\u{1b}[0m");
     println!("\u{1b}[33mProgram at {:0>4X}: {}\u{1b}[0m",
-             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
+             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
     let mut state = DebuggerState::default();
     loop {
         if let Err(interrupt) = debugger_prompt(cpu, &mut state) {
             state.interrupt = Some(interrupt);
             state.running = false;
             println!("\u{1b}[33mUnhandled interrupt {interrupt} at {:0>4X}: {}\u{1b}[0m",
-                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
+                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
         }
     }
 }

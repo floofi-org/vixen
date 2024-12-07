@@ -1,5 +1,6 @@
 use alloc::format;
 use alloc::string::String;
+use core::fmt::{Debug, Display, Formatter};
 use crate::{CPUResult, Interrupt};
 
 #[allow(edition_2024_expr_fragment_specifier)]
@@ -29,10 +30,22 @@ pub enum Operation {
     /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Bit, Asr, Sec, Clc, Sei, Cli, Clv, Php, Plp
 }
 
+impl Display for Operation {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        Display::fmt(&format!("{self:?}"), f)
+    }
+}
+
 impl Operation {
     #[must_use]
-    pub fn disassemble(value: u16, mode: u8) -> String {
-        if let Ok(operation) = Operation::try_from(value) {
+    pub fn disassemble(value: u16, mode: u8, disassembler_mode: bool) -> String {
+        if disassembler_mode {
+            if let Ok(operation) = Operation::try_from(value) {
+                format!("        {operation:<7} ").to_lowercase()
+            } else {
+                String::from("        <unk>   ")
+            }
+        } else if let Ok(operation) = Operation::try_from(value) {
             format!("{operation:?} ").to_lowercase()
         } else {
             format!("??({value:0>3X}{mode:0>1X}) ")
