@@ -9,7 +9,7 @@ pub const CPU_SPECIFICATION: Specification = Specification {
     data_width: 8,
     address_width: 16,
     max_ram: 52735,
-    microcode: 0x0001
+    microcode: 0x0002
 };
 
 pub mod core;
