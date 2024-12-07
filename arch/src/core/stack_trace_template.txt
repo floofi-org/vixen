@@ -1,11 +1,11 @@
 "
 Unhandled {reason}: {interrupt}
-At 0x{pc:0>4X} ({state}) -> {disassembler}
+At {pc:0>8x} ({state}) -> {disassembler}
 
-A  = 0x{a:0>2X}   X  = 0x{x:0>2X}   Y  = 0x{y:0>2X}
-R0 = 0x{r0:0>2X}   R1 = 0x{r1:0>2X}   R2 = 0x{r2:0>2X}   R3 = 0x{r3:0>2X}   \
-R4 = 0x{r4:0>2X}   R5 = 0x{r5:0>2X}   R6 = 0x{r6:0>2X}   R7 = 0x{r7:0>2X}
-Stack Pointer: 0x{sp:0>4X}   Status Register: {sr}
+{a:0>8x} {x:0>8x} {y:0>8x} {r0:0>8x} {r1:0>8x}
+{r2:0>8x} {r3:0>8x} {r4:0>8x} {r5:0>8x} {r6:0>8x} {r7:0>8x}
 
-    Addr    Context               Status    Symbol
+Stack Pointer: {sp:0>8x}   Status Register: {sr}
+
+    Addr      Context               Status    Symbol
 {stack_trace}"

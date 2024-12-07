@@ -18,9 +18,9 @@ fn main() {
         exit(-1);
     });
 
-    if rom.len() > 8192 {
+    if rom.len() > 33_553_920 {
         eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
-        (8192 bytes).\u{1b}[0m", rom.len());
+        (33553920 bytes).\u{1b}[0m", rom.len());
         exit(2);
     }
 
@@ -38,11 +38,12 @@ fn main() {
 fn disassemble_rom(mut cpu: CPU) -> String {
     let mut disassembled = String::new();
 
-    while cpu.memory[cpu.program_counter as usize] != 0x00 {
+    #[allow(clippy::cast_possible_truncation)]
+    while cpu.program_counter < (cpu.memory.len() - 1) as u32 && cpu.memory[cpu.program_counter as usize + 9] != 0x00 {
         let text = cpu.read_instruction_string(cpu.program_counter, true);
         disassembled.push_str(&text);
         disassembled.push('\n');
-        cpu.program_counter += 6;
+        cpu.program_counter += 10;
     }
 
     disassembled

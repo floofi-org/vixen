@@ -2,6 +2,7 @@ pub mod system_stack;
 pub mod user_stack;
 pub mod decoder;
 
+use alloc::boxed::Box;
 pub use decoder::Decoder;
 pub use system_stack::SystemStack;
 pub use user_stack::UserStack;
@@ -17,35 +18,35 @@ use crate::{CPUResult, InstructionResult, CPU_SPECIFICATION};
 #[derive(Debug)]
 pub struct CPU {
     pub registers: Registers,
-    pub stack_pointer: u16,
-    pub program_counter: u16,
+    pub stack_pointer: u32,
+    pub program_counter: u32,
     pub status_register: StatusRegister,
-    pub memory: [u8; 0xFFFF],
-    pub system_stack: Vec<u16>
+    pub memory: Box<[u8]>,
+    pub system_stack: Vec<u32>
 }
 
 impl CPU {
     pub fn load_rom(&mut self, rom: &[u8]) -> CPUResult<()> {
-        let base_address = 0xE000;
+        let base_address = 0x0e00_0000;
         let end_address = base_address + rom.len();
         let rom_region = base_address..end_address;
         self.memory[rom_region].copy_from_slice(rom);
 
         let specification: Vec<u8> = CPU_SPECIFICATION.into();
-        let base_address = 0xFE00;
+        let base_address = 0x0fff_fe00;
         let end_address = base_address + specification.len();
         let specification_region = base_address..end_address;
         self.memory[specification_region].copy_from_slice(specification.as_slice());
 
         // Reset stack pointer to the start of the stack
-        self.stack_pointer = 0x0100;
+        self.stack_pointer = 0x0000_0000;
         self.system_stack_save_state()?;
 
         Ok(())
     }
 
     #[must_use]
-    pub fn get_register(&self, register_id: RegisterId) -> u8 {
+    pub fn get_register(&self, register_id: RegisterId) -> u32 {
         match register_id {
             RegisterId::A => self.registers.a,
             RegisterId::X => self.registers.x,
@@ -89,7 +90,10 @@ impl CPU {
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
             self.status_register.interrupt = true;
-            let address = u16::from_le_bytes([self.memory[0x00FE], self.memory[0x00FF]]);
+            let address = u32::from_le_bytes([
+                self.memory[0x0000], self.memory[0x0001],
+                self.memory[0x0002], self.memory[0x0003]
+            ]);
             self.program_counter = address;
         }
 
@@ -116,10 +120,10 @@ impl Default for CPU {
     fn default() -> Self {
         Self {
             registers: Registers::default(),
-            stack_pointer: 0x0100,
-            program_counter: 0xE000,
+            stack_pointer: 0x0000_0000,
+            program_counter: 0x0e00_0000,
             status_register: StatusRegister::default(),
-            memory: [0; 0xFFFF],
+            memory: vec![0u8; 0x0fff_ffff].into_boxed_slice(),
             system_stack: vec![],
         }
     }

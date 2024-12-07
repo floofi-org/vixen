@@ -21,9 +21,9 @@ fn main() {
         exit(-1);
     });
 
-    if rom.len() > 8192 {
+    if rom.len() > 33_553_920 {
         eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
-        (8192 bytes).\u{1b}[0m", rom.len());
+        (33553920 bytes).\u{1b}[0m", rom.len());
         exit(2);
     }
 
@@ -47,14 +47,14 @@ fn get_rom_path() -> Option<OsString> {
 fn run_cpu(cpu: &mut CPU) -> CPUResult<()> {
     loop {
         cpu.tick()?;
-        cpu.program_counter += 6;
+        cpu.program_counter += 10;
     }
 }
 
 fn on_unhandled_interrupt(cpu: &CPU, interrupt: Interrupt) {
     println!("\u{1b}[33m{}\u{1b}[0m", StackTrace::new(interrupt, cpu));
 
-    let result = fs::write("./memory.bin", cpu.memory);
+    let result = fs::write("./memory.bin", &cpu.memory);
     match result {
         Ok(()) => println!("\u{1b}[33mCore dumped to 'memory.bin'.\u{1b}[0m"),
         Err(e) => println!("\u{1b}[33mFailed to dump memory: {e}\u{1b}[0m"),

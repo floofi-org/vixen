@@ -13,7 +13,7 @@ pub enum Interrupt {
     Failure, Reset
 }
 
-impl From<Interrupt> for u8 {
+impl From<Interrupt> for u32 {
     fn from(value: Interrupt) -> Self {
         match value {
             Interrupt::Rtc => 0x00,
@@ -55,7 +55,7 @@ impl Interrupt {
     }
 
     #[must_use]
-    pub fn get_stack_trace(stack: &[u16], status_register: StatusRegister) -> String {
+    pub fn get_stack_trace(stack: &[u32], status_register: StatusRegister) -> String {
         let mut trace = String::new();
         let frames = stack.chunks(2).rev();
 
@@ -67,7 +67,7 @@ impl Interrupt {
             };
             // Status register dump in stack frame is 8-bit
             #[allow(clippy::cast_possible_truncation)]
-            writeln!(&mut trace, "->  0x{:0>4X}  {cause: <20}  {: <8}  ??",
+            writeln!(&mut trace, "->  {:0>8x}  {cause: <20}  {: <8}  ??",
                      frame[1], StatusRegister::from(frame[0] as u8)).unwrap();
         }
 
@@ -78,34 +78,34 @@ impl Interrupt {
 impl Display for Interrupt {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", match self {
-            Interrupt::Rtc => "0x00 (Real-time clock tick)",
-            Interrupt::AsyncIO => "0x01 (Asynchronous I/O event)",
-            Interrupt::Hardware => "0x02 (General hardware fault)",
-            Interrupt::External => "0x03 (External hardware handling_interrupt)",
-            Interrupt::Breakpoint => "0x10 (Breakpoint hit)",
-            Interrupt::IllegalInstruction => "0x11 (Illegal instruction)",
-            Interrupt::IllegalMemory => "0x12 (Illegal memory access)",
-            Interrupt::DivideByZero => "0x13 (Divide by zero)",
-            Interrupt::StackOverflow => "0x20 (Stack overflow)",
-            Interrupt::StackUnderflow => "0x21 (Stack underflow)",
-            Interrupt::User1 => "0xE0 (User-defined interrupt 1)",
-            Interrupt::User2 => "0xE1 (User-defined interrupt 2)",
-            Interrupt::User3 => "0xE2 (User-defined interrupt 3)",
-            Interrupt::User4 => "0xE3 (User-defined interrupt 4)",
-            Interrupt::User5 => "0xE4 (User-defined interrupt 5)",
-            Interrupt::User6 => "0xE5 (User-defined interrupt 6)",
-            Interrupt::User7 => "0xE6 (User-defined interrupt 7)",
-            Interrupt::User8 => "0xE7 (User-defined interrupt 8)",
-            Interrupt::User9 => "0xE8 (User-defined interrupt 9)",
-            Interrupt::User10 => "0xE9 (User-defined interrupt 10)",
-            Interrupt::User11 => "0xEA (User-defined interrupt 11)",
-            Interrupt::User12 => "0xEB (User-defined interrupt 12)",
-            Interrupt::User13 => "0xEC (User-defined interrupt 13)",
-            Interrupt::User14 => "0xED (User-defined interrupt 14)",
-            Interrupt::User15 => "0xEE (User-defined interrupt 15)",
-            Interrupt::User16 => "0xEF (User-defined interrupt 16)",
-            Interrupt::Failure => "0xFE (Internal system failure)",
-            Interrupt::Reset => "0xFF (System reset)",
+            Interrupt::Rtc => "00 (Real-time clock tick)",
+            Interrupt::AsyncIO => "01 (Asynchronous I/O event)",
+            Interrupt::Hardware => "032 (General hardware fault)",
+            Interrupt::External => "03 (External hardware handling_interrupt)",
+            Interrupt::Breakpoint => "10 (Breakpoint hit)",
+            Interrupt::IllegalInstruction => "11 (Illegal instruction)",
+            Interrupt::IllegalMemory => "12 (Illegal memory access)",
+            Interrupt::DivideByZero => "13 (Divide by zero)",
+            Interrupt::StackOverflow => "20 (Stack overflow)",
+            Interrupt::StackUnderflow => "21 (Stack underflow)",
+            Interrupt::User1 => "e0 (User-defined interrupt 1)",
+            Interrupt::User2 => "e1 (User-defined interrupt 2)",
+            Interrupt::User3 => "e2 (User-defined interrupt 3)",
+            Interrupt::User4 => "e3 (User-defined interrupt 4)",
+            Interrupt::User5 => "e4 (User-defined interrupt 5)",
+            Interrupt::User6 => "e5 (User-defined interrupt 6)",
+            Interrupt::User7 => "e6 (User-defined interrupt 7)",
+            Interrupt::User8 => "e7 (User-defined interrupt 8)",
+            Interrupt::User9 => "e8 (User-defined interrupt 9)",
+            Interrupt::User10 => "e9 (User-defined interrupt 10)",
+            Interrupt::User11 => "ea (User-defined interrupt 11)",
+            Interrupt::User12 => "eb (User-defined interrupt 12)",
+            Interrupt::User13 => "ec (User-defined interrupt 13)",
+            Interrupt::User14 => "ed (User-defined interrupt 14)",
+            Interrupt::User15 => "ee (User-defined interrupt 15)",
+            Interrupt::User16 => "ef (User-defined interrupt 16)",
+            Interrupt::Failure => "fe (Internal system failure)",
+            Interrupt::Reset => "ff (System reset)",
         })
     }
 }

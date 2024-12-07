@@ -2,13 +2,13 @@ use alloc::vec::Vec;
 
 pub struct Specification<'a> {
     pub name: &'a [u8],
-    pub id: u16,
+    pub id: u32,
     pub microarchitecture: &'a [u8],
     pub microarchitecture_name: &'a [u8],
     pub data_width: u8,
     pub address_width: u8,
-    pub max_ram: u16,
-    pub microcode: u16
+    pub max_ram: u32,
+    pub microcode: u32
 }
 
 impl From<Specification<'_>> for Vec<u8> {

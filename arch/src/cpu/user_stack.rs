@@ -4,69 +4,54 @@ use crate::CPU;
 use crate::CPUResult;
 
 pub trait UserStack {
-    fn user_stack_push_word(&mut self, value: u8) -> CPUResult<()>;
-    fn user_stack_push_dword(&mut self, value: u16) -> CPUResult<()>;
-    fn user_stack_pull_word(&mut self) -> CPUResult<u8>;
-    fn user_stack_pull_dword(&mut self) -> CPUResult<u16>;
+    fn user_stack_push_word(&mut self, value: u32) -> CPUResult<()>;
+    fn user_stack_pull_word(&mut self) -> CPUResult<u32>;
     fn user_stack_save_state(&mut self) -> CPUResult<()>;
     fn user_stack_restore_state(&mut self) -> CPUResult<()>;
-    fn user_stack_pull_state(&mut self) -> CPUResult<(u16, StatusRegister)>;
+    fn user_stack_pull_state(&mut self) -> CPUResult<(u32, StatusRegister)>;
 }
 
 impl UserStack for CPU {
-    fn user_stack_push_word(&mut self, value: u8) -> CPUResult<()> {
+    fn user_stack_push_word(&mut self, value: u32) -> CPUResult<()> {
         if self.stack_pointer <= 0x0100 {
             Err(Interrupt::StackOverflow)
         } else {
-            self.memory[self.stack_pointer as usize] = value;
+            let bytes = value.to_le_bytes();
+            self.memory[(self.stack_pointer as usize)..(self.stack_pointer as usize + 4)].copy_from_slice(&bytes);
             self.stack_pointer -= 1;
             Ok(())
         }
     }
 
-    fn user_stack_push_dword(&mut self, value: u16) -> CPUResult<()> {
-        if self.stack_pointer <= 0x0101 {
-            Err(Interrupt::StackOverflow)
-        } else {
-            self.memory[self.stack_pointer as usize] = (value & 0xFF) as u8;
-            self.memory[(self.stack_pointer - 1) as usize] = (value >> 8) as u8;
-            self.stack_pointer -= 2;
-            Ok(())
-        }
-    }
-
-    fn user_stack_pull_word(&mut self) -> CPUResult<u8> {
+    fn user_stack_pull_word(&mut self) -> CPUResult<u32> {
         if self.stack_pointer >= 0x01FF {
             Err(Interrupt::StackUnderflow)
         } else {
-            self.stack_pointer += 1;
-            Ok(self.memory[(self.stack_pointer - 1) as usize])
-        }
-    }
-
-    fn user_stack_pull_dword(&mut self) -> CPUResult<u16> {
-        if self.stack_pointer >= 0x01FE {
-            Err(Interrupt::StackUnderflow)
-        } else {
-            self.stack_pointer += 2;
-            Ok(u16::from(self.memory[(self.stack_pointer + 2) as usize]) * 0x100 + u16::from(self.memory[(self.stack_pointer + 1) as usize]))
+            self.stack_pointer += 4;
+            Ok(u32::from_le_bytes([
+                self.memory[(self.stack_pointer - 4) as usize],
+                self.memory[(self.stack_pointer - 3) as usize],
+                self.memory[(self.stack_pointer - 2) as usize],
+                self.memory[(self.stack_pointer - 1) as usize]
+            ]))
         }
     }
 
     fn user_stack_save_state(&mut self) -> CPUResult<()> {
-        self.user_stack_push_word(self.status_register.into())?;
-        self.user_stack_push_dword(self.program_counter)
+        let sr: u8 = self.status_register.into();
+        self.user_stack_push_word(sr as u32)?;
+        self.user_stack_push_word(self.program_counter)
     }
 
     fn user_stack_restore_state(&mut self) -> CPUResult<()> {
-        self.program_counter = self.user_stack_pull_dword()?;
-        self.status_register = StatusRegister::from(self.user_stack_pull_word()?);
+        self.program_counter = self.user_stack_pull_word()?;
+        self.status_register = StatusRegister::from(self.user_stack_pull_word()? as u8);
         Ok(())
     }
 
-    fn user_stack_pull_state(&mut self) -> CPUResult<(u16, StatusRegister)> {
-        let program_counter = self.user_stack_pull_dword()?;
-        let status_register = StatusRegister::from(self.user_stack_pull_word()?);
+    fn user_stack_pull_state(&mut self) -> CPUResult<(u32, StatusRegister)> {
+        let program_counter = self.user_stack_pull_word()?;
+        let status_register = StatusRegister::from(self.user_stack_pull_word()? as u8);
         Ok((program_counter, status_register))
     }
 }

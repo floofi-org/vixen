@@ -8,9 +8,9 @@ impl Display for ExtractedBinaryData<'_> {
         let bytes = &self.0[..second_to_last];
 
         for byte in bytes {
-            write!(f, "{byte:0>2X} ")?;
+            write!(f, "{byte:0>2x} ")?;
         }
 
-        write!(f, "{:0>2X}", self.0.last().unwrap())
+        write!(f, "{:0>2x}", self.0.last().unwrap())
     }
 }

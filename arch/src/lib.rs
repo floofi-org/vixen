@@ -2,14 +2,14 @@
 extern crate alloc;
 
 pub const CPU_SPECIFICATION: Specification = Specification {
-    name: b"Floofi(TM) Vixen(TM) Arctic",
-    id: 0x0001,
-    microarchitecture: b"vx1",
-    microarchitecture_name: b"Goupil",
-    data_width: 8,
-    address_width: 16,
-    max_ram: 52735,
-    microcode: 0x0002
+    name: b"Floofi(TM) Vixen(TM) Coyote",
+    id: 0x0002,
+    microarchitecture: b"vx2",
+    microarchitecture_name: b"Kitsune",
+    data_width: 32,
+    address_width: 32,
+    max_ram: 4_294_967_295,
+    microcode: 0x0003
 };
 
 pub mod core;

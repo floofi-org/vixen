@@ -7,10 +7,10 @@ pub enum RegisterId {
     R0, R1, R2, R3, R4, R5, R6, R7
 }
 
-impl TryFrom<u16> for RegisterId {
+impl TryFrom<u32> for RegisterId {
     type Error = Interrupt;
 
-    fn try_from(value: u16) -> CPUResult<Self> {
+    fn try_from(value: u32) -> CPUResult<Self> {
         match value {
             0x0001 => Ok(Self::A),
             0x0011 => Ok(Self::X),

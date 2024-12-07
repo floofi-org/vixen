@@ -4,7 +4,7 @@ use crate::core::MemoryCell;
 use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
-use libm::{sqrtf, cbrtf};
+use libm::{sqrt, cbrt};
 
 pub fn add(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
@@ -120,7 +120,7 @@ pub fn mod_(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
-        let result = sqrtf(f32::from(number)) as u8;
+        let result = sqrt(f64::from(number)) as u32;
         let result_negative = result >> 7 == 1;
 
         cpu.status_register.zero = result == 0;
@@ -138,7 +138,7 @@ pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
-        let result = cbrtf(f32::from(number)) as u8;
+        let result = cbrt(f64::from(number)) as u32;
         let result_negative = result >> 7 == 1;
 
         cpu.status_register.zero = result == 0;

@@ -6,15 +6,15 @@ pub use status_register::StatusRegister;
 
 #[derive(Debug, Default)]
 pub struct Registers {
-    pub a: u8,
-    pub x: u8,
-    pub y: u8,
-    pub r0: u8,
-    pub r1: u8,
-    pub r2: u8,
-    pub r3: u8,
-    pub r4: u8,
-    pub r5: u8,
-    pub r6: u8,
-    pub r7: u8
+    pub a: u32,
+    pub x: u32,
+    pub y: u32,
+    pub r0: u32,
+    pub r1: u32,
+    pub r2: u32,
+    pub r3: u32,
+    pub r4: u32,
+    pub r5: u32,
+    pub r6: u32,
+    pub r7: u32
 }

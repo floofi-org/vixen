@@ -8,8 +8,8 @@ use crate::InstructionResult;
 
 pub fn jmp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute | Addressing::Relative = mode {
-        let position = &operands[0].read_dword()?;
-        cpu.program_counter = position - 6;
+        let position = &operands[0].read_word()?;
+        cpu.program_counter = position - 10;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -18,9 +18,9 @@ pub fn jmp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 
 pub fn jsr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        let position = &operands[0].read_dword()?;
+        let position = &operands[0].read_word()?;
         cpu.system_stack_save_state()?;
-        cpu.program_counter = position - 6;
+        cpu.program_counter = position - 10;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -29,8 +29,8 @@ pub fn jsr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 
 pub fn ret(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let position = cpu.system_stack_pull_dword()?;
-        cpu.program_counter = position - 6;
+        let position = cpu.system_stack_pull_word()?;
+        cpu.program_counter = position - 10;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)

@@ -4,26 +4,15 @@ use crate::CPU;
 use crate::CPUResult;
 
 pub trait SystemStack {
-    fn system_stack_push_word(&mut self, value: u8) -> CPUResult<()>;
-    fn system_stack_push_dword(&mut self, value: u16) -> CPUResult<()>;
-    fn system_stack_pull_word(&mut self) -> CPUResult<u8>;
-    fn system_stack_pull_dword(&mut self) -> CPUResult<u16>;
+    fn system_stack_push_word(&mut self, value: u32) -> CPUResult<()>;
+    fn system_stack_pull_word(&mut self) -> CPUResult<u32>;
     fn system_stack_save_state(&mut self) -> CPUResult<()>;
     fn system_stack_restore_state(&mut self) -> CPUResult<()>;
-    fn system_stack_pull_state(&mut self) -> CPUResult<(u16, StatusRegister)>;
+    fn system_stack_pull_state(&mut self) -> CPUResult<(u32, StatusRegister)>;
 }
 
 impl SystemStack for CPU {
-    fn system_stack_push_word(&mut self, value: u8) -> CPUResult<()> {
-        if self.system_stack.len() > 256 {
-            Err(Interrupt::StackOverflow)
-        } else {
-            self.system_stack.push(u16::from(value));
-            Ok(())
-        }
-    }
-
-    fn system_stack_push_dword(&mut self, value: u16) -> CPUResult<()> {
+    fn system_stack_push_word(&mut self, value: u32) -> CPUResult<()> {
         if self.system_stack.len() > 256 {
             Err(Interrupt::StackOverflow)
         } else {
@@ -32,41 +21,31 @@ impl SystemStack for CPU {
         }
     }
 
-    fn system_stack_pull_word(&mut self) -> CPUResult<u8> {
+    fn system_stack_pull_word(&mut self) -> CPUResult<u32> {
         if self.system_stack.is_empty() {
             Err(Interrupt::StackUnderflow)
         } else {
             // This is intended as the system stack can store both u16 and u8 values
             #[allow(clippy::cast_possible_truncation)]
-            match self.system_stack.pop().ok_or(Interrupt::IllegalMemory) {
-                Ok(v) => Ok(v as u8),
-                Err(i) => Err(i)
-            }
-        }
-    }
-
-    fn system_stack_pull_dword(&mut self) -> CPUResult<u16> {
-        if self.system_stack.is_empty() {
-            Err(Interrupt::StackUnderflow)
-        } else {
             self.system_stack.pop().ok_or(Interrupt::IllegalMemory)
         }
     }
 
     fn system_stack_save_state(&mut self) -> CPUResult<()> {
-        self.system_stack_push_word(self.status_register.into())?;
-        self.system_stack_push_dword(self.program_counter)
+        let sr: u8 = self.status_register.into();
+        self.system_stack_push_word(sr as u32)?;
+        self.system_stack_push_word(self.program_counter)
     }
 
     fn system_stack_restore_state(&mut self) -> CPUResult<()> {
-        self.program_counter = self.system_stack_pull_dword()?;
-        self.status_register = StatusRegister::from(self.system_stack_pull_word()?);
+        self.program_counter = self.system_stack_pull_word()?;
+        self.status_register = StatusRegister::from(self.system_stack_pull_word()? as u8);
         Ok(())
     }
 
-    fn system_stack_pull_state(&mut self) -> CPUResult<(u16, StatusRegister)> {
-        let program_counter = self.system_stack_pull_dword()?;
-        let status_register = StatusRegister::from(self.system_stack_pull_word()?);
+    fn system_stack_pull_state(&mut self) -> CPUResult<(u32, StatusRegister)> {
+        let program_counter = self.system_stack_pull_word()?;
+        let status_register = StatusRegister::from(self.system_stack_pull_word()? as u8);
         Ok((program_counter, status_register))
     }
 }
