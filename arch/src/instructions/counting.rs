@@ -38,11 +38,11 @@ pub fn dec(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn ina(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let result = cpu.registers.a.overflowing_add(1);
+        let result = cpu.registers.r0.overflowing_add(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = cpu.registers.a == 127;
-        cpu.registers.a = result.0;
+        cpu.status_register.overflow = cpu.registers.r0 == 127;
+        cpu.registers.r0 = result.0;
 
         Ok(())
     } else {
@@ -52,12 +52,12 @@ pub fn ina(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn dea(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let result = cpu.registers.a.overflowing_sub(1);
+        let result = cpu.registers.r0.overflowing_sub(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = cpu.registers.a == 128;
+        cpu.status_register.overflow = cpu.registers.r0 == 128;
         cpu.status_register.zero = result.0 == 0;
-        cpu.registers.a = result.0;
+        cpu.registers.r0 = result.0;
 
         Ok(())
     } else {
@@ -67,11 +67,11 @@ pub fn dea(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn inx(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let result = cpu.registers.x.overflowing_add(1);
+        let result = cpu.registers.r1.overflowing_add(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = cpu.registers.x == 127;
-        cpu.registers.x = result.0;
+        cpu.status_register.overflow = cpu.registers.r1 == 127;
+        cpu.registers.r1 = result.0;
 
         Ok(())
     } else {
@@ -81,12 +81,12 @@ pub fn inx(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn dex(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let result = cpu.registers.x.overflowing_sub(1);
+        let result = cpu.registers.r1.overflowing_sub(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = cpu.registers.x == 128;
+        cpu.status_register.overflow = cpu.registers.r1 == 128;
         cpu.status_register.zero = result.0 == 0;
-        cpu.registers.x = result.0;
+        cpu.registers.r1 = result.0;
 
         Ok(())
     } else {
@@ -96,11 +96,11 @@ pub fn dex(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn iny(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let result = cpu.registers.y.overflowing_add(1);
+        let result = cpu.registers.r2.overflowing_add(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = cpu.registers.y == 127;
-        cpu.registers.y = result.0;
+        cpu.status_register.overflow = cpu.registers.r2 == 127;
+        cpu.registers.r2 = result.0;
 
         Ok(())
     } else {
@@ -110,12 +110,12 @@ pub fn iny(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn dey(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        let result = cpu.registers.y.overflowing_sub(1);
+        let result = cpu.registers.r2.overflowing_sub(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = cpu.registers.y == 128;
+        cpu.status_register.overflow = cpu.registers.r2 == 128;
         cpu.status_register.zero = result.0 == 0;
-        cpu.registers.y = result.0;
+        cpu.registers.r2 = result.0;
 
         Ok(())
     } else {

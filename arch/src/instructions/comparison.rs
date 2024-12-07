@@ -7,7 +7,7 @@ use crate::InstructionResult;
 
 pub fn cmp(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
-        let value1 = cpu.registers.a;
+        let value1 = cpu.registers.r0;
         let value2 = operand[0].read_word()?;
 
         cpu.status_register.zero = value1 == value2;
@@ -22,7 +22,7 @@ pub fn cmp(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 
 pub fn cpx(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
-        let value1 = cpu.registers.x;
+        let value1 = cpu.registers.r1;
         let value2 = operand[0].read_word()?;
 
         cpu.status_register.zero = value1 == value2;
@@ -37,7 +37,7 @@ pub fn cpx(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 
 pub fn cpy(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
-        let value1 = cpu.registers.y;
+        let value1 = cpu.registers.r2;
         let value2 = operand[0].read_word()?;
 
         cpu.status_register.zero = value1 == value2;
@@ -52,7 +52,7 @@ pub fn cpy(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 
 pub fn lte(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
-        let value1 = cpu.registers.a;
+        let value1 = cpu.registers.r0;
         let value2 = operand[0].read_word()?;
 
         cpu.status_register.zero = value1 <= value2;
@@ -67,7 +67,7 @@ pub fn lte(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 
 pub fn gte(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
-        let value1 = cpu.registers.a;
+        let value1 = cpu.registers.r0;
         let value2 = operand[0].read_word()?;
 
         cpu.status_register.zero = value1 >= value2;

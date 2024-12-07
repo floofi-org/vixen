@@ -20,7 +20,7 @@ pub fn add(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
         cpu.status_register.zero = sum.0 == 0;
         cpu.status_register.negative = sum_negative;
-        cpu.registers.a = sum.0;
+        cpu.registers.r0 = sum.0;
 
         Ok(())
     } else {
@@ -42,7 +42,7 @@ pub fn sub(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
         cpu.status_register.zero = diff.0 == 0;
         cpu.status_register.negative = diff_negative;
-        cpu.registers.a = diff.0;
+        cpu.registers.r0 = diff.0;
 
         Ok(())
     } else {
@@ -65,7 +65,7 @@ pub fn mul(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
             ((number1_negative != number2_negative) && !result_negative);
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result.0;
+        cpu.registers.r0 = result.0;
 
         Ok(())
     } else {
@@ -87,7 +87,7 @@ pub fn div(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = number1 == 128 && number2 == 255;
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result.0;
+        cpu.registers.r0 = result.0;
 
         Ok(())
     } else {
@@ -107,7 +107,7 @@ pub fn mod_(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -125,7 +125,7 @@ pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -143,7 +143,7 @@ pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -165,7 +165,7 @@ pub fn sqr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = number_abs > 11;
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result.0;
+        cpu.registers.r0 = result.0;
 
         Ok(())
     } else {
@@ -187,7 +187,7 @@ pub fn cbe(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = number_abs > 5;
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
-        cpu.registers.a = result.0;
+        cpu.registers.r0 = result.0;
 
         Ok(())
     } else {
@@ -204,7 +204,7 @@ pub fn min(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result >> 7 == 1;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -221,7 +221,7 @@ pub fn max(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result >> 7 == 1;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -244,7 +244,7 @@ pub fn adc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
         cpu.status_register.zero = sum.0 == 0;
         cpu.status_register.negative = sum_negative;
-        cpu.registers.a = sum.0;
+        cpu.registers.r0 = sum.0;
 
         Ok(())
     } else {
@@ -267,7 +267,7 @@ pub fn sbc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
         cpu.status_register.zero = diff.0 == 0;
         cpu.status_register.negative = diff_negative;
-        cpu.registers.a = diff.0;
+        cpu.registers.r0 = diff.0;
 
         Ok(())
     } else {

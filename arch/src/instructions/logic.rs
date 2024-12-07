@@ -12,7 +12,7 @@ pub fn and(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         let result = number1 & number2;
 
         cpu.status_register.zero = result == 0;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -27,7 +27,7 @@ pub fn or(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instructi
         let result = number1 | number2;
 
         cpu.status_register.zero = result == 0;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -42,7 +42,7 @@ pub fn xor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         let result = number1 ^ number2;
 
         cpu.status_register.zero = result == 0;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -57,7 +57,7 @@ pub fn nor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         let result = !(number1 | number2);
 
         cpu.status_register.zero = result == 0;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -72,7 +72,7 @@ pub fn nad(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         let result = !(number1 & number2);
 
         cpu.status_register.zero = result == 0;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -87,7 +87,7 @@ pub fn imp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         let result = (!number1) | number2;
 
         cpu.status_register.zero = result == 0;
-        cpu.registers.a = result;
+        cpu.registers.r0 = result;
 
         Ok(())
     } else {
@@ -97,8 +97,8 @@ pub fn imp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 
 pub fn not(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.registers.a = !cpu.registers.a;
-        cpu.status_register.zero = cpu.registers.a == 0;
+        cpu.registers.r0 = !cpu.registers.r0;
+        cpu.status_register.zero = cpu.registers.r0 == 0;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)

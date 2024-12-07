@@ -48,9 +48,6 @@ impl CPU {
     #[must_use]
     pub fn get_register(&self, register_id: RegisterId) -> u32 {
         match register_id {
-            RegisterId::A => self.registers.a,
-            RegisterId::X => self.registers.x,
-            RegisterId::Y => self.registers.y,
             RegisterId::R0 => self.registers.r0,
             RegisterId::R1 => self.registers.r1,
             RegisterId::R2 => self.registers.r2,
@@ -58,7 +55,14 @@ impl CPU {
             RegisterId::R4 => self.registers.r4,
             RegisterId::R5 => self.registers.r5,
             RegisterId::R6 => self.registers.r6,
-            RegisterId::R7 => self.registers.r7
+            RegisterId::R7 => self.registers.r7,
+            RegisterId::R8 => self.registers.r8,
+            RegisterId::R9 => self.registers.r9,
+            RegisterId::R10 => self.registers.r10,
+            RegisterId::R11 => self.registers.r11,
+            RegisterId::R12 => self.registers.r12,
+            RegisterId::R13 => self.registers.r13,
+            RegisterId::R14 => self.registers.r14
         }
     }
 
@@ -85,14 +89,14 @@ impl CPU {
         // If we are already handling interrupt, use ROM-provided double fault handler
         if self.status_register.interrupt {
             self.status_register.double_fault = true;
-            self.registers.r7 = interrupt.into();
-            self.program_counter = 0xF0F0;
+            self.registers.r14 = interrupt.into();
+            self.program_counter = 0xffff_0000;
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
             self.status_register.interrupt = true;
             let address = u32::from_le_bytes([
-                self.memory[0x0000], self.memory[0x0001],
-                self.memory[0x0002], self.memory[0x0003]
+                self.memory[0x2000_0000], self.memory[0x2000_0001],
+                self.memory[0x2000_0002], self.memory[0x2000_0003]
             ]);
             self.program_counter = address;
         }

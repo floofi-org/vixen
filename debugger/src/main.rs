@@ -127,9 +127,9 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
             dump_memory(cpu, start, end, None);
         },
         "g" | "registers" => {
-            println!("A  = {register:0>8x}, {register}", register = cpu.registers.a);
-            println!("X  = {register:0>8x}, {register}", register = cpu.registers.x);
-            println!("Y  = {register:0>8x}, {register}", register = cpu.registers.y);
+            println!("A  = {register:0>8x}, {register}", register = cpu.registers.r0);
+            println!("X  = {register:0>8x}, {register}", register = cpu.registers.r1);
+            println!("Y  = {register:0>8x}, {register}", register = cpu.registers.r2);
             println!("R0 = {register:0>8x}, {register}", register = cpu.registers.r0);
             println!("R1 = {register:0>8x}, {register}", register = cpu.registers.r1);
             println!("R2 = {register:0>8x}, {register}", register = cpu.registers.r2);

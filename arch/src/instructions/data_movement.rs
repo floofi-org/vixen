@@ -7,8 +7,8 @@ use crate::InstructionResult;
 
 pub fn lda(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        cpu.registers.a = operands[0].read_word()?;
-        cpu.status_register.zero = cpu.registers.a == 0;
+        cpu.registers.r0 = operands[0].read_word()?;
+        cpu.status_register.zero = cpu.registers.r0 == 0;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -17,8 +17,8 @@ pub fn lda(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn ldx(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        cpu.registers.x = operands[0].read_word()?;
-        cpu.status_register.zero = cpu.registers.x == 0;
+        cpu.registers.r1 = operands[0].read_word()?;
+        cpu.status_register.zero = cpu.registers.r1 == 0;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -27,8 +27,8 @@ pub fn ldx(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn ldy(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        cpu.registers.y = operands[0].read_word()?;
-        cpu.status_register.zero = cpu.registers.y == 0;
+        cpu.registers.r2 = operands[0].read_word()?;
+        cpu.status_register.zero = cpu.registers.r2 == 0;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -47,7 +47,7 @@ pub fn ldz(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn sta(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        operands[0].write_word(cpu, cpu.registers.a)?;
+        operands[0].write_word(cpu, cpu.registers.r0)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -56,7 +56,7 @@ pub fn sta(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn stx(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        operands[0].write_word(cpu, cpu.registers.x)?;
+        operands[0].write_word(cpu, cpu.registers.r1)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -65,7 +65,7 @@ pub fn stx(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn sty(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Absolute = mode {
-        operands[0].write_word(cpu, cpu.registers.y)?;
+        operands[0].write_word(cpu, cpu.registers.r2)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)

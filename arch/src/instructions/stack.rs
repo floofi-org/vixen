@@ -9,7 +9,7 @@ use crate::InstructionResult;
 
 pub fn pha(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.user_stack_push_word(cpu.registers.a)?;
+        cpu.user_stack_push_word(cpu.registers.r0)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -18,7 +18,7 @@ pub fn pha(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn pla(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.registers.a = cpu.user_stack_pull_word()?;
+        cpu.registers.r0 = cpu.user_stack_pull_word()?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -27,7 +27,7 @@ pub fn pla(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn phx(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.user_stack_push_word(cpu.registers.x)?;
+        cpu.user_stack_push_word(cpu.registers.r1)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -36,7 +36,7 @@ pub fn phx(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn plx(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.registers.x = cpu.user_stack_pull_word()?;
+        cpu.registers.r1 = cpu.user_stack_pull_word()?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -45,7 +45,7 @@ pub fn plx(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn phy(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.user_stack_push_word(cpu.registers.y)?;
+        cpu.user_stack_push_word(cpu.registers.r2)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
@@ -54,7 +54,7 @@ pub fn phy(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 
 pub fn ply(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Implied = mode {
-        cpu.registers.y = cpu.user_stack_pull_word()?;
+        cpu.registers.r2 = cpu.user_stack_pull_word()?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)

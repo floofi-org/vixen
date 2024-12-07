@@ -25,9 +25,6 @@ impl MemoryCell for Operand {
             Operand::Literal(_) | Operand::Void => Err(Interrupt::IllegalMemory),
             Operand::Register(id, initial_value) => {
                 match id {
-                    RegisterId::A => cpu.registers.a = value,
-                    RegisterId::X => cpu.registers.x = value,
-                    RegisterId::Y => cpu.registers.y = value,
                     RegisterId::R0 => cpu.registers.r0 = value,
                     RegisterId::R1 => cpu.registers.r1 = value,
                     RegisterId::R2 => cpu.registers.r2 = value,
@@ -35,7 +32,14 @@ impl MemoryCell for Operand {
                     RegisterId::R4 => cpu.registers.r4 = value,
                     RegisterId::R5 => cpu.registers.r5 = value,
                     RegisterId::R6 => cpu.registers.r6 = value,
-                    RegisterId::R7 => cpu.registers.r7 = value
+                    RegisterId::R7 => cpu.registers.r7 = value,
+                    RegisterId::R8 => cpu.registers.r8 = value,
+                    RegisterId::R9 => cpu.registers.r9 = value,
+                    RegisterId::R10 => cpu.registers.r10 = value,
+                    RegisterId::R11 => cpu.registers.r11 = value,
+                    RegisterId::R12 => cpu.registers.r12 = value,
+                    RegisterId::R13 => cpu.registers.r13 = value,
+                    RegisterId::R14 => cpu.registers.r14 = value
                 }
                 *initial_value = value;
                 Ok(())
