@@ -19,12 +19,10 @@ pub enum Literal {
 }
 
 impl Literal {
-    /// # Panics
-    /// Panics when parsing number fails
     pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Self> {
         let number = scanner.next_while(literal_filter)?;
         let number = u16::from_str_radix(&number, radix)
-            .expect("Your number is silly");
+            .expect("Invalid number literal");
 
         Some(Self::Number(number))
     }
@@ -36,6 +34,8 @@ impl Literal {
     }
 }
 
+// .next_while require we take a reference of char
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn literal_filter(char: &char) -> bool {
     !(char.is_whitespace() || FORBIDDEN_LITERAL_CHARS.contains(char))
 }

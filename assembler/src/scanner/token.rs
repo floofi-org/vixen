@@ -5,6 +5,7 @@ mod literal;
 pub use literal::Literal;
 
 #[derive(Debug)]
+#[allow(clippy::module_name_repetitions)]
 pub struct TokenWithSpan {
     pub token: Token,
     pub span: Span,
@@ -36,8 +37,6 @@ pub enum Token {
 }
 
 impl TokenWithSpan {
-    /// # Panics
-    /// Panics if encounters unknown token
     #[must_use]
     pub fn scan(scanner: &mut Scanner) -> Option<Self> {
         let Some(char) = scanner.peek() else {

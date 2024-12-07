@@ -167,6 +167,7 @@ name = "vasm"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "vixen",
 ]
 
 [[package]]
