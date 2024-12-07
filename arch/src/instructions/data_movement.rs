@@ -104,3 +104,48 @@ pub fn clr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
         Err(Interrupt::IllegalInstruction)
     }
 }
+
+pub fn sec(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode {
+        cpu.status_register.carry = true;
+        Ok(())
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}
+
+pub fn clc(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode {
+        cpu.status_register.carry = false;
+        Ok(())
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}
+
+pub fn sei(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode {
+        cpu.status_register.interrupt_disable = true;
+        Ok(())
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}
+
+pub fn cli(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode {
+        cpu.status_register.interrupt_disable = false;
+        Ok(())
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}
+
+pub fn clv(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode {
+        cpu.status_register.overflow = false;
+        Ok(())
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}

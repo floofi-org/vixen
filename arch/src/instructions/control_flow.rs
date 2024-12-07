@@ -162,3 +162,27 @@ pub fn jam(mode: Addressing, _operands: &[Operand; 2], _cpu: &mut CPU) -> Instru
         Err(Interrupt::IllegalInstruction)
     }
 }
+
+pub fn bpl(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode {
+        if cpu.status_register.negative {
+            jmp(mode, operands, cpu)
+        } else {
+            Ok(())
+        }
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}
+
+pub fn bmi(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode {
+        if cpu.status_register.negative {
+            jmp(mode, operands, cpu)
+        } else {
+            Ok(())
+        }
+    } else {
+        Err(Interrupt::IllegalInstruction)
+    }
+}

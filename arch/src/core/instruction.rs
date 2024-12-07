@@ -106,7 +106,6 @@ impl Instruction {
             Operation::Bmi => instructions::bmi(self.mode, &self.operands, cpu),
             Operation::Adc => instructions::adc(self.mode, &self.operands, cpu),
             Operation::Sbc => instructions::sbc(self.mode, &self.operands, cpu),
-            Operation::Bit => instructions::bit(self.mode, &self.operands, cpu),
             Operation::Asr => instructions::asr(self.mode, &mut self.operands, cpu),
             Operation::Sec => instructions::sec(self.mode, &self.operands, cpu),
             Operation::Clc => instructions::clc(self.mode, &self.operands, cpu),

@@ -27,7 +27,7 @@ pub enum Operation {
     /* 0x05?? */ Lda, Ldx, Ldy, Ldz, Sta, Stx, Sty, Mov, Swp, Clr,
     /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam,
     /* 0x07?? */ Pha, Pla, Phx, Plx, Phy, Ply, Psh, Pll,
-    /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Bit, Asr, Sec, Clc, Sei, Cli, Clv, Php, Plp
+    /* 0x08?? */ Bpl, Bmi, Adc, Sbc, Asr, Sec, Clc, Sei, Cli, Clv, Php, Plp
 }
 
 impl Display for Operation {
@@ -72,6 +72,9 @@ impl TryFrom<u16> for Operation {
             0x018 => Cbe,
             0x019 => Min,
             0x01A => Max,
+            0x01B => Adc,
+            0x01C => Sbc,
+            0x01D => Asr,
 
             // 0x02?? - Logic Instructions
             0x020 => And,
@@ -117,6 +120,11 @@ impl TryFrom<u16> for Operation {
             0x057 => Mov,
             0x058 => Swp,
             0x059 => Clr,
+            0x05A => Sec,
+            0x05B => Clc,
+            0x05C => Sei,
+            0x05D => Cli,
+            0x05E => Clv,
 
             // 0x06?? - Control Flow Instructions
             0x060 => Jmp,
@@ -132,6 +140,8 @@ impl TryFrom<u16> for Operation {
             0x06A => Irt,
             0x06B => Nop,
             0x06C => Jam,
+            0x06D => Bpl,
+            0x06E => Bmi,
 
             // 0x07?? - Stack Instructions
             0x070 => Pha,
@@ -142,21 +152,8 @@ impl TryFrom<u16> for Operation {
             0x075 => Ply,
             0x076 => Psh,
             0x077 => Pll,
-
-            // 0x08?? - MOS 6502 Compatibility Extensions
-            0x080 => Bpl,
-            0x081 => Bmi,
-            0x082 => Adc,
-            0x083 => Sbc,
-            0x084 => Bit,
-            0x085 => Asr,
-            0x086 => Sec,
-            0x087 => Clc,
-            0x088 => Sei,
-            0x089 => Cli,
-            0x08A => Clv,
-            0x08B => Php,
-            0x0BC => Plp
+            0x078 => Php,
+            0x079 => Plp
         }
     }
 }
