@@ -61,7 +61,7 @@ pub fn ply(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
 }
 
 pub fn psh(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
         cpu.user_stack_push_word(operands[0].read_word()?)?;
         Ok(())
     } else {
@@ -70,7 +70,7 @@ pub fn psh(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 }
 
 pub fn pll(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Direct | Addressing::Absolute = mode {
         let word = cpu.user_stack_pull_word()?;
         operands[0].write_word(cpu, word)?;
         Ok(())

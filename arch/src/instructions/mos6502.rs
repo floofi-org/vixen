@@ -33,7 +33,7 @@ pub fn bmi(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 }
 
 pub fn adc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
+    if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number1_negative = number1 >> 7 == 1;
         let number2 = operands[1].read_word()?;
@@ -56,7 +56,7 @@ pub fn adc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 }
 
 pub fn sbc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::ZeroPage | Addressing::Relative = mode {
+    if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
         let number1_negative = number1 >> 7 == 1;
         let number2 = operands[1].read_word()?;
@@ -81,7 +81,7 @@ pub fn sbc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn bit(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     // They literally are just 8-bit binary numbers
     #[allow(clippy::unreadable_literal)]
-    if let Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Absolute = mode {
         let result = cpu.registers.a & operands[0].read_word()?;
         cpu.status_register.negative = (result & 0b10000000) == 0b10000000;
         cpu.status_register.overflow = (result & 0b01000000) == 0b01000000;
@@ -94,7 +94,7 @@ pub fn bit(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 // u8 <-> i8 conversion is intended, see comment below
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 pub fn asr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Direct | Addressing::Absolute = mode {
         // For this instruction, we convert the 32-bit word to a signed integer and then do an arithmetic
         // shift right on that (>> does ASR on i32, LSR on u32), and then convert it back to an 32-bit
         // word and update memory.

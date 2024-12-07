@@ -6,7 +6,7 @@ use crate::CPU;
 use crate::InstructionResult;
 
 pub fn cmp(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
         let value1 = cpu.registers.a;
         let value2 = operand[0].read_word()?;
 
@@ -21,7 +21,7 @@ pub fn cmp(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 }
 
 pub fn cpx(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
         let value1 = cpu.registers.x;
         let value2 = operand[0].read_word()?;
 
@@ -36,7 +36,7 @@ pub fn cpx(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 }
 
 pub fn cpy(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
         let value1 = cpu.registers.y;
         let value2 = operand[0].read_word()?;
 
@@ -51,7 +51,7 @@ pub fn cpy(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 }
 
 pub fn lte(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
         let value1 = cpu.registers.a;
         let value2 = operand[0].read_word()?;
 
@@ -66,7 +66,7 @@ pub fn lte(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 }
 
 pub fn gte(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Direct | Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Immediate | Addressing::Direct | Addressing::Absolute = mode {
         let value1 = cpu.registers.a;
         let value2 = operand[0].read_word()?;
 

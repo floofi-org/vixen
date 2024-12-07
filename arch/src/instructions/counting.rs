@@ -6,7 +6,7 @@ use crate::CPU;
 use crate::InstructionResult;
 
 pub fn inc(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Absolute = mode {
         let initial = operands[0].read_word()?;
         let result = initial.overflowing_add(1);
 
@@ -21,7 +21,7 @@ pub fn inc(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 }
 
 pub fn dec(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::ZeroPage | Addressing::Absolute = mode {
+    if let Addressing::Absolute = mode {
         let initial = operands[0].read_word()?;
         let result = initial.overflowing_sub(1);
 

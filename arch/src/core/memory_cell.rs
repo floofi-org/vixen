@@ -15,7 +15,7 @@ impl MemoryCell for Operand {
     fn read_word(&self) -> CPUResult<u32> {
         Ok(match self {
             Operand::Literal(value) => *value,
-            Operand::Register(_, value) | Operand::ZeroPage(_, value) | Operand::Memory(_, value) => *value,
+            Operand::Register(_, value) | Operand::Memory(_, value) => *value,
             Operand::Void => return Err(Interrupt::IllegalMemory)
         })
     }
@@ -40,7 +40,7 @@ impl MemoryCell for Operand {
                 *initial_value = value;
                 Ok(())
             },
-            Operand::ZeroPage(addr, initial_value) | Operand::Memory(addr, initial_value) => {
+            Operand::Memory(addr, initial_value) => {
                 if (0x0000_0000..0xdfff_ffff).contains(addr) {
                     let bytes = value.to_le_bytes();
                     cpu.memory[(*addr as usize)..(*addr as usize + 4)].copy_from_slice(&bytes);
@@ -57,7 +57,6 @@ impl MemoryCell for Operand {
         match self {
             Operand::Literal(_) => Addressing::Immediate,
             Operand::Register(_, _) => Addressing::Direct,
-            Operand::ZeroPage(_, _) => Addressing::ZeroPage,
             Operand::Memory(_, _) => Addressing::Absolute,
             Operand::Void => Addressing::Implied
         }
