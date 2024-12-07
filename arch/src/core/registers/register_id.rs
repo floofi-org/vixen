@@ -1,7 +1,8 @@
+use alloc::string::String;
 use crate::core::interrupt::Interrupt;
 use crate::CPUResult;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub enum RegisterId {
     A, X, Y,
     R0, R1, R2, R3, R4, R5, R6, R7
@@ -23,6 +24,27 @@ impl TryFrom<u16> for RegisterId {
             0x1005 => Ok(Self::R5),
             0x1006 => Ok(Self::R6),
             0x1007 => Ok(Self::R7),
+            _ => Err(Interrupt::IllegalMemory)
+        }
+    }
+}
+
+impl TryFrom<&String> for RegisterId {
+    type Error = Interrupt;
+
+    fn try_from(value: &String) -> CPUResult<Self> {
+        match value.to_lowercase().as_str() {
+            "a" => Ok(Self::A),
+            "x" => Ok(Self::X),
+            "y" => Ok(Self::Y),
+            "r0" => Ok(Self::R0),
+            "r1" => Ok(Self::R1),
+            "r2" => Ok(Self::R2),
+            "r3" => Ok(Self::R3),
+            "r4" => Ok(Self::R4),
+            "r5" => Ok(Self::R5),
+            "r6" => Ok(Self::R6),
+            "r7" => Ok(Self::R7),
             _ => Err(Interrupt::IllegalMemory)
         }
     }
