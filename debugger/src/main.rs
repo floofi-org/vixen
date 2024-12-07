@@ -106,7 +106,11 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
             println!("\u{1b}[33mSystem unblocked. Ignoring interrupts is unsafe, you are on your own.\u{1b}[0m");
         },
         "r" | "run" => {
-            state.running = true;
+            if state.interrupt.is_some() {
+                println!("\u{1b}[33mSystem blocked on interrupt. 'i' for stack trace, 'b' to resume.\u{1b}[0m");
+            } else {
+                state.running = true;
+            }
         },
         // We want to get a valid memory address at the end, this is intended
         #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
