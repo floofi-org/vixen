@@ -11,7 +11,7 @@ pub fn inc(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
         let result = initial.overflowing_add(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = initial == 127;
+        cpu.status_register.overflow = initial == 2_147_483_646;
         operands[0].write_word(cpu, result.0)?;
 
         Ok(())
@@ -26,7 +26,7 @@ pub fn dec(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
         let result = initial.overflowing_sub(1);
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = initial == 128;
+        cpu.status_register.overflow = initial == 2_147_483_647;
         cpu.status_register.zero = result.0 == 0;
         operands[0].write_word(cpu, result.0)?;
 

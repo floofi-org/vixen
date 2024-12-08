@@ -9,12 +9,12 @@ use libm::{sqrt, cbrt};
 pub fn add(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
-        let number1_negative = number1 >> 7 == 1;
+        let number1_negative = number1 >> 31 == 1;
         let number2 = operands[1].read_word()?;
-        let number2_negative = number2 >> 7 == 1;
+        let number2_negative = number2 >> 31 == 1;
 
         let sum = number1.overflowing_add(number2);
-        let sum_negative = sum.0 >> 7 == 1;
+        let sum_negative = sum.0 >> 31 == 1;
 
         cpu.status_register.carry = sum.1;
         cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
@@ -31,12 +31,12 @@ pub fn add(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn sub(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
-        let number1_negative = number1 >> 7 == 1;
+        let number1_negative = number1 >> 31 == 1;
         let number2 = operands[1].read_word()?;
-        let number2_negative = number2 >> 7 == 1;
+        let number2_negative = number2 >> 31 == 1;
 
         let diff = number1.overflowing_sub(number2);
-        let diff_negative = diff.0 >> 7 == 1;
+        let diff_negative = diff.0 >> 31 == 1;
 
         cpu.status_register.carry = diff.1;
         cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
@@ -53,12 +53,12 @@ pub fn sub(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn mul(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
-        let number1_negative = number1 >> 7 == 1;
+        let number1_negative = number1 >> 31 == 1;
         let number2 = operands[1].read_word()?;
-        let number2_negative = number2 >> 7 == 1;
+        let number2_negative = number2 >> 31 == 1;
 
         let result = number1.overflowing_mul(number2);
-        let result_negative = result.0 >> 7 == 1;
+        let result_negative = result.0 >> 31 == 1;
 
         cpu.status_register.carry = result.1;
         cpu.status_register.overflow = ((number1_negative == number2_negative) && result_negative) ||
@@ -81,10 +81,10 @@ pub fn div(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
         if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
         let result = number1.overflowing_div(number2);
-        let result_negative = result.0 >> 7 == 1;
+        let result_negative = result.0 >> 31 == 1;
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = number1 == 128 && number2 == 255;
+        cpu.status_register.overflow = number1 == 2_147_483_647 && number2 == 4_294_967_295;
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
         cpu.registers.r0 = result.0;
@@ -103,7 +103,7 @@ pub fn mod_(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
         if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
         let result = number1 % number2;
-        let result_negative = result >> 7 == 1;
+        let result_negative = result >> 31 == 1;
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result_negative;
@@ -121,7 +121,7 @@ pub fn sqt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let result = sqrt(f64::from(number)) as u32;
-        let result_negative = result >> 7 == 1;
+        let result_negative = result >> 31 == 1;
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result_negative;
@@ -139,7 +139,7 @@ pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
         let result = cbrt(f64::from(number)) as u32;
-        let result_negative = result >> 7 == 1;
+        let result_negative = result >> 31 == 1;
 
         cpu.status_register.zero = result == 0;
         cpu.status_register.negative = result_negative;
@@ -156,13 +156,13 @@ pub fn cbt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn sqr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
-        let number_abs = (number as i8).unsigned_abs();
+        let number_abs = (number as i32).unsigned_abs();
 
         let result = number.overflowing_pow(2);
-        let result_negative = result.0 >> 7 == 1;
+        let result_negative = result.0 >> 31 == 1;
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = number_abs > 11;
+        cpu.status_register.overflow = number_abs > 65535;
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
         cpu.registers.r0 = result.0;
@@ -178,13 +178,13 @@ pub fn sqr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn cbe(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number = operands[0].read_word()?;
-        let number_abs = (number as i8).unsigned_abs();
+        let number_abs = (number as i32).unsigned_abs();
 
         let result = number.overflowing_pow(3);
-        let result_negative = result.0 >> 7 == 1;
+        let result_negative = result.0 >> 31 == 1;
 
         cpu.status_register.carry = result.1;
-        cpu.status_register.overflow = number_abs > 5;
+        cpu.status_register.overflow = number_abs > 1625;
         cpu.status_register.zero = result.0 == 0;
         cpu.status_register.negative = result_negative;
         cpu.registers.r0 = result.0;
@@ -203,7 +203,7 @@ pub fn min(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
         let result = number1.min(number2);
 
         cpu.status_register.zero = result == 0;
-        cpu.status_register.negative = result >> 7 == 1;
+        cpu.status_register.negative = result >> 31 == 1;
         cpu.registers.r0 = result;
 
         Ok(())
@@ -220,7 +220,7 @@ pub fn max(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
         let result = number1.max(number2);
 
         cpu.status_register.zero = result == 0;
-        cpu.status_register.negative = result >> 7 == 1;
+        cpu.status_register.negative = result >> 31 == 1;
         cpu.registers.r0 = result;
 
         Ok(())
@@ -232,13 +232,13 @@ pub fn max(mode: Addressing, operand: &[Operand; 2], cpu: &mut CPU) -> Instructi
 pub fn adc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
-        let number1_negative = number1 >> 7 == 1;
+        let number1_negative = number1 >> 31 == 1;
         let number2 = operands[1].read_word()?;
-        let number2_negative = number2 >> 7 == 1;
+        let number2_negative = number2 >> 31 == 1;
 
         let sum_pre = number1.overflowing_add(number2);
         let sum = sum_pre.0.overflowing_add(u32::from(cpu.status_register.carry));
-        let sum_negative = sum_pre.0 >> 7 == 1;
+        let sum_negative = sum_pre.0 >> 31 == 1;
 
         cpu.status_register.carry = sum.1;
         cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
@@ -255,13 +255,13 @@ pub fn adc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
 pub fn sbc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Immediate | Addressing::Relative = mode {
         let number1 = operands[0].read_word()?;
-        let number1_negative = number1 >> 7 == 1;
+        let number1_negative = number1 >> 31 == 1;
         let number2 = operands[1].read_word()?;
-        let number2_negative = number2 >> 7 == 1;
+        let number2_negative = number2 >> 31 == 1;
 
         let diff_pre = number1.overflowing_sub(number2);
         let diff = diff_pre.0.overflowing_sub(u32::from(!cpu.status_register.carry));
-        let diff_negative = diff.0 >> 7 == 1;
+        let diff_negative = diff.0 >> 31 == 1;
 
         cpu.status_register.carry = diff.1;
         cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
