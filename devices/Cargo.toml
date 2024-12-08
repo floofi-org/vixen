@@ -1,0 +1,11 @@
+[package]
+name = "vixen-devices"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vixen = { path = "../arch" }
+
+[lints.clippy]
+pedantic = "warn"
+missing_errors_doc = "allow"
