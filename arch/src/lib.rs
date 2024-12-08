@@ -15,8 +15,10 @@ pub const CPU_SPECIFICATION: Specification = Specification {
 pub mod core;
 pub mod cpu;
 pub mod instructions;
+pub mod devices;
 
 pub use cpu::CPU;
+pub use devices::BusDevice;
 
 use crate::core::Interrupt;
 use crate::core::Specification;
