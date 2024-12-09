@@ -8,8 +8,8 @@ use macros::{token, tokens};
 
 
 #[allow(clippy::module_name_repetitions)]
-pub trait CastToToken<T> {
-    fn cast(self) -> Option<T>;
+pub trait FromToken: Sized {
+    fn from_token(token: Token) -> Option<Self>;
 }
 
 #[derive(Debug)]
