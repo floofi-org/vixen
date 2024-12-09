@@ -2,9 +2,9 @@ macro_rules! token {
     ($name: ident) => {
         pub struct $name;
 
-        impl CastToToken<$name> for Token {
-            fn cast(self) -> Option<$name> {
-                if let Self::$name = self {
+        impl FromToken for $name {
+            fn from_token(token: Token) -> Option<$name> {
+                if let Token::$name = token {
                     Some($name)
                 } else {
                     None
@@ -16,9 +16,9 @@ macro_rules! token {
     ($name: ident ($($elem:ident : $elem_ty: ty),+)) => {
         pub struct $name ($( pub $elem_ty ),+);
 
-        impl CastToToken<$name> for Token {
-            fn cast(self) -> Option<$name> {
-                if let Token::$name ($( $elem ),+) = self {
+        impl FromToken for $name {
+            fn from_token(token: Token) -> Option<$name> {
+                if let Token::$name ($( $elem ),+) = token {
                     Some($name ($( $elem ),+))
                 } else {
                     None
