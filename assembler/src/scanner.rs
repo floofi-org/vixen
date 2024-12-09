@@ -3,7 +3,7 @@ use std::iter::Peekable;
 
 pub mod token;
 
-pub use token::{Token, TokenWithSpan, Literal, Location};
+pub use token::{Token, TokenWithSpan, Location};
 
 pub struct Scanner<'a> {
     source: Peekable<Chars<'a>>,
