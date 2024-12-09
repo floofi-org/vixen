@@ -127,17 +127,16 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
             dump_memory(cpu, start, end, None);
         },
         "g" | "registers" => {
-            println!("A  = {register:0>8x}, {register}", register = cpu.registers.r0);
-            println!("X  = {register:0>8x}, {register}", register = cpu.registers.r1);
-            println!("Y  = {register:0>8x}, {register}", register = cpu.registers.r2);
-            println!("R0 = {register:0>8x}, {register}", register = cpu.registers.r0);
-            println!("R1 = {register:0>8x}, {register}", register = cpu.registers.r1);
-            println!("R2 = {register:0>8x}, {register}", register = cpu.registers.r2);
-            println!("R3 = {register:0>8x}, {register}", register = cpu.registers.r3);
-            println!("R4 = {register:0>8x}, {register}", register = cpu.registers.r4);
-            println!("R5 = {register:0>8x}, {register}", register = cpu.registers.r5);
-            println!("R6 = {register:0>8x}, {register}", register = cpu.registers.r6);
-            println!("R7 = {register:0>8x}, {register}", register = cpu.registers.r7);
+            println!("r0  = {register1:0>8x}, r1  = {register2:0>8x}, r2  = {register3:0>8x}",
+                     register1 = cpu.registers.r0, register2 = cpu.registers.r1, register3 = cpu.registers.r2);
+            println!("r3  = {register1:0>8x}, r4  = {register2:0>8x}, r5  = {register3:0>8x}",
+                     register1 = cpu.registers.r3, register2 = cpu.registers.r4, register3 = cpu.registers.r5);
+            println!("r6  = {register1:0>8x}, r7  = {register2:0>8x}, r8  = {register3:0>8x}",
+                     register1 = cpu.registers.r6, register2 = cpu.registers.r7, register3 = cpu.registers.r8);
+            println!("r9  = {register1:0>8x}, r10 = {register2:0>8x}, r11 = {register3:0>8x}",
+                     register1 = cpu.registers.r9, register2 = cpu.registers.r10, register3 = cpu.registers.r11);
+            println!("r12 = {register1:0>8x}, r13 = {register2:0>8x}, r14 = {register3:0>8x}",
+                     register1 = cpu.registers.r12, register2 = cpu.registers.r13, register3 = cpu.registers.r14);
         },
         "i" | "interrupt" => {
             if state.interrupt.is_some() {
