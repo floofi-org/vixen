@@ -1,9 +1,9 @@
 use std::str::Chars;
 use std::iter::Peekable;
 
-pub mod token;
+mod token;
 
-pub use token::{Token, TokenWithSpan, Location};
+use crate::models::{Location, Token, TokenWithSpan};
 
 pub struct Scanner<'a> {
     source: Peekable<Chars<'a>>,

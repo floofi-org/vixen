@@ -1,7 +1,6 @@
 use std::cmp::PartialEq;
 use vixen::core::registers::register_id::RegisterId;
-use crate::scanner::{Token, TokenWithSpan};
-use crate::scanner::token::Span;
+use crate::models::{Span, Token, TokenWithSpan};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Operand {
