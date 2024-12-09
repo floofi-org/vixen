@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 use vixen::core::registers::register_id::RegisterId;
-use crate::scanner::{Token, TokenWithSpan, Literal};
+use crate::scanner::{Token, TokenWithSpan};
 use crate::scanner::token::Span;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -50,7 +50,7 @@ impl From<Vec<TokenWithSpan>> for ParsedCollection {
             };
 
             match &token.token {
-                Token::Literal(Literal::Identifier(i)) => {
+                Token::Identifier(i) => {
                     if parsing_macro {
                         if current_macro.0.is_empty() {
                             i.clone_into(&mut current_macro.0);
@@ -104,7 +104,7 @@ impl From<Vec<TokenWithSpan>> for ParsedCollection {
                     signed = true;
                     negative = true;
                 },
-                Token::Literal(Literal::Number(n)) => {
+                Token::Number(n) => {
                     // We consider that a sane user wouldn't enter an invalid number
                     #[allow(clippy::cast_possible_wrap)]
                     if literal {

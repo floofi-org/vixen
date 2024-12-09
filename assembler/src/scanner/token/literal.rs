@@ -1,5 +1,7 @@
 use crate::scanner::Scanner;
 
+use super::Token;
+
 const FORBIDDEN_LITERAL_CHARS: &[char] = &[
     ':',
     '$',
@@ -12,26 +14,18 @@ const FORBIDDEN_LITERAL_CHARS: &[char] = &[
     ';',
 ];
 
-#[derive(Debug)]
-pub enum Literal {
-    Identifier(String),
-    Number(u16),
+pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {
+    let number = scanner.next_while(literal_filter)?;
+    let number = u16::from_str_radix(&number, radix)
+        .expect("Invalid number literal");
+
+    Some(Token::Number(number))
 }
 
-impl Literal {
-    pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Self> {
-        let number = scanner.next_while(literal_filter)?;
-        let number = u16::from_str_radix(&number, radix)
-            .expect("Invalid number literal");
+pub fn identifier(scanner: &mut Scanner) -> Option<Token> {
+    let identifier = scanner.next_while(literal_filter)?;
 
-        Some(Self::Number(number))
-    }
-
-    pub fn identifier(scanner: &mut Scanner) -> Option<Self> {
-        let identifier = scanner.next_while(literal_filter)?;
-
-        Some(Self::Identifier(identifier))
-    }
+    Some(Token::Identifier(identifier))
 }
 
 // .next_while require we take a reference of char

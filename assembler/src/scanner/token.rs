@@ -1,8 +1,9 @@
 use super::Scanner;
 
 mod literal;
+mod macros;
 
-pub use literal::Literal;
+use macros::{token, tokens};
 
 #[derive(Debug)]
 #[allow(clippy::module_name_repetitions)]
@@ -33,7 +34,13 @@ pub enum Token {
     Comma,
     LineBreak,
     EOF,
-    Literal(Literal),
+    Identifier(String),
+    Number(u16),
+}
+
+#[allow(clippy::module_name_repetitions)]
+pub trait CastToToken<T> {
+    fn cast(self) -> Option<T>;
 }
 
 impl TokenWithSpan {
@@ -53,17 +60,17 @@ impl TokenWithSpan {
             ';' => Self::comment(scanner),
             '\n' | '\r' => Self::linebreak(scanner),
 
-            'a'..='z' | 'A'..='Z' | '_' => Self::literal(scanner, Literal::identifier),
+            'a'..='z' | 'A'..='Z' | '_' => Self::literal(scanner, literal::identifier),
 
-            '0'..='9' => Self::literal(scanner, |s| Literal::number(s, 10)),
+            '0'..='9' => Self::literal(scanner, |s| literal::number(s, 10)),
             '$' => {
                 scanner.next();
-                Self::literal(scanner, |s| Literal::number(s, 16))
+                Self::literal(scanner, |s| literal::number(s, 16))
             },
 
             '%' => {
                 scanner.next();
-                Self::literal(scanner, |s| Literal::number(s, 2))
+                Self::literal(scanner, |s| literal::number(s, 2))
             },
 
             ' ' | '\t' => {
@@ -119,13 +126,13 @@ impl TokenWithSpan {
         Some(token)
     }
 
-    fn literal(scanner: &mut Scanner, f: impl FnOnce(&mut Scanner) -> Option<Literal>) -> Option<Self> {
+    fn literal(scanner: &mut Scanner, f: impl FnOnce(&mut Scanner) -> Option<Token>) -> Option<Self> {
         let begin = scanner.location.clone();
-        let literal = f(scanner)?;
+        let token = f(scanner)?;
         let end = scanner.location.clone();
 
         Some(TokenWithSpan {
-            token: Token::Literal(literal),
+            token,
             span: Span::new(begin, end),
         })
     }
@@ -139,4 +146,17 @@ impl Span {
             end,
         }
     }
+}
+
+tokens! {
+    Colon,
+    Hash,
+    Minus,
+    Plus,
+    Dot,
+    Comma,
+    LineBreak,
+    EOF,
+    Identifier(string: String),
+    Number(number: u16)
 }
