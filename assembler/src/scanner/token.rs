@@ -1,47 +1,7 @@
+use crate::models::{Span, Token, TokenWithSpan};
 use super::Scanner;
 
 mod literal;
-mod macros;
-
-use macros::{token, tokens};
-
-#[derive(Debug)]
-#[allow(clippy::module_name_repetitions)]
-pub struct TokenWithSpan {
-    pub token: Token,
-    pub span: Span,
-}
-
-#[derive(Debug, Default, Clone)]
-pub struct Location {
-    pub line: usize,
-    pub column: usize,
-}
-
-#[derive(Debug, Clone)]
-pub struct Span {
-    pub begin: Location,
-    pub end: Location,
-}
-
-#[derive(Debug)]
-pub enum Token {
-    Colon,
-    Hash,
-    Minus,
-    Plus,
-    Dot,
-    Comma,
-    LineBreak,
-    EOF,
-    Identifier(String),
-    Number(u16),
-}
-
-#[allow(clippy::module_name_repetitions)]
-pub trait CastToToken<T> {
-    fn cast(self) -> Option<T>;
-}
 
 impl TokenWithSpan {
     #[must_use]
@@ -136,27 +96,4 @@ impl TokenWithSpan {
             span: Span::new(begin, end),
         })
     }
-}
-
-
-impl Span {
-    fn new(begin: Location, end: Location) -> Self {
-        Self {
-            begin,
-            end,
-        }
-    }
-}
-
-tokens! {
-    Colon,
-    Hash,
-    Minus,
-    Plus,
-    Dot,
-    Comma,
-    LineBreak,
-    EOF,
-    Identifier(string: String),
-    Number(number: u16)
 }
