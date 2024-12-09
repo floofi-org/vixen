@@ -4,7 +4,7 @@ use std::{env, fs, io};
 use std::io::Write;
 use vixen::core::Interrupt;
 use vixen::core::StackTrace;
-use vixen::CPU;
+use vixen::{CPU, MEMORY_64M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
 
@@ -28,13 +28,13 @@ fn main() {
         exit(-1);
     });
 
-    if rom.len() > 33_553_920 {
+    if rom.len() > 67_108_864 {
         eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
-        (33553920 bytes).\u{1b}[0m", rom.len());
+        (67108864 bytes).\u{1b}[0m", rom.len());
         exit(2);
     }
 
-    let mut cpu = CPU::default();
+    let mut cpu = CPU::new(MEMORY_64M);
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);

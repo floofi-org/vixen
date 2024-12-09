@@ -1,7 +1,7 @@
 use std::ffi::OsString;
 use std::process::exit;
 use std::{env, fs};
-use vixen::CPU;
+use vixen::{CPU, MEMORY_NONE};
 use vixen::cpu::Decoder;
 
 fn main() {
@@ -18,13 +18,13 @@ fn main() {
         exit(-1);
     });
 
-    if rom.len() > 33_553_920 {
+    if rom.len() > 67_108_864 {
         eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
-        (33553920 bytes).\u{1b}[0m", rom.len());
+        (67108864 bytes).\u{1b}[0m", rom.len());
         exit(2);
     }
 
-    let mut cpu = CPU::default();
+    let mut cpu = CPU::new(MEMORY_NONE);
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);
