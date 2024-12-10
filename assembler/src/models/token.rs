@@ -13,7 +13,7 @@ pub trait FromToken: Sized {
     fn from_token(token: Token) -> Option<Self>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Token {
     Colon,
     Hash,

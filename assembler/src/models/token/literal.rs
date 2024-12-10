@@ -6,7 +6,7 @@ pub struct Identifier(pub String);
 #[derive(Debug)]
 pub struct Number(pub u32);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Literal {
     Identifier(String),
     Number(u32),

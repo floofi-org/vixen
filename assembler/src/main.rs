@@ -4,7 +4,6 @@ use std::process::exit;
 use vasm::scanner::Scanner;
 use clap::Parser;
 use vasm::error::Result;
-use vasm::parser::ParsedCollection;
 
 /// A code assembler for Vixen processors
 #[derive(Parser, Debug)]
@@ -16,12 +15,14 @@ struct Args {
 fn run_assembler(args: Args) -> Result<()> {
     let source = fs::read_to_string(args.source)?;
     let tokens = Scanner::new(&source).scan();
-    
     println!("{tokens:#?}");
-    let parsed: ParsedCollection = tokens.into();
-    println!("{parsed:#?}");
+
+    let mut parser = vasm::parser::Parser::new(tokens);
+    let program = parser.parse().unwrap();
+
+    println!("{program:#?}");
     Ok(())
-} 
+}
 
 fn main() {
     let args = Args::parse();
