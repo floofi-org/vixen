@@ -1,11 +1,12 @@
+mod literal;
 mod span;
 mod macros;
 
 #[allow(clippy::module_name_repetitions)]
 pub use span::TokenWithSpan;
+pub use literal::{Literal, Identifier, Number};
 
 use macros::{token, tokens};
-
 
 #[allow(clippy::module_name_repetitions)]
 pub trait FromToken: Sized {
@@ -22,8 +23,7 @@ pub enum Token {
     Comma,
     LineBreak,
     EOF,
-    Identifier(String),
-    Number(u16),
+    Literal(Literal)
 }
 
 tokens! {
@@ -34,7 +34,5 @@ tokens! {
     Dot,
     Comma,
     LineBreak,
-    EOF,
-    Identifier(string: String),
-    Number(number: u16)
+    EOF
 }
