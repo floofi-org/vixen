@@ -9,7 +9,7 @@ use super::{FromTokenStream, ParseError, Parser};
 pub enum Operand {
     Literal(u32),
     Register(RegisterId),
-    Address(Address)
+    Address(Address),
 }
 
 #[derive(Debug)]
@@ -50,7 +50,7 @@ fn direct(mut register: String) -> Result<Operand, ParseError> {
         return Err(ParseError::InvalidOperand("Failed parsing regsiter number"));
     };
 
-    let Ok(register_id) = RegisterId::try_from(register) else {
+    let Some(register_id) = get_register(register) else {
         return Err(ParseError::InvalidOperand("No such register"));
     };
 
@@ -72,4 +72,26 @@ fn relative(parser: &mut Parser, forward: bool) -> Result<Operand, ParseError> {
     };
 
     Ok(Operand::Address(Address::Relative(address)))
+}
+
+// FIXME: AAAAAAAAAAAAAAAA
+fn get_register(register: u32) -> Option<RegisterId> {
+    match register {
+        0 => Some(RegisterId::R0),
+        1 => Some(RegisterId::R1),
+        2 => Some(RegisterId::R2),
+        3 => Some(RegisterId::R3),
+        4 => Some(RegisterId::R4),
+        5 => Some(RegisterId::R5),
+        6 => Some(RegisterId::R6),
+        7 => Some(RegisterId::R7),
+        8 => Some(RegisterId::R8),
+        9 => Some(RegisterId::R9),
+        10 => Some(RegisterId::R10),
+        11 => Some(RegisterId::R11),
+        12 => Some(RegisterId::R12),
+        13 => Some(RegisterId::R13),
+        14 => Some(RegisterId::R14),
+        _ => None
+    }
 }
