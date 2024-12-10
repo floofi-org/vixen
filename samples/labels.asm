@@ -4,7 +4,7 @@
 
 foo:
         mov     R1, #12         ; Set R1 to 12
-        ldy     R2, #34         ; Set R2 to 34
+        mov     R2, #34         ; Set R2 to 34
         add     R1, R2          ; 12 + 34
         str     $1000           ; Store at 0x1000
         ret

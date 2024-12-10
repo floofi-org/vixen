@@ -1,5 +1,5 @@
 main:                           ; Our main program
-        add     1, 1            ; Run some arbitrary calculation
+        add     #1, #1          ; Run some arbitrary calculation
         pll     R1              ; This should cause a stack underflow
         jmp     main            ; Otherwise repeat infinitely
 
