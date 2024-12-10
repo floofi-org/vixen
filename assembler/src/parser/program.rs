@@ -34,9 +34,11 @@ impl FromTokenStream for Program {
                 Token::Literal(Literal::Identifier(ident)) => {
                     identifier(ident.clone(), &mut labels, &mut instructions, parser)?;
                 }
-                Token::LineBreak => {}
+                Token::LineBreak => {
+                    parser.next().unwrap();
+                }
                 Token::EOF => break,
-                _ => return Err(ParseError::UnexpectedToken),
+                t => return Err(ParseError::UnexpectedToken(t.clone())),
             }
         }
 

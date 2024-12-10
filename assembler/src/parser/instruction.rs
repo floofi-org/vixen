@@ -18,7 +18,15 @@ impl Instruction {
     pub fn parse(operation: Operation, parser: &mut Parser) -> Result<Self, ParseError> {
         let mut operands = Vec::new();
 
-        operand(&mut operands, parser)?;
+        // First arg
+        match parser.peek()? {
+            Token::LineBreak | Token::EOF => {}
+            _ => {
+                operand(&mut operands, parser)?;
+            }
+        }
+
+        // Others expect comma
         while let Some(Token::Comma) = parser.next_on_line()? {
             operand(&mut operands, parser)?;
         }

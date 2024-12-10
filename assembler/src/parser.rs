@@ -20,7 +20,7 @@ trait FromTokenStream: Sized {
 
 #[derive(Debug)]
 pub enum ParseError {
-    UnexpectedToken,
+    UnexpectedToken(Token),
     UnexpectedEof,
     InvalidInstruction(String),
     InvalidOperand(&'static str)
@@ -49,8 +49,8 @@ impl Parser {
             return Err(ParseError::UnexpectedEof);
         };
 
-        let Some(expected) = T::from_token(token.token) else {
-            return Err(ParseError::UnexpectedToken);
+        let Some(expected) = T::from_token(token.token.clone()) else {
+            return Err(ParseError::UnexpectedToken(token.token));
         };
 
         Ok(expected)
