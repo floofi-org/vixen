@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use vixen::core::instruction::Operation;
 
 use crate::models::token::Literal;
@@ -11,15 +13,15 @@ use super::{FromTokenStream, ParseError, Parser};
 
 #[derive(Debug, Default)]
 pub struct Program {
-    pub labels: Vec<Label>,
-    pub macros: Vec<Macro>,
+    pub labels: HashMap<usize, Label>,
+    pub macros: HashMap<usize, Macro>,
     pub instructions: Vec<Instruction>,
 }
 
 impl FromTokenStream for Program {
     fn parse(parser: &mut Parser) -> Result<Self, ParseError> {
-        let mut labels = Vec::new();
-        let mut macros = Vec::new();
+        let mut labels = HashMap::new();
+        let mut macros = HashMap::new();
         let mut instructions = Vec::new();
 
         loop {
@@ -28,7 +30,7 @@ impl FromTokenStream for Program {
             match token {
                 Token::Dot => {
                     let r#macro = Macro::parse(parser)?;
-                    macros.push(r#macro);
+                    macros.insert(instructions.len(), r#macro);
                 }
 
                 Token::Literal(Literal::Identifier(ident)) => {
@@ -52,7 +54,7 @@ impl FromTokenStream for Program {
 
 fn identifier(
     identifier: String,
-    labels: &mut Vec<Label>,
+    labels: &mut HashMap<usize, Label>,
     instructions: &mut Vec<Instruction>,
     parser: &mut Parser,
 ) -> Result<(), ParseError> {
@@ -61,10 +63,12 @@ fn identifier(
 
     if let Token::Colon = next {
         let label = Label::parse(identifier, parser)?;
-        labels.push(label);
+
+        labels.insert(instructions.len(), label);
     } else {
         let operation = Operation::parse(identifier)?;
         let instruction = Instruction::parse(operation, parser)?;
+
         instructions.push(instruction);
     }
 
