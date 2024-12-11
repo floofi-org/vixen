@@ -26,9 +26,9 @@ pub fn str(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
 
 pub fn mov(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
     if let Addressing::Direct | Addressing::Absolute = mode {
-        let value = operands[0].read_word()?;
-        operands[1].write_word(cpu, value)?;
-        operands[0].write_word(cpu, 0)?;
+        let value = operands[1].read_word()?;
+        operands[0].write_word(cpu, value)?;
+        operands[1].write_word(cpu, 0)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
