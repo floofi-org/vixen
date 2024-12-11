@@ -1,6 +1,7 @@
 use alloc::vec::Vec;
 use crate::BASE_SYSTEM_SIZE;
 
+#[allow(clippy::module_name_repetitions)]
 pub struct StaticSpecification<'a> {
     pub name: &'a [u8],
     pub id: u32,
