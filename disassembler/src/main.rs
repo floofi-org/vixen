@@ -43,7 +43,7 @@ fn disassemble_rom(mut cpu: CPU) -> String {
         let text = cpu.read_instruction_string(cpu.program_counter, true);
         disassembled.push_str(&text);
         disassembled.push('\n');
-        cpu.program_counter += 10;
+        cpu.program_counter += 15;
     }
 
     disassembled

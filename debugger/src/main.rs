@@ -57,7 +57,7 @@ fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
         print!("\u{1b}[0m{position:0>8x}:  ");
         for _ in 0..16 {
             let focus_start = focus.unwrap_or(cpu.program_counter as usize);
-            let focus_end = focus_start + if focus.is_some() { 1 } else { 10 };
+            let focus_end = focus_start + if focus.is_some() { 1 } else { 15 };
             match position {
                 x if x > 0xffff_fffe => (),
                 x if x == focus_end - 1 => print!("\u{1b}[43m{:0>2x}\u{1b}[0m ", cpu.memory[position]),
@@ -73,7 +73,7 @@ fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
 fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
     if state.running {
         cpu.tick()?;
-        cpu.program_counter += 10;
+        cpu.program_counter += 15;
         return Ok(());
     }
 
@@ -102,14 +102,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
                 println!("\u{1b}[33mSystem blocked on interrupt. 'i' for stack trace, 'b' to resume.\u{1b}[0m");
             } else {
                 cpu.tick()?;
-                cpu.program_counter += 10;
+                cpu.program_counter += 15;
                 println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
                          cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
             }
         },
         "b" | "unblock" => {
             state.interrupt = None;
-            cpu.program_counter += 10;
+            cpu.program_counter += 15;
             println!("\u{1b}[33mSystem unblocked. Ignoring interrupts is unsafe, you are on your own.\u{1b}[0m");
         },
         "r" | "run" => {

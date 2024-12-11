@@ -18,7 +18,7 @@ pub struct Instruction {
 impl Instruction {
     pub fn execute_unhandled(&mut self, cpu: &mut CPU) -> InstructionResult {
         match self.operation {
-            // 0x01?? - Arithmetic and Algebric Instructions - 10/11 implemented
+            // 0x01?? - Arithmetic and Algebric Instructions
             Operation::Add => instructions::add(self.mode, &self.operands, cpu),
             Operation::Sub => instructions::sub(self.mode, &self.operands, cpu),
             Operation::Mul => instructions::mul(self.mode, &self.operands, cpu),

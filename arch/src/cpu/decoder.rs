@@ -17,7 +17,7 @@ pub trait Decoder {
 impl Decoder for CPU {
     fn extract_instruction(&self, position: u32) -> ExtractedBinaryData {
         let index = position as usize;
-        ExtractedBinaryData(&self.memory[index..index + 10])
+        ExtractedBinaryData(&self.memory[index..index + 15])
     }
 
     fn read_instruction(&self, position: u32) -> CPUResult<Instruction> {

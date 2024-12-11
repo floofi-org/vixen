@@ -4,6 +4,7 @@ use crate::{CPUResult, Interrupt};
 pub enum Addressing {
     Immediate,
     Direct,
+    Indirect,
     Absolute,
     Relative,
     Implied
@@ -16,6 +17,7 @@ impl TryFrom<u8> for Addressing {
         match value {
             0x0 => Ok(Addressing::Immediate),
             0x1 => Ok(Addressing::Direct),
+            0x2 => Ok(Addressing::Indirect),
             0x3 => Ok(Addressing::Absolute),
             0x4 => Ok(Addressing::Relative),
             0x5 => Ok(Addressing::Implied),

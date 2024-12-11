@@ -21,8 +21,8 @@ impl Operand {
             Addressing::Direct => Self::direct(raw_operand, cpu),
             Addressing::Absolute => Self::memory(raw_operand, cpu),
             Addressing::Relative => {
-                // Relative offsets are stored as u16 internally
-                // but need to be interpreted as i16.
+                // Relative offsets are stored as u32 internally
+                // but need to be interpreted as i32.
                 #[allow(clippy::cast_possible_wrap)]
                 let offset = raw_operand as i32;
                 let target = if offset > 0 {
@@ -30,12 +30,25 @@ impl Operand {
                 } else {
                     cpu.program_counter - offset.unsigned_abs()
                 };
-                if target < 0xFF {
+                #[allow(clippy::cast_possible_truncation)]
+                if target > (cpu.memory.len() - 4) as u32 {
                     Err(Interrupt::IllegalMemory)
                 } else {
                     Self::memory(target, cpu)
                 }
             },
+            Addressing::Indirect => {
+                let target = u32::from_le_bytes([
+                    cpu.memory[raw_operand as usize], cpu.memory[raw_operand as usize + 1],
+                    cpu.memory[raw_operand as usize + 2], cpu.memory[raw_operand as usize + 3]
+                ]);
+                #[allow(clippy::cast_possible_truncation)]
+                if target > (cpu.memory.len() - 4) as u32 {
+                    Err(Interrupt::IllegalMemory)
+                } else {
+                    Self::memory(target, cpu)
+                }
+            }
             Addressing::Implied => Ok(Self::Void)
         }
     }
@@ -48,7 +61,8 @@ impl Operand {
     }
 
     fn memory(address: u32, cpu: &CPU) -> CPUResult<Self> {
-        if address <= 0xFF {
+        #[allow(clippy::cast_possible_truncation)]
+        if address > (cpu.memory.len() - 4) as u32 {
             return Err(Interrupt::IllegalMemory);
         }
 

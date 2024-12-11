@@ -47,7 +47,7 @@ fn get_rom_path() -> Option<OsString> {
 fn run_cpu(cpu: &mut CPU) -> CPUResult<()> {
     loop {
         cpu.tick()?;
-        cpu.program_counter += 10;
+        cpu.program_counter += 15;
     }
 }
 
