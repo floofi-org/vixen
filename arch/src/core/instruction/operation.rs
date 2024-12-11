@@ -19,12 +19,11 @@ macro_rules! isa {
             }
         }
 
-        #[allow(clippy::from_over_into, reason = "Not every u16 is a valid Operation")]
-        impl Into<u16> for Operation {
-            fn into(self) -> u16 {
-                match self {
+        impl From<Operation> for u16 {
+            fn from(value: Operation) -> u16 {
+                match value {
                     $(
-                        Self::$y => $x,
+                        Operation::$y => $x,
                     )*
                 }
             }

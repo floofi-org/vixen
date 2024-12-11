@@ -23,3 +23,15 @@ impl TryFrom<u8> for Addressing {
         }
     }
 }
+
+impl From<Addressing> for u8 {
+    fn from(val: Addressing) -> Self {
+        match val {
+            Addressing::Immediate => 0x0,
+            Addressing::Direct => 0x1,
+            Addressing::Absolute => 0x3,
+            Addressing::Relative => 0x4,
+            Addressing::Implied => 0x5,
+        }
+    }
+}
