@@ -6,8 +6,8 @@ use crate::CPU;
 use crate::cpu::SystemStack;
 use crate::InstructionResult;
 
-pub fn jmp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Absolute | Addressing::Relative = mode {
+pub fn jmp(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Absolute | Addressing::Relative = mode[0] {
         let position = &operands[0].read_word()?;
         cpu.program_counter = position - 10;
         Ok(())
@@ -16,8 +16,8 @@ pub fn jmp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn jsr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Absolute = mode {
+pub fn jsr(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Absolute = mode[0] {
         let position = &operands[0].read_word()?;
         cpu.system_stack_save_state()?;
         cpu.program_counter = position - 10;
@@ -27,8 +27,8 @@ pub fn jsr(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn ret(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn ret(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         let position = cpu.system_stack_pull_word()?;
         cpu.program_counter = position - 10;
         Ok(())
@@ -37,8 +37,8 @@ pub fn ret(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn beq(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn beq(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.zero {
             jmp(mode, operands, cpu)
         } else {
@@ -49,8 +49,8 @@ pub fn beq(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn bne(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn bne(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.zero {
             Ok(())
         } else {
@@ -61,8 +61,8 @@ pub fn bne(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn bec(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn bec(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.carry {
             jmp(mode, operands, cpu)
         } else {
@@ -73,8 +73,8 @@ pub fn bec(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn bnc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn bnc(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.carry {
             Ok(())
         } else {
@@ -85,8 +85,8 @@ pub fn bnc(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn beo(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn beo(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.overflow {
             jmp(mode, operands, cpu)
         } else {
@@ -97,8 +97,8 @@ pub fn beo(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn bno(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn bno(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.overflow {
             Ok(())
         } else {
@@ -109,8 +109,8 @@ pub fn bno(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn int(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn int(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         // They literally are just 8-bit binary numbers
         #[allow(clippy::unreadable_literal)]
         Err(match cpu.registers.r13 & 0b1111 {
@@ -136,8 +136,8 @@ pub fn int(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn irt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct = mode {
+pub fn irt(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct = mode[0] {
         cpu.status_register.interrupt = false;
         cpu.status_register.double_fault = false;
         ret(mode, operands, cpu)
@@ -146,16 +146,16 @@ pub fn irt(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn nop(mode: Addressing, _operands: &[Operand; 2], _cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn nop(mode: &[Addressing; 3], _operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
     }
 }
 
-pub fn jam(mode: Addressing, _operands: &[Operand; 2], _cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn jam(mode: &[Addressing; 3], _operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         #[allow(clippy::empty_loop)]
         loop {}
     } else {
@@ -163,8 +163,8 @@ pub fn jam(mode: Addressing, _operands: &[Operand; 2], _cpu: &mut CPU) -> Instru
     }
 }
 
-pub fn bpl(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn bpl(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.negative {
             jmp(mode, operands, cpu)
         } else {
@@ -175,8 +175,8 @@ pub fn bpl(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn bmi(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Relative = mode {
+pub fn bmi(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Relative = mode[0] {
         if cpu.status_register.negative {
             jmp(mode, operands, cpu)
         } else {

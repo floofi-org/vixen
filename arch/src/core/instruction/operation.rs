@@ -37,7 +37,7 @@ impl Display for Operation {
 
 impl Operation {
     #[must_use]
-    pub fn disassemble(value: u16, mode: u8, disassembler_mode: bool) -> String {
+    pub fn disassemble(value: u16, full_opcode: u32, disassembler_mode: bool) -> String {
         if disassembler_mode {
             if let Ok(operation) = Operation::try_from(value) {
                 format!("        {operation:<7} ").to_lowercase()
@@ -47,7 +47,7 @@ impl Operation {
         } else if let Ok(operation) = Operation::try_from(value) {
             format!("{operation:?} ").to_lowercase()
         } else {
-            format!("??({value:0>3X}{mode:0>1X}) ")
+            format!("??({full_opcode:0>6x}) ")
         }
     }
 }

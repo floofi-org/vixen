@@ -37,6 +37,16 @@ impl Operand {
                     Self::memory(target, cpu)
                 }
             },
+            Addressing::RegisterIndirect => {
+                let register = RegisterId::try_from(raw_operand)?;
+                let target = cpu.get_register(register);
+                #[allow(clippy::cast_possible_truncation)]
+                if target > (cpu.memory.len() - 4) as u32 {
+                    Err(Interrupt::IllegalMemory)
+                } else {
+                    Self::memory(target, cpu)
+                }
+            },
             Addressing::Indirect => {
                 let target = u32::from_le_bytes([
                     cpu.memory[raw_operand as usize], cpu.memory[raw_operand as usize + 1],
@@ -80,7 +90,7 @@ impl Operand {
         if let Ok(operand) = Operand::decode(raw_operand, cpu, mode) {
             operand.disassemble_self()
         } else if disassembler_mode {
-            String::from("<unk>")
+            format!("{raw_operand} <unk>")
         } else {
             format!("??({raw_operand:0>8x})")
         }
