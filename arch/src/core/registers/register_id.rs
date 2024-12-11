@@ -31,3 +31,25 @@ impl TryFrom<u32> for RegisterId {
         }
     }
 }
+
+impl From<RegisterId> for u32 {
+    fn from(value: RegisterId) -> Self {
+        match value {
+            RegisterId::R0 => 0x0001,
+            RegisterId::R1 => 0x0011,
+            RegisterId::R2 => 0x0012,
+            RegisterId::R3 => 0x1000,
+            RegisterId::R4 => 0x1001,
+            RegisterId::R5 => 0x1002,
+            RegisterId::R6 => 0x1003,
+            RegisterId::R7 => 0x1004,
+            RegisterId::R8 => 0x1005,
+            RegisterId::R9 => 0x1006,
+            RegisterId::R10 => 0x1007,
+            RegisterId::R11 => 0x1008,
+            RegisterId::R12 => 0x1009,
+            RegisterId::R13 => 0x100A,
+            RegisterId::R14 => 0x100B,
+        }
+    }
+}
