@@ -3,9 +3,8 @@ use std::collections::HashMap;
 use vixen::core::instruction::Operation;
 
 use crate::models::token::Literal;
-use crate::models::Token;
+use crate::models::{Instruction, Token};
 
-use super::instruction::Instruction;
 use super::label::Label;
 use super::operation::OperationExt;
 use super::r#macro::Macro;

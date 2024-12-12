@@ -1,4 +1,4 @@
-use crate::models::token::{Colon, Identifier};
+use crate::models::token::Colon;
 
 use super::{ParseError, Parser};
 

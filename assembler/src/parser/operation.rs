@@ -1,7 +1,5 @@
 use vixen::core::instruction::Operation;
 
-use crate::models::token::Identifier;
-
 use super::ParseError;
 
 #[allow(edition_2024_expr_fragment_specifier)]
@@ -20,6 +18,7 @@ macro_rules! operation {
 // FIXME: See label module
 // impl FromTokenStream for Operation { }
 
+#[allow(clippy::module_name_repetitions)]
 pub trait OperationExt: Sized {
     fn parse(name: String) -> Result<Self, ParseError>;
 }

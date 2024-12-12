@@ -1,23 +1,9 @@
 use vixen::core::registers::RegisterId;
 
-use crate::models::Token;
+use crate::models::{Address, Operand, Token};
 use crate::models::token::{Literal, Number};
 
 use super::{FromTokenStream, ParseError, Parser};
-
-#[derive(Debug)]
-pub enum Operand {
-    Literal(u32),
-    Register(RegisterId),
-    Address(Address),
-    Label(String),
-}
-
-#[derive(Debug)]
-enum Address {
-    Absolute(u32),
-    Relative(i32),
-}
 
 impl FromTokenStream for Operand {
     fn parse(parser: &mut Parser) -> Result<Self, ParseError> {

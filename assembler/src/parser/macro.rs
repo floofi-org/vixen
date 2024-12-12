@@ -1,4 +1,4 @@
-use crate::models::token::{Colon, Dot, Identifier};
+use crate::models::token::{Dot, Identifier};
 
 use super::{FromTokenStream, ParseError, Parser};
 

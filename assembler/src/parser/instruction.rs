@@ -1,15 +1,8 @@
 use vixen::core::instruction::Operation;
 
-use crate::models::Token;
+use crate::models::{Instruction, Operand, Token};
 
 use super::{FromTokenStream, ParseError, Parser};
-use super::operand::Operand;
-
-#[derive(Debug)]
-pub struct Instruction {
-    operation: Operation,
-    operands: Vec<Operand>,
-}
 
 // FIXME: See label module
 // impl FromTokenStream for Instruction {}

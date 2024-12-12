@@ -1,8 +1,6 @@
 use std::vec::IntoIter;
 use std::iter::Peekable;
 
-use program::Program;
-
 use crate::models::{Token, TokenWithSpan};
 use crate::models::token::FromToken;
 
@@ -13,6 +11,10 @@ mod r#macro;
 mod operand;
 mod operation;
 mod program;
+
+pub use label::Label;
+pub use r#macro::Macro;
+pub use program::Program;
 
 trait FromTokenStream: Sized {
     fn parse(parser: &mut Parser) -> Result<Self, ParseError>;
