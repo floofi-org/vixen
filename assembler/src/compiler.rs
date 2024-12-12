@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use crate::models::Instruction;
 
 mod instruction;
@@ -19,7 +21,7 @@ pub struct Compiler {
 }
 
 impl Compiler {
-    pub fn compile(mut self, instructions: Vec<Instruction>) -> Result<Vec<u8>, CompilerError> {
+    pub fn compile(mut self, instructions: VecDeque<Instruction>) -> Result<Vec<u8>, CompilerError> {
         for instruction in instructions {
             instruction.compile(&mut self)?;
         }

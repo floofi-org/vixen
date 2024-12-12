@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
 use vixen::core::instruction::Operation;
 
@@ -12,16 +12,16 @@ use super::{FromTokenStream, ParseError, Parser};
 
 #[derive(Debug, Default)]
 pub struct Program {
-    pub labels: HashMap<usize, Label>,
-    pub macros: HashMap<usize, Macro>,
-    pub instructions: Vec<Instruction>,
+    pub labels: HashMap<String, usize>,
+    pub macros: Vec<(Macro, usize)>,
+    pub instructions: VecDeque<Instruction>,
 }
 
 impl FromTokenStream for Program {
     fn parse(parser: &mut Parser) -> Result<Self, ParseError> {
         let mut labels = HashMap::new();
-        let mut macros = HashMap::new();
-        let mut instructions = Vec::new();
+        let mut macros = Vec::new();
+        let mut instructions = VecDeque::new();
 
         loop {
             let token = parser.peek()?;
@@ -29,7 +29,7 @@ impl FromTokenStream for Program {
             match token {
                 Token::Dot => {
                     let r#macro = Macro::parse(parser)?;
-                    macros.insert(instructions.len(), r#macro);
+                    macros.push((r#macro, instructions.len()))
                 }
 
                 Token::Literal(Literal::Identifier(ident)) => {
@@ -53,8 +53,8 @@ impl FromTokenStream for Program {
 
 fn identifier(
     identifier: String,
-    labels: &mut HashMap<usize, Label>,
-    instructions: &mut Vec<Instruction>,
+    labels: &mut HashMap<String, usize>,
+    instructions: &mut VecDeque<Instruction>,
     parser: &mut Parser,
 ) -> Result<(), ParseError> {
     parser.next();
@@ -63,12 +63,12 @@ fn identifier(
     if let Token::Colon = next {
         let label = Label::parse(identifier, parser)?;
 
-        labels.insert(instructions.len(), label);
+        labels.insert(label.0, instructions.len());
     } else {
         let operation = Operation::parse(identifier)?;
         let instruction = Instruction::parse(operation, parser)?;
 
-        instructions.push(instruction);
+        instructions.push_back(instruction);
     }
 
     Ok(())
