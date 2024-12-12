@@ -4,7 +4,7 @@ use super::{FromTokenStream, ParseError, Parser};
 
 #[derive(Debug)]
 pub struct Macro {
-    name: String,
+    pub name: String,
 }
 
 impl FromTokenStream for Macro {

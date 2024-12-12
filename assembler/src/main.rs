@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
-use vasm::scanner::Scanner;
+use vasm::assemble;
 use clap::Parser;
 use vasm::error::Result;
 
@@ -14,11 +14,7 @@ struct Args {
 
 fn run_assembler(args: Args) -> Result<()> {
     let source = fs::read_to_string(args.source)?;
-    let tokens = Scanner::new(&source).scan();
-    println!("{tokens:#?}");
-
-    let mut parser = vasm::parser::Parser::new(tokens);
-    let program = parser.parse().unwrap();
+    let program = assemble(source)?;
 
     println!("{program:#?}");
     Ok(())
