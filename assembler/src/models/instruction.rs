@@ -1,6 +1,4 @@
-use vixen::core::{instruction::Operation, Interrupt};
-
-use crate::assembler::{Compile, CompilerError};
+use vixen::core::instruction::Operation;
 
 use super::Operand;
 
