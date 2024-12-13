@@ -10,13 +10,15 @@ use vasm::error::Result;
 #[command(about)]
 struct Args {
     pub source: PathBuf,
+    pub destination: PathBuf,
 }
 
 fn run_assembler(args: Args) -> Result<()> {
-    let source = fs::read_to_string(args.source)?;
+    let source = fs::read_to_string(&args.source)?;
     let program = assemble(source)?;
+    fs::write(&args.destination, program)?;
 
-    println!("{program:#?}");
+    println!("Compiled program {} to {}", args.source.display(), args.destination.display());
     Ok(())
 }
 
