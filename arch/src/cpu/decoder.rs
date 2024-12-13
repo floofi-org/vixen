@@ -44,10 +44,12 @@ impl Decoder for CPU {
         ];
 
         let modes = [
-            (instruction & 0xF00) >> 8,
             instruction & 0xF,
-            (instruction & 0xF0) >> 4
+            (instruction & 0xF0) >> 4,
+            (instruction & 0xF00) >> 8,
         ];
+
+        println!("{modes:x?}");
 
         let operation = instruction >> 12;
         #[allow(clippy::cast_possible_truncation)]
@@ -88,21 +90,21 @@ impl Decoder for CPU {
                     opcode[3], opcode[4],
                     opcode[5], opcode[6]
                 ]),
-                (instruction & 0xF00) >> 8
+                instruction & 0xF
             ),
             (
                 u32::from_le_bytes([
                     opcode[7], opcode[8],
                     opcode[9], opcode[10]
                 ]),
-                instruction & 0xF
+                (instruction & 0xF0) >> 4
             ),
             (
                 u32::from_le_bytes([
                     opcode[11], opcode[12],
                     opcode[13], opcode[14]
                 ]),
-                (instruction & 0xF0) >> 4
+                (instruction & 0xF00) >> 8
             )
         ];
 
