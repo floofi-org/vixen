@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use vixen::core::instruction::Operation;
 
-use crate::{models::{Address, Instruction, Operand}, parser::Program};
+use crate::models::{Address, Instruction, Operand};
 
 pub enum Macro {
     Interrupt,

@@ -85,16 +85,4 @@ impl Parser {
             Ok(Some(token.token))
         }
     }
-
-    fn peek_on_line(&mut self) -> Result<Option<&Token>, ParseError> {
-        let Some(token) = self.tokens.peek() else {
-            return Err(ParseError::UnexpectedEof);
-        };
-
-        if let Token::LineBreak | Token::EOF = token.token {
-            Ok(None)
-        } else {
-            Ok(Some(&token.token))
-        }
-    }
 }

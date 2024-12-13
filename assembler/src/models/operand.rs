@@ -15,6 +15,7 @@ pub enum Address {
 }
 
 impl Operand {
+    #[must_use]
     pub fn get_addressing(&self) -> Addressing {
         match self {
             Operand::Literal(_) => Addressing::Immediate,
@@ -26,6 +27,7 @@ impl Operand {
 }
 
 impl Address {
+    #[must_use]
     pub fn get_addressing(&self) -> Addressing {
         match self {
             Address::Absolute(_) => Addressing::Absolute,

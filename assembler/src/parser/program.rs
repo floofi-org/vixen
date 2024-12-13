@@ -29,7 +29,7 @@ impl FromTokenStream for Program {
             match token {
                 Token::Dot => {
                     let r#macro = Macro::parse(parser)?;
-                    macros.push((r#macro, instructions.len()))
+                    macros.push((r#macro, instructions.len()));
                 }
 
                 Token::Literal(Literal::Identifier(ident)) => {
@@ -57,7 +57,7 @@ fn identifier(
     instructions: &mut VecDeque<Instruction>,
     parser: &mut Parser,
 ) -> Result<(), ParseError> {
-    parser.next();
+    parser.next().unwrap();
     let next = parser.peek()?;
 
     if let Token::Colon = next {

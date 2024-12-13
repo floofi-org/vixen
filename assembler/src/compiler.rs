@@ -4,7 +4,6 @@ use crate::models::Instruction;
 
 mod instruction;
 mod operand;
-mod operation;
 
 pub trait Compile {
     fn compile(self, compiler: &mut Compiler) -> Result<(), CompilerError>;
