@@ -4,6 +4,7 @@ use std::iter::Peekable;
 mod token;
 
 use crate::models::{Location, Token, TokenWithSpan};
+pub use token::UnexpectedToken;
 
 pub struct Scanner<'a> {
     source: Peekable<Chars<'a>>,
@@ -23,11 +24,11 @@ impl<'a> Scanner<'a> {
     }
 
     #[must_use]
-    pub fn scan(mut self) -> Vec<TokenWithSpan> {
+    pub fn scan(mut self) -> Result<Vec<TokenWithSpan>, UnexpectedToken> {
         let mut tokens = Vec::new();
 
         loop {
-            let Some(token) = TokenWithSpan::scan(&mut self) else {
+            let Some(token) = TokenWithSpan::scan(&mut self)? else {
                 continue;
             };
 
@@ -39,7 +40,7 @@ impl<'a> Scanner<'a> {
             }
         }
 
-        tokens
+        Ok(tokens)
     }
 
     fn skip_while(&mut self, mut f: impl FnMut(&char) -> bool) {

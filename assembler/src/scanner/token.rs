@@ -3,42 +3,45 @@ use super::Scanner;
 
 mod literal;
 
+#[derive(Debug, Clone, Copy)]
+pub struct UnexpectedToken(pub char);
+
 impl TokenWithSpan {
     #[must_use]
-    pub fn scan(scanner: &mut Scanner) -> Option<Self> {
+    pub fn scan(scanner: &mut Scanner) -> Result<Option<Self>, UnexpectedToken> {
         let Some(char) = scanner.peek() else {
-            return Some(Self::simple(scanner, Token::EOF))
+            return Ok(Some(Self::simple(scanner, Token::EOF)));
         };
 
         match char {
-            ':' => Some(Self::simple(scanner, Token::Colon)),
-            '#' => Some(Self::simple(scanner, Token::Hash)),
-            '-' => Some(Self::simple(scanner, Token::Minus)),
-            '+' => Some(Self::simple(scanner, Token::Plus)),
-            '.' => Some(Self::simple(scanner, Token::Dot)),
-            ',' => Some(Self::simple(scanner, Token::Comma)),
-            ';' => Self::comment(scanner),
-            '\n' | '\r' => Self::linebreak(scanner),
+            ':' => Ok(Some(Self::simple(scanner, Token::Colon))),
+            '#' => Ok(Some(Self::simple(scanner, Token::Hash))),
+            '-' => Ok(Some(Self::simple(scanner, Token::Minus))),
+            '+' => Ok(Some(Self::simple(scanner, Token::Plus))),
+            '.' => Ok(Some(Self::simple(scanner, Token::Dot))),
+            ',' => Ok(Some(Self::simple(scanner, Token::Comma))),
+            ';' => Ok(Self::comment(scanner)),
+            '\n' | '\r' => Ok(Self::linebreak(scanner)),
 
-            'a'..='z' | 'A'..='Z' | '_' => Self::literal(scanner, literal::identifier),
+            'a'..='z' | 'A'..='Z' | '_' => Ok(Self::literal(scanner, literal::identifier)),
 
-            '0'..='9' => Self::literal(scanner, |s| literal::number(s, 10)),
+            '0'..='9' => Ok(Self::literal(scanner, |s| literal::number(s, 10))),
             '$' => {
                 scanner.next();
-                Self::literal(scanner, |s| literal::number(s, 16))
+                Ok(Self::literal(scanner, |s| literal::number(s, 16)))
             },
 
             '%' => {
                 scanner.next();
-                Self::literal(scanner, |s| literal::number(s, 2))
+                Ok(Self::literal(scanner, |s| literal::number(s, 2)))
             },
 
             ' ' | '\t' => {
                 scanner.next(); // Ignore whitespace
-                None
+                Ok(None)
             }
 
-            c => panic!("Encountered unknown token: {c}"),
+            c => Err(UnexpectedToken(*c)),
         }
     }
 
