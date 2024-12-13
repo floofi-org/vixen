@@ -24,18 +24,18 @@ impl Decoder for CPU {
         let opcode = self.extract_instruction(position).0;
 
         let instruction = u32::from_le_bytes([
-            0, opcode[0],
-            opcode[1], opcode[2]
+            opcode[0], opcode[1],
+            opcode[2], 0
         ]);
 
         let operands = [
             u32::from_le_bytes([
-                opcode[0], opcode[1],
-                opcode[2], 0
-            ]),
-            u32::from_le_bytes([
                 opcode[3], opcode[4],
                 opcode[5], opcode[6]
+            ]),
+            u32::from_le_bytes([
+                opcode[7], opcode[8],
+                opcode[9], opcode[10]
             ]),
             u32::from_le_bytes([
                 opcode[11], opcode[12],
@@ -85,15 +85,15 @@ impl Decoder for CPU {
         let operands_with_modes = [
             (
                 u32::from_le_bytes([
-                    opcode[0], opcode[1],
-                    opcode[2], 0
+                    opcode[3], opcode[4],
+                    opcode[5], opcode[6]
                 ]),
                 (instruction & 0xF00) >> 8
             ),
             (
                 u32::from_le_bytes([
-                    opcode[3], opcode[4],
-                    opcode[5], opcode[6]
+                    opcode[7], opcode[8],
+                    opcode[9], opcode[10]
                 ]),
                 instruction & 0xF
             ),

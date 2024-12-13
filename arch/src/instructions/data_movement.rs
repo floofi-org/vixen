@@ -20,7 +20,7 @@ pub fn str(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -
         operands[0].write_word(cpu, cpu.registers.r0)?;
         Ok(())
     } else {
-        Err(Interrupt::IllegalInstruction)
+        Err(Interrupt::IllegalMemory)
     }
 }
 
