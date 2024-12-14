@@ -36,6 +36,17 @@ impl TokenWithSpan {
                 Ok(Self::literal(scanner, |s| literal::number(s, 2)))
             },
 
+            '\'' => {
+                scanner.next();
+
+                let token = Ok(Self::literal(scanner, |c| Some(literal::number_char(c))));
+                scanner.next()
+                    .filter(|c| *c == '\'')
+                    .expect("Unterminated char literal");
+
+                token
+            },
+
             ' ' | '\t' => {
                 scanner.next(); // Ignore whitespace
                 Ok(None)

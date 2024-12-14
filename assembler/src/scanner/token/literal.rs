@@ -13,6 +13,16 @@ pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {
     Some(Token::Literal(Literal::Number(number)))
 }
 
+pub fn number_char(scanner: &mut Scanner) -> Token {
+    let char = scanner.next()
+        .filter(|c| c.is_ascii())
+        .expect("Invalid character literal");
+
+    let char = char as u32;
+
+    Token::Literal(Literal::Number(char))
+}
+
 pub fn identifier(scanner: &mut Scanner) -> Option<Token> {
     let identifier = scanner.next_while(literal_filter)?;
 
