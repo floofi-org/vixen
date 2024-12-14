@@ -14,8 +14,8 @@ pub trait MemoryCell {
 impl MemoryCell for Operand {
     fn read_word(&self) -> CPUResult<u32> {
         Ok(match self {
-            Operand::Literal(value) => *value,
-            Operand::Register(_, value) | Operand::Memory(_, value) => *value,
+            Operand::Literal(value) | Operand::Register(_, value) | 
+                Operand::Memory(_, value) => *value,
             Operand::Void => return Err(Interrupt::IllegalMemory)
         })
     }

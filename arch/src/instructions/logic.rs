@@ -5,8 +5,9 @@ use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
 
-pub fn and(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Relative = mode {
+pub fn and(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Immediate || mode[0] == Addressing::Relative) &&
+        (mode[1] == Addressing::Immediate || mode[1] == Addressing::Relative) {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = number1 & number2;
@@ -20,8 +21,9 @@ pub fn and(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn or(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Relative = mode {
+pub fn or(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Immediate || mode[0] == Addressing::Relative) &&
+        (mode[1] == Addressing::Immediate || mode[1] == Addressing::Relative) {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = number1 | number2;
@@ -35,8 +37,9 @@ pub fn or(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instructi
     }
 }
 
-pub fn xor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Relative = mode {
+pub fn xor(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Immediate || mode[0] == Addressing::Relative) &&
+        (mode[1] == Addressing::Immediate || mode[1] == Addressing::Relative) {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = number1 ^ number2;
@@ -50,8 +53,9 @@ pub fn xor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn nor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Relative = mode {
+pub fn nor(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Immediate || mode[0] == Addressing::Relative) &&
+        (mode[1] == Addressing::Immediate || mode[1] == Addressing::Relative) {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = !(number1 | number2);
@@ -65,8 +69,9 @@ pub fn nor(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn nad(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Relative = mode {
+pub fn nad(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Immediate || mode[0] == Addressing::Relative) &&
+        (mode[1] == Addressing::Immediate || mode[1] == Addressing::Relative) {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = !(number1 & number2);
@@ -80,8 +85,9 @@ pub fn nad(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn imp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Immediate | Addressing::Relative = mode {
+pub fn imp(mode: &[Addressing; 3], operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Immediate || mode[0] == Addressing::Relative) &&
+        (mode[1] == Addressing::Immediate || mode[1] == Addressing::Relative) {
         let number1 = operands[0].read_word()?;
         let number2 = operands[1].read_word()?;
         let result = (!number1) | number2;
@@ -95,8 +101,8 @@ pub fn imp(mode: Addressing, operands: &[Operand; 2], cpu: &mut CPU) -> Instruct
     }
 }
 
-pub fn not(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn not(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         cpu.registers.r0 = !cpu.registers.r0;
         cpu.status_register.zero = cpu.registers.r0 == 0;
         Ok(())
@@ -105,8 +111,8 @@ pub fn not(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn shl(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::Relative = mode {
+pub fn shl(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::Relative = mode[0] {
         let number = operands[0].read_word()?;
         let result = number << 1;
 
@@ -119,8 +125,8 @@ pub fn shl(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn shr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::Relative = mode {
+pub fn shr(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::Relative = mode[0] {
         let number = operands[0].read_word()?;
         let result = number >> 1;
 
@@ -133,8 +139,8 @@ pub fn shr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn rol(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::Relative = mode {
+pub fn rol(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::Relative = mode[0] {
         let number = operands[0].read_word()?;
         let result = number.rotate_left(1);
 
@@ -147,8 +153,8 @@ pub fn rol(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn ror(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::Relative = mode {
+pub fn ror(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Direct | Addressing::Relative = mode[0] {
         let number = operands[0].read_word()?;
         let result = number.rotate_right(1);
 

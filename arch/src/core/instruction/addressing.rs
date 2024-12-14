@@ -4,9 +4,11 @@ use crate::{CPUResult, Interrupt};
 pub enum Addressing {
     Immediate,
     Direct,
+    Indirect,
     Absolute,
     Relative,
-    Implied
+    Implied,
+    RegisterIndirect
 }
 
 impl TryFrom<u8> for Addressing {
@@ -16,9 +18,14 @@ impl TryFrom<u8> for Addressing {
         match value {
             0x0 => Ok(Addressing::Immediate),
             0x1 => Ok(Addressing::Direct),
+            0x2 => Ok(Addressing::Indirect),
             0x3 => Ok(Addressing::Absolute),
             0x4 => Ok(Addressing::Relative),
             0x5 => Ok(Addressing::Implied),
+            // TODO: Indexed
+            0x7 => Ok(Addressing::RegisterIndirect),
+            // TODO: Memory Indexed
+            // TODO: Register Indexed
             _ => Err(Interrupt::IllegalInstruction)
         }
     }
