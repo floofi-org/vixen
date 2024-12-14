@@ -6,21 +6,21 @@ use crate::cpu::SystemStack;
 use crate::InstructionResult;
 
 pub fn jmp(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].read_word()?;
-    cpu.program_counter = position - 10;
+    let position = &operands[0].get_address()?;
+    cpu.program_counter = position - 15;
     Ok(())
 }
 
 pub fn jsr(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].read_word()?;
+    let position = &operands[0].get_address()?;
     cpu.system_stack_save_state()?;
-    cpu.program_counter = position - 10;
+    cpu.program_counter = position - 15;
     Ok(())
 }
 
 pub fn ret(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let position = cpu.system_stack_pull_word()?;
-    cpu.program_counter = position - 10;
+    cpu.program_counter = position - 15;
     Ok(())
 }
 
