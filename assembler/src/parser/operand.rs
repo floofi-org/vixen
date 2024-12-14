@@ -58,7 +58,6 @@ fn relative(parser: &mut Parser, forward: bool) -> Result<Operand, ParseError> {
     Ok(Operand::Address(Address::Relative(address)))
 }
 
-// FIXME: AAAAAAAAAAAAAAAA
 fn get_register(register: &str) -> Option<RegisterId> {
     match register {
         "0" => Some(RegisterId::R0),

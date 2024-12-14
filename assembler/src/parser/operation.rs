@@ -15,8 +15,6 @@ macro_rules! operation {
         }
     };
 }
-// FIXME: See label module
-// impl FromTokenStream for Operation { }
 
 #[allow(clippy::module_name_repetitions)]
 pub trait OperationExt: Sized {

@@ -5,7 +5,7 @@ use super::{ParseError, Parser};
 #[derive(Debug)]
 pub struct Label(pub String);
 
-// FIXME: Label is a special case as we cannot know whether it's an operation or label
+// NOTE: Label is a special case as we cannot know whether it's an operation or label
 // by just looking at the first token.
 // Parser doesn't support look ahead yet.
 //
