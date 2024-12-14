@@ -55,8 +55,12 @@ impl Macro {
             }
         };
 
+        // Reserve capacity upfront
         program.instructions.reserve(included.instructions.len());
-        for instruction in included.instructions {
+
+        // Going in reverse is important here
+        // Since we push instructions downwards, so we need to start from the bottom
+        for instruction in included.instructions.into_iter().rev() {
             program.instructions.insert(instruction_offset, instruction);
         }
 
