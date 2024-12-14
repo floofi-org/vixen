@@ -4,7 +4,7 @@ use std::{env, fs, io};
 use std::io::Write;
 use vixen::core::Interrupt;
 use vixen::core::StackTrace;
-use vixen::CPU;
+use vixen::{CPU, MEMORY_64M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
 
@@ -28,13 +28,13 @@ fn main() {
         exit(-1);
     });
 
-    if rom.len() > 33_553_920 {
+    if rom.len() > 67_108_864 {
         eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
-        (33553920 bytes).\u{1b}[0m", rom.len());
+        (67108864 bytes).\u{1b}[0m", rom.len());
         exit(2);
     }
 
-    let mut cpu = CPU::default();
+    let mut cpu = CPU::new(MEMORY_64M);
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);
@@ -57,7 +57,7 @@ fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
         print!("\u{1b}[0m{position:0>8x}:  ");
         for _ in 0..16 {
             let focus_start = focus.unwrap_or(cpu.program_counter as usize);
-            let focus_end = focus_start + if focus.is_some() { 1 } else { 10 };
+            let focus_end = focus_start + if focus.is_some() { 1 } else { 15 };
             match position {
                 x if x > 0xffff_fffe => (),
                 x if x == focus_end - 1 => print!("\u{1b}[43m{:0>2x}\u{1b}[0m ", cpu.memory[position]),
@@ -73,7 +73,7 @@ fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
 fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
     if state.running {
         cpu.tick()?;
-        cpu.program_counter += 10;
+        cpu.program_counter += 15;
         return Ok(());
     }
 
@@ -102,14 +102,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
                 println!("\u{1b}[33mSystem blocked on interrupt. 'i' for stack trace, 'b' to resume.\u{1b}[0m");
             } else {
                 cpu.tick()?;
-                cpu.program_counter += 10;
+                cpu.program_counter += 15;
                 println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
-                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
             }
         },
         "b" | "unblock" => {
             state.interrupt = None;
-            cpu.program_counter += 10;
+            cpu.program_counter += 15;
             println!("\u{1b}[33mSystem unblocked. Ignoring interrupts is unsafe, you are on your own.\u{1b}[0m");
         },
         "r" | "run" => {
@@ -127,17 +127,16 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
             dump_memory(cpu, start, end, None);
         },
         "g" | "registers" => {
-            println!("A  = {register:0>8x}, {register}", register = cpu.registers.r0);
-            println!("X  = {register:0>8x}, {register}", register = cpu.registers.r1);
-            println!("Y  = {register:0>8x}, {register}", register = cpu.registers.r2);
-            println!("R0 = {register:0>8x}, {register}", register = cpu.registers.r0);
-            println!("R1 = {register:0>8x}, {register}", register = cpu.registers.r1);
-            println!("R2 = {register:0>8x}, {register}", register = cpu.registers.r2);
-            println!("R3 = {register:0>8x}, {register}", register = cpu.registers.r3);
-            println!("R4 = {register:0>8x}, {register}", register = cpu.registers.r4);
-            println!("R5 = {register:0>8x}, {register}", register = cpu.registers.r5);
-            println!("R6 = {register:0>8x}, {register}", register = cpu.registers.r6);
-            println!("R7 = {register:0>8x}, {register}", register = cpu.registers.r7);
+            println!("r0  = {register1:0>8x}, r1  = {register2:0>8x}, r2  = {register3:0>8x}",
+                     register1 = cpu.registers.r0, register2 = cpu.registers.r1, register3 = cpu.registers.r2);
+            println!("r3  = {register1:0>8x}, r4  = {register2:0>8x}, r5  = {register3:0>8x}",
+                     register1 = cpu.registers.r3, register2 = cpu.registers.r4, register3 = cpu.registers.r5);
+            println!("r6  = {register1:0>8x}, r7  = {register2:0>8x}, r8  = {register3:0>8x}",
+                     register1 = cpu.registers.r6, register2 = cpu.registers.r7, register3 = cpu.registers.r8);
+            println!("r9  = {register1:0>8x}, r10 = {register2:0>8x}, r11 = {register3:0>8x}",
+                     register1 = cpu.registers.r9, register2 = cpu.registers.r10, register3 = cpu.registers.r11);
+            println!("r12 = {register1:0>8x}, r13 = {register2:0>8x}, r14 = {register3:0>8x}",
+                     register1 = cpu.registers.r12, register2 = cpu.registers.r13, register3 = cpu.registers.r14);
         },
         "i" | "interrupt" => {
             if state.interrupt.is_some() {
@@ -172,14 +171,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
 fn debug_cpu(cpu: &mut CPU, rom_size: usize) {
     println!("\u{1b}[33mLoaded {rom_size} bytes of system ROM.\u{1b}[0m");
     println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
-             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
     let mut state = DebuggerState::default();
     loop {
         if let Err(interrupt) = debugger_prompt(cpu, &mut state) {
             state.interrupt = Some(interrupt);
             state.running = false;
             println!("\u{1b}[33mUnhandled interrupt {interrupt} at {:0>8x}: {}\u{1b}[0m",
-                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
         }
     }
 }

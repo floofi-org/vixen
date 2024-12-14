@@ -5,8 +5,8 @@ use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
 
-pub fn ldr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Absolute = mode {
+pub fn ldr(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Absolute = mode[0] {
         cpu.registers.r0 = operands[0].read_word()?;
         cpu.status_register.zero = cpu.registers.r0 == 0;
         Ok(())
@@ -15,28 +15,30 @@ pub fn ldr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn str(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Absolute = mode {
+pub fn str(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Absolute = mode[0] {
         operands[0].write_word(cpu, cpu.registers.r0)?;
         Ok(())
     } else {
-        Err(Interrupt::IllegalInstruction)
+        Err(Interrupt::IllegalMemory)
     }
 }
 
-pub fn mov(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::Absolute = mode {
-        let value = operands[0].read_word()?;
-        operands[1].write_word(cpu, value)?;
-        operands[0].write_word(cpu, 0)?;
+pub fn mov(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Direct || mode[0] == Addressing::Absolute) &&
+        (mode[1] == Addressing::Direct || mode[1] == Addressing::Absolute) {
+        let value = operands[1].read_word()?;
+        operands[0].write_word(cpu, value)?;
+        operands[1].write_word(cpu, 0)?;
         Ok(())
     } else {
         Err(Interrupt::IllegalInstruction)
     }
 }
 
-pub fn swp(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Direct | Addressing::Absolute = mode {
+pub fn swp(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Direct || mode[0] == Addressing::Absolute) &&
+        (mode[1] == Addressing::Direct || mode[1] == Addressing::Absolute) {
         let value1 = operands[0].read_word()?;
         let value2 = operands[1].read_word()?;
         operands[1].write_word(cpu, value1)?;
@@ -47,8 +49,9 @@ pub fn swp(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn clr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Absolute | Addressing::Direct = mode {
+pub fn clr(mode: &[Addressing; 3], operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if (mode[0] == Addressing::Direct || mode[0] == Addressing::Absolute) &&
+        (mode[1] == Addressing::Direct || mode[1] == Addressing::Absolute) {
         operands[0].write_word(cpu, 0)?;
         cpu.status_register.zero = true;
         Ok(())
@@ -57,8 +60,8 @@ pub fn clr(mode: Addressing, operands: &mut [Operand; 2], cpu: &mut CPU) -> Inst
     }
 }
 
-pub fn sec(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn sec(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         cpu.status_register.carry = true;
         Ok(())
     } else {
@@ -66,8 +69,8 @@ pub fn sec(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn clc(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn clc(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         cpu.status_register.carry = false;
         Ok(())
     } else {
@@ -75,8 +78,8 @@ pub fn clc(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn sei(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn sei(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         cpu.status_register.interrupt_disable = true;
         Ok(())
     } else {
@@ -84,8 +87,8 @@ pub fn sei(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn cli(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn cli(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         cpu.status_register.interrupt_disable = false;
         Ok(())
     } else {
@@ -93,8 +96,8 @@ pub fn cli(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> Instruc
     }
 }
 
-pub fn clv(mode: Addressing, _operands: &[Operand; 2], cpu: &mut CPU) -> InstructionResult {
-    if let Addressing::Implied = mode {
+pub fn clv(mode: &[Addressing; 3], _operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    if let Addressing::Implied = mode[0] {
         cpu.status_register.overflow = false;
         Ok(())
     } else {

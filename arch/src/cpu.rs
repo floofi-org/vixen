@@ -9,7 +9,7 @@ pub use user_stack::UserStack;
 
 use alloc::vec;
 use alloc::vec::Vec;
-use crate::core::Interrupt;
+use crate::core::{Interrupt, Specification};
 use crate::core::registers::RegisterId;
 use crate::core::Registers;
 use crate::core::registers::StatusRegister;
@@ -26,20 +26,32 @@ pub struct CPU {
 }
 
 impl CPU {
+    #[must_use]
+    pub fn new(memory_size: usize) -> Self {
+        Self {
+            registers: Registers::default(),
+            stack_pointer: 0x0000_0000,
+            program_counter: 0x0000_0200,
+            status_register: StatusRegister::default(),
+            memory: vec![0u8; memory_size].into_boxed_slice(),
+            system_stack: vec![],
+        }
+    }
+
     pub fn load_rom(&mut self, rom: &[u8]) -> CPUResult<()> {
-        let base_address = 0xe000_0000;
+        let base_address = 0x0000_0200;
         let end_address = base_address + rom.len();
         let rom_region = base_address..end_address;
         self.memory[rom_region].copy_from_slice(rom);
 
-        let specification: Vec<u8> = CPU_SPECIFICATION.into();
-        let base_address = 0xffff_fe00;
+        let specification: Vec<u8> = Specification::new(CPU_SPECIFICATION, self.memory.len()).into();
+        let base_address = 0x0000_0000;
         let end_address = base_address + specification.len();
         let specification_region = base_address..end_address;
         self.memory[specification_region].copy_from_slice(specification.as_slice());
 
         // Reset stack pointer to the start of the stack
-        self.stack_pointer = 0x0000_0000;
+        self.stack_pointer = 0x0410_0201;
         self.system_stack_save_state()?;
 
         Ok(())
@@ -67,7 +79,10 @@ impl CPU {
     }
 
     fn has_interrupt_handler(&self) -> bool {
-        self.memory[0x00FE] != 0 || self.memory[0x00FF] != 0
+        self.memory.len() >= 0x0450_0aad && (
+            self.memory[0x0450_0aaa] != 0 || self.memory[0x0450_0aab] != 0 ||
+            self.memory[0x0450_0aac] != 0 || self.memory[0x0450_0aad] != 0
+        )
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
@@ -90,13 +105,13 @@ impl CPU {
         if self.status_register.interrupt {
             self.status_register.double_fault = true;
             self.registers.r14 = interrupt.into();
-            self.program_counter = 0xffff_0000;
+            self.program_counter = 0x0400_dead;
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
             self.status_register.interrupt = true;
             let address = u32::from_le_bytes([
-                self.memory[0x2000_0000], self.memory[0x2000_0001],
-                self.memory[0x2000_0002], self.memory[0x2000_0003]
+                self.memory[0x0450_0aaa], self.memory[0x0450_0aab],
+                self.memory[0x0450_0aac], self.memory[0x0450_0aad]
             ]);
             self.program_counter = address;
         }
@@ -116,19 +131,6 @@ impl CPU {
                     self.tick()
                 }
             }
-        }
-    }
-}
-
-impl Default for CPU {
-    fn default() -> Self {
-        Self {
-            registers: Registers::default(),
-            stack_pointer: 0x0000_0000,
-            program_counter: 0xe000_0000,
-            status_register: StatusRegister::default(),
-            memory: vec![0u8; 0xffff_ffff].into_boxed_slice(),
-            system_stack: vec![],
         }
     }
 }
