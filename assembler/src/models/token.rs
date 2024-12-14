@@ -4,7 +4,7 @@ mod macros;
 
 #[allow(clippy::module_name_repetitions)]
 pub use span::TokenWithSpan;
-pub use literal::{Literal, Identifier, Number};
+pub use literal::{Literal, Identifier, Number, StringLiteral};
 
 use macros::{token, tokens};
 

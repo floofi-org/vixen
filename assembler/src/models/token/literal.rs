@@ -6,10 +6,13 @@ pub struct Identifier(pub String);
 #[derive(Debug)]
 pub struct Number(pub u32);
 
+pub struct StringLiteral(pub String);
+
 #[derive(Debug, Clone)]
 pub enum Literal {
     Identifier(String),
     Number(u32),
+    String(String),
 }
 
 impl FromToken for Literal {
@@ -37,6 +40,16 @@ impl FromToken for Number {
     fn from_token(token: Token) -> Option<Self> {
         if let Token::Literal(Literal::Number(number)) = token {
             Some(Self(number))
+        } else {
+            None
+        }
+    }
+}
+
+impl FromToken for StringLiteral {
+    fn from_token(token: Token) -> Option<Self> {
+        if let Token::Literal(Literal::String(string)) = token {
+            Some(Self(string))
         } else {
             None
         }

@@ -4,7 +4,7 @@ use std::iter::Peekable;
 use crate::models::{Token, TokenWithSpan};
 use crate::models::token::FromToken;
 
-
+mod args;
 mod instruction;
 mod label;
 mod r#macro;
@@ -13,7 +13,7 @@ mod operation;
 mod program;
 
 pub use label::Label;
-pub use r#macro::Macro;
+pub use r#macro::{MacroDefinition, MacroArg};
 pub use program::Program;
 
 trait FromTokenStream: Sized {

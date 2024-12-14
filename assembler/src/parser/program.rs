@@ -7,13 +7,13 @@ use crate::models::{Instruction, Token};
 
 use super::label::Label;
 use super::operation::OperationExt;
-use super::r#macro::Macro;
+use super::r#macro::MacroDefinition;
 use super::{FromTokenStream, ParseError, Parser};
 
 #[derive(Debug, Default)]
 pub struct Program {
     pub labels: HashMap<String, usize>,
-    pub macros: Vec<(Macro, usize)>,
+    pub macros: Vec<(MacroDefinition, usize)>,
     pub instructions: VecDeque<Instruction>,
 }
 
@@ -28,16 +28,18 @@ impl FromTokenStream for Program {
 
             match token {
                 Token::Dot => {
-                    let r#macro = Macro::parse(parser)?;
+                    let r#macro = MacroDefinition::parse(parser)?;
                     macros.push((r#macro, instructions.len()));
-                }
+                },
 
                 Token::Literal(Literal::Identifier(ident)) => {
                     identifier(ident.clone(), &mut labels, &mut instructions, parser)?;
-                }
+                },
+
                 Token::LineBreak => {
                     parser.next().unwrap();
-                }
+                },
+
                 Token::EOF => break,
                 t => return Err(ParseError::UnexpectedToken(t.clone())),
             }

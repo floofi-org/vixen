@@ -12,7 +12,8 @@ pub struct Preprocessor;
 #[derive(Debug)]
 pub enum PreprocessorError {
     NoSuchLabel(String),
-    InvalidMacro(String),
+    NoSuchMacro(String),
+    UnexpectedMacroArguments(String, usize, usize),
 }
 
 impl Preprocessor {
@@ -29,9 +30,7 @@ impl Preprocessor {
         }
 
         for (definition, offset) in program.macros {
-            let r#macro = Macro::from_str(&definition.name)
-                .ok_or(PreprocessorError::InvalidMacro(definition.name))?;
-
+            let r#macro: Macro = definition.try_into()?;
             r#macro.apply(&mut program.instructions, offset);
         }
 
