@@ -135,7 +135,8 @@ impl From<DecodedInstruction<'_>> for String {
     #[allow(clippy::cast_possible_truncation)]
     fn from(value: DecodedInstruction) -> Self {
         let mut disassembled = Self::new();
-        disassembled.push_str(&Operation::disassemble(value.operation as u16));
+        let operation = Operation::disassemble(value.operation as u16);
+        disassembled.push_str(&operation);
 
         let operands_with_modes = [
             (value.operands[0], value.modes[0]),
