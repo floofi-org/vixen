@@ -55,11 +55,9 @@ impl Macro {
             }
         };
 
-        let at = instruction_offset.saturating_sub(1);
-
         program.instructions.reserve(included.instructions.len());
         for instruction in included.instructions {
-            program.instructions.insert(at, instruction);
+            program.instructions.insert(instruction_offset, instruction);
         }
 
         for label in &mut included.labels {
