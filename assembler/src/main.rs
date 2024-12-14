@@ -15,7 +15,7 @@ struct Args {
 
 fn run_assembler(args: &Args) -> Result<()> {
     let source = fs::read_to_string(&args.source)?;
-    let program = assemble(&source)?;
+    let program = assemble(&args.source, &source)?;
     fs::write(&args.destination, program)?;
 
     println!("Compiled program {} to {}", args.source.display(), args.destination.display());

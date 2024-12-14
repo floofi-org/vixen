@@ -47,6 +47,10 @@ impl TokenWithSpan {
                 token
             },
 
+            '"' => {
+                Ok(Self::literal(scanner, literal::string))
+            }
+
             ' ' | '\t' => {
                 scanner.next(); // Ignore whitespace
                 Ok(None)

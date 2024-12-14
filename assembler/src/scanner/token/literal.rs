@@ -15,7 +15,7 @@ pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {
 
 pub fn number_char(scanner: &mut Scanner) -> Token {
     let char = scanner.next()
-        .filter(|c| c.is_ascii())
+        .filter(char::is_ascii)
         .expect("Invalid character literal");
 
     let char = char as u32;
@@ -27,6 +27,22 @@ pub fn identifier(scanner: &mut Scanner) -> Option<Token> {
     let identifier = scanner.next_while(literal_filter)?;
 
     Some(Token::Literal(Literal::Identifier(identifier)))
+}
+
+pub fn string(scanner: &mut Scanner) -> Option<Token> {
+    // .next_while require we take a reference of char
+    #[allow(clippy::trivially_copy_pass_by_ref)]
+    fn quotation_mark(char: &char) -> bool {
+        *char == '"'
+    }
+
+    scanner.next()
+        .filter(quotation_mark)
+        .expect("Expected beginning of a string");
+
+    let string = scanner.next_while(|c| *c != '"')?;
+
+    Some(Token::Literal(Literal::String(string)))
 }
 
 // .next_while require we take a reference of char

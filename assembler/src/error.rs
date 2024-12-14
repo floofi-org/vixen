@@ -8,6 +8,7 @@ use crate::scanner::UnexpectedToken;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
+#[derive(Debug)]
 pub enum Error {
     IO(io::Error),
     UnexpectedToken(char),
