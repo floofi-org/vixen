@@ -146,13 +146,17 @@ impl From<DecodedInstruction<'_>> for String {
 
         for (i, (operand, mode)) in operands_with_modes.iter().enumerate() {
             #[allow(clippy::cast_possible_truncation)]
-            if let Ok(mode) = Addressing::try_from(*mode as u8) {
-                if mode != Addressing::Implied {
-                    if i > 0 {
-                        disassembled.push_str(", ");
-                    }
-                    disassembled.push_str(&Operand::disassemble(*operand, value.cpu, mode));
+            let mode = Addressing::try_from(*mode as u8)
+                .ok()
+                .filter(|m| m != Addressing::Implied);
+
+            if let Some(mode) = mode {
+                if i > 0 {
+                    disassembled.push_str(", ");
                 }
+                
+                let operand = Operand::disassemble(*operand, value.cpu, mode);
+                disassembled.push_str(&operand);         
             } else {
                 disassembled.push_str("<unk>");
             }
