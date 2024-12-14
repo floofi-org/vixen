@@ -36,9 +36,11 @@ impl From<Addressing> for u8 {
         match val {
             Addressing::Immediate => 0x0,
             Addressing::Direct => 0x1,
+            Addressing::Indirect => 0x2,
             Addressing::Absolute => 0x3,
             Addressing::Relative => 0x4,
             Addressing::Implied => 0x5,
+            Addressing::RegisterIndirect => 0x6,
         }
     }
 }

@@ -148,7 +148,7 @@ impl From<DecodedInstruction<'_>> for String {
             #[allow(clippy::cast_possible_truncation)]
             let mode = Addressing::try_from(*mode as u8)
                 .ok()
-                .filter(|m| m != Addressing::Implied);
+                .filter(|m| *m != Addressing::Implied);
 
             if let Some(mode) = mode {
                 if i > 0 {
@@ -157,8 +157,6 @@ impl From<DecodedInstruction<'_>> for String {
                 
                 let operand = Operand::disassemble(*operand, value.cpu, mode);
                 disassembled.push_str(&operand);         
-            } else {
-                disassembled.push_str("<unk>");
             }
         }
 
