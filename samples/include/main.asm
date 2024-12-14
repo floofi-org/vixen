@@ -6,5 +6,6 @@ main:
     ldr #$04500200 ; Copy to the start of the RAM
     mov r3, r0
     jsr strcopy
+    int
 
 .include "strcopy.asm"
