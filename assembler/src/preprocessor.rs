@@ -28,6 +28,7 @@ pub struct ProcessedProgram {
 impl Preprocessor {
     // See: https://github.com/floofi-org/vixen/wiki/Memory-management-and-registers#memory-map
     const START_OF_BOOT_ROM: u32 = 0x0000_0200;
+    const INSTRUCTION_SIZE: u32 = 15;
 
     pub fn process(source_path: &Path, program: Program) -> Result<ProcessedProgram, PreprocessorError> {
         let Program {labels, macros, instructions } = program;
@@ -61,7 +62,7 @@ impl Preprocessor {
             .ok_or_else(|| PreprocessorError::NoSuchLabel(label.to_owned()))?;
 
         #[allow(clippy::cast_possible_truncation)]
-        let address = Self::START_OF_BOOT_ROM + *address as u32;
+        let address = Self::START_OF_BOOT_ROM + *address as u32 * Self::INSTRUCTION_SIZE;
 
         Ok(Address::Absolute(address))
     }
