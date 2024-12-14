@@ -7,12 +7,12 @@ strcopy:
     ; If so return
     mov r0, r1
     cmp #0
-    bne +2
+    bne +30
     ret
 
     ; Copy character to destination
-    ldr r2
-    str r3
+    ldr [r2]
+    str [r3]
 
     ; Increment pointers and decrement remaining string length
     inc r2
