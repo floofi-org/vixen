@@ -12,6 +12,7 @@ mod r#macro;
 pub struct Preprocessor;
 
 #[derive(Debug)]
+#[allow(clippy::module_name_repetitions)]
 pub enum PreprocessorError {
     NoSuchLabel(String),
     NoSuchMacro(String),
@@ -56,6 +57,7 @@ impl Preprocessor {
             .get(label)
             .ok_or_else(|| PreprocessorError::NoSuchLabel(label.to_owned()))?;
 
+        #[allow(clippy::cast_possible_truncation)]
         Ok(Address::Absolute(*address as u32))
     }
 }

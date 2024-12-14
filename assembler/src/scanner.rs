@@ -23,7 +23,6 @@ impl<'a> Scanner<'a> {
         }
     }
 
-    #[must_use]
     pub fn scan(mut self) -> Result<Vec<TokenWithSpan>, UnexpectedToken> {
         let mut tokens = Vec::new();
 

@@ -4,10 +4,10 @@ use super::Scanner;
 mod literal;
 
 #[derive(Debug, Clone, Copy)]
+#[allow(clippy::module_name_repetitions)]
 pub struct UnexpectedToken(pub char);
 
 impl TokenWithSpan {
-    #[must_use]
     pub fn scan(scanner: &mut Scanner) -> Result<Option<Self>, UnexpectedToken> {
         let Some(char) = scanner.peek() else {
             return Ok(Some(Self::simple(scanner, Token::EOF)));

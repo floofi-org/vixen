@@ -14,3 +14,4 @@ rust_2024_compatibility = "warn"
 [lints.clippy]
 pedantic = "warn"
 missing_panics_doc = "allow"
+missing_errors_doc = "allow"

@@ -6,6 +6,7 @@ pub struct Identifier(pub String);
 #[derive(Debug)]
 pub struct Number(pub u32);
 
+#[allow(clippy::module_name_repetitions)]
 pub struct StringLiteral(pub String);
 
 #[derive(Debug, Clone)]

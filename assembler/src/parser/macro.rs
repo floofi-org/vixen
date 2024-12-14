@@ -3,6 +3,7 @@ use crate::models::token::{Dot, Identifier, StringLiteral};
 use super::{args::Args, FromTokenStream, ParseError, Parser};
 
 #[derive(Debug)]
+#[allow(clippy::module_name_repetitions)]
 pub struct MacroDefinition {
     pub name: String,
     pub args: Vec<MacroArg>,

@@ -3,7 +3,6 @@ use std::path::{Path, PathBuf};
 
 use vixen::core::instruction::Operation;
 
-use crate::error::Error;
 use crate::models::{Address, Instruction, Operand};
 use crate::parser::{MacroArg, MacroDefinition};
 
@@ -23,6 +22,7 @@ impl Macro {
     const INTERRUPT_HANDLER_ADDRESS: u32 = 0x0450_0aaa;
     const DOUBLE_FAULT_HANDLER_ADDRESS: u32 = 0x0400_dead;
 
+    #[allow(clippy::unit_arg)]
     pub fn apply(self, source_path: &Path, program: &mut ProcessedProgram, instruction_offset: usize) -> Result<(), PreprocessorError> {
         match self {
             Self::Interrupt => Ok(Self::interrupt(program, instruction_offset)),
@@ -51,7 +51,7 @@ impl Macro {
         let mut included = match crate::compile_to_program(&source_path, &source) {
             Ok(s) => s,
             Err(e) => {
-                return Err(PreprocessorError::IncludeCompileError(source_path, Box::new(e.into())));
+                return Err(PreprocessorError::IncludeCompileError(source_path, Box::new(e)));
             }
         };
 
@@ -71,6 +71,7 @@ impl Macro {
         Ok(())
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     fn define_handler(instructions: &mut VecDeque<Instruction>, setup_address: u32, handler_offset: usize) {
         let mov = Instruction {
             operation: Operation::Mov,

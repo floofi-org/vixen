@@ -6,10 +6,8 @@ pub mod parser;
 pub mod preprocessor;
 
 use std::path::Path;
-use std::collections::VecDeque;
 
 use error::Error;
-use models::Instruction;
 use preprocessor::ProcessedProgram;
 
 pub fn assemble(source_path: &Path, source: &str) -> Result<Vec<u8>, Error> {

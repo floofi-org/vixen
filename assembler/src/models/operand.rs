@@ -49,6 +49,7 @@ impl From<Operand> for u32 {
 
 impl From<Address> for u32 {
     fn from(value: Address) -> Self {
+        #[allow(clippy::cast_sign_loss)]
         match value {
             Address::Absolute(address) => address,
             Address::Relative(address) => address as u32,

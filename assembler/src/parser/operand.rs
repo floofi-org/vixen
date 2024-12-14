@@ -47,6 +47,7 @@ fn absolute(address: u32) -> Operand {
 
 fn relative(parser: &mut Parser, forward: bool) -> Result<Operand, ParseError> {
     let address: Number = parser.expect()?;
+    #[allow(clippy::cast_possible_wrap)]
     let address = address.0 as i32;
 
     let address = if forward {
