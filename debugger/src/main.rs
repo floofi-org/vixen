@@ -104,7 +104,7 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
                 cpu.tick()?;
                 cpu.program_counter += 15;
                 println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
-                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
             }
         },
         "b" | "unblock" => {
@@ -171,14 +171,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
 fn debug_cpu(cpu: &mut CPU, rom_size: usize) {
     println!("\u{1b}[33mLoaded {rom_size} bytes of system ROM.\u{1b}[0m");
     println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
-             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
     let mut state = DebuggerState::default();
     loop {
         if let Err(interrupt) = debugger_prompt(cpu, &mut state) {
             state.interrupt = Some(interrupt);
             state.running = false;
             println!("\u{1b}[33mUnhandled interrupt {interrupt} at {:0>8x}: {}\u{1b}[0m",
-                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
         }
     }
 }

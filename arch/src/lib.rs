@@ -1,4 +1,4 @@
-//#![no_std]
+#![no_std]
 extern crate alloc;
 
 pub const CPU_SPECIFICATION: StaticSpecification = StaticSpecification {

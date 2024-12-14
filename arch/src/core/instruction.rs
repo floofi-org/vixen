@@ -1,4 +1,5 @@
-use crate::core::Operand;
+use alloc::string::String;
+use crate::core::{Interrupt, Operand};
 use crate::{instructions, InstructionResult};
 use crate::CPU;
 
@@ -13,6 +14,15 @@ pub struct Instruction {
     pub operation: Operation,
     pub modes: [Addressing; 3],
     pub operands: [Operand; 3]
+}
+
+#[allow(clippy::module_name_repetitions)]
+pub struct DecodedInstruction<'a> {
+    pub cpu: &'a CPU,
+    pub instruction: u32,
+    pub operands: [u32; 3],
+    pub modes: [u32; 3],
+    pub operation: u32
 }
 
 impl Instruction {
@@ -94,5 +104,59 @@ impl Instruction {
             Operation::Php => instructions::php(&self.modes, &self.operands, cpu),
             Operation::Plp => instructions::plp(&self.modes, &self.operands, cpu)
         }
+    }
+}
+
+impl TryFrom<DecodedInstruction<'_>> for Instruction {
+    type Error = Interrupt;
+
+    #[allow(clippy::cast_possible_truncation)]
+    fn try_from(value: DecodedInstruction) -> Result<Self, Self::Error> {
+        let operation = Operation::try_from(value.operation as u16)?;
+        let modes = [
+            Addressing::try_from(value.modes[0] as u8)?,
+            Addressing::try_from(value.modes[1] as u8)?,
+            Addressing::try_from(value.modes[2] as u8)?
+        ];
+        let operands = [
+            Operand::decode(value.operands[0], value.cpu, modes[0])?,
+            Operand::decode(value.operands[1], value.cpu, modes[1])?,
+            Operand::decode(value.operands[2], value.cpu, modes[2])?
+        ];
+        Ok(Instruction {
+            operation,
+            modes,
+            operands,
+        })
+    }
+}
+
+impl From<DecodedInstruction<'_>> for String {
+    #[allow(clippy::cast_possible_truncation)]
+    fn from(value: DecodedInstruction) -> Self {
+        let mut disassembled = Self::new();
+        disassembled.push_str(&Operation::disassemble(value.operation as u16));
+
+        let operands_with_modes = [
+            (value.operands[0], value.modes[0]),
+            (value.operands[1], value.modes[1]),
+            (value.operands[2], value.modes[2])
+        ];
+
+        for (i, (operand, mode)) in operands_with_modes.iter().enumerate() {
+            #[allow(clippy::cast_possible_truncation)]
+            if let Ok(mode) = Addressing::try_from(*mode as u8) {
+                if mode != Addressing::Implied {
+                    if i > 0 {
+                        disassembled.push_str(", ");
+                    }
+                    disassembled.push_str(&Operand::disassemble(*operand, value.cpu, mode));
+                }
+            } else {
+                disassembled.push_str("<unk>");
+            }
+        }
+
+        disassembled
     }
 }

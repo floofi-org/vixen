@@ -36,12 +36,15 @@ fn main() {
 }
 
 #[allow(clippy::cast_possible_truncation)]
-fn disassemble_rom(mut cpu: CPU, rom: &Vec<u8>) -> String {
+fn disassemble_rom(mut cpu: CPU, rom: &[u8]) -> String {
     let mut disassembled = String::new();
 
     while cpu.program_counter < (cpu.memory.len() - 1) as u32 && cpu.program_counter < rom.len() as u32 + 0x1ff {
-        let text = cpu.read_instruction_string(cpu.program_counter, true);
-        disassembled.push_str(&text);
+        let position = cpu.program_counter;
+        let text = cpu.read_instruction_string(position);
+
+        disassembled.push_str(&format!("{text:<32} ; {position:0>8x}: {}",
+                                       cpu.extract_instruction(position)));
         disassembled.push('\n');
         cpu.program_counter += 15;
     }

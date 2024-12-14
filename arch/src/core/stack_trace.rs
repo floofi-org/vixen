@@ -49,7 +49,7 @@ impl Display for StackTrace<'_> {
                sr = cpu.status_register,
                pc = cpu.program_counter,
                state = cpu.extract_instruction(cpu.program_counter),
-               disassembler = cpu.read_instruction_string(cpu.program_counter, false),
+               disassembler = cpu.read_instruction_string(cpu.program_counter),
                stack_trace = stack_trace,
         )
     }

@@ -86,13 +86,11 @@ impl Operand {
     }
 
     #[must_use]
-    pub fn disassemble(raw_operand: u32, cpu: &CPU, mode: Addressing, disassembler_mode: bool) -> String {
+    pub fn disassemble(raw_operand: u32, cpu: &CPU, mode: Addressing) -> String {
         if let Ok(operand) = Operand::decode(raw_operand, cpu, mode) {
             operand.disassemble_self()
-        } else if disassembler_mode {
-            format!("{raw_operand} <unk>")
         } else {
-            format!("??({raw_operand:0>8x})")
+            String::from("<unk>")
         }
     }
 
