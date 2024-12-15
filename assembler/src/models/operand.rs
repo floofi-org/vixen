@@ -6,6 +6,13 @@ pub enum Operand {
     Register(RegisterId),
     Address(Address),
     Label(String),
+    Indirect(OperandIndirect),
+}
+
+#[allow(clippy::module_name_repetitions)]
+#[derive(Debug)]
+pub enum OperandIndirect {
+    Register(RegisterId),
 }
 
 #[derive(Debug)]
@@ -22,6 +29,16 @@ impl Operand {
             Operand::Register(_) => Addressing::Direct,
             Operand::Address(address) => address.get_addressing(),
             Operand::Label(_) => Addressing::Relative, // Relative to the start of the program
+            Operand::Indirect(indirect) => indirect.get_addressing(),
+        }
+    }
+}
+
+impl OperandIndirect {
+    #[must_use]
+    pub fn get_addressing(&self) -> Addressing {
+        match self {
+            OperandIndirect::Register(_) => Addressing::RegisterIndirect,
         }
     }
 }
@@ -43,6 +60,15 @@ impl From<Operand> for u32 {
             Operand::Register(reg) => reg.into(),
             Operand::Address(address) => address.into(),
             Operand::Label(_) => panic!("Tried to convert label to u32"),
+            Operand::Indirect(indirect) => indirect.into(),
+        }
+    }
+}
+
+impl From<OperandIndirect> for u32 {
+    fn from(value: OperandIndirect) -> Self {
+        match value {
+            OperandIndirect::Register(reg) => reg.into(),
         }
     }
 }

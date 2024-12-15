@@ -3,7 +3,12 @@ use crate::scanner::Scanner;
 
 use super::Token;
 
-const FORBIDDEN_LITERAL_CHARS: &[char] = &[':', '$', '#', '%', '-', '+', '.', ',', ';'];
+const FORBIDDEN_LITERAL_CHARS: &[char] = &[
+    ':', '$', '#', '%',
+    '-', '+', '[', ']',
+    '.', ',', ';', '\'',
+    '"',
+];
 
 pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {
     let number = scanner.next_while(literal_filter)?;

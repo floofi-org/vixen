@@ -18,6 +18,8 @@ impl TokenWithSpan {
             '#' => Ok(Some(Self::simple(scanner, Token::Hash))),
             '-' => Ok(Some(Self::simple(scanner, Token::Minus))),
             '+' => Ok(Some(Self::simple(scanner, Token::Plus))),
+            '[' => Ok(Some(Self::simple(scanner, Token::LeftBracket))),
+            ']' => Ok(Some(Self::simple(scanner, Token::RightBracket))),
             '.' => Ok(Some(Self::simple(scanner, Token::Dot))),
             ',' => Ok(Some(Self::simple(scanner, Token::Comma))),
             ';' => Ok(Self::comment(scanner)),

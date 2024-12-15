@@ -1,7 +1,8 @@
 use vixen::core::registers::RegisterId;
 
+use crate::models::operand::OperandIndirect;
 use crate::models::{Address, Operand, Token};
-use crate::models::token::{Literal, Number};
+use crate::models::token::{Literal, Number, RightBracket};
 
 use super::{FromTokenStream, ParseError, Parser};
 
@@ -11,6 +12,7 @@ impl FromTokenStream for Operand {
 
         match token {
             Token::Hash => literal(parser),
+            Token::LeftBracket => indirect(parser),
             Token::Literal(Literal::Identifier(register)) => identifier(register),
             Token::Literal(Literal::Number(address)) => Ok(absolute(address)),
             Token::Plus => relative(parser, true),
@@ -24,6 +26,20 @@ fn literal(parser: &mut Parser) -> Result<Operand, ParseError> {
     let number: Number = parser.expect()?;
 
     Ok(Operand::Literal(number.0))
+}
+
+fn indirect(parser: &mut Parser) -> Result<Operand, ParseError> {
+    let operand = Operand::parse(parser)?;
+    parser.expect::<RightBracket>()?;
+
+    match operand {
+        Operand::Register(register) => Ok(register_indirect(register)),
+        operand => Err(ParseError::UnsupportedIndirect(operand)),
+    }
+}
+
+fn register_indirect(register: RegisterId) -> Operand {
+    Operand::Indirect(OperandIndirect::Register(register))
 }
 
 fn identifier(mut identifier: String) -> Result<Operand, ParseError> {

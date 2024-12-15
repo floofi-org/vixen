@@ -1,7 +1,7 @@
 use std::vec::IntoIter;
 use std::iter::Peekable;
 
-use crate::models::{Token, TokenWithSpan};
+use crate::models::{Operand, Token, TokenWithSpan};
 use crate::models::token::FromToken;
 
 mod args;
@@ -25,7 +25,8 @@ pub enum ParseError {
     UnexpectedToken(Token),
     UnexpectedEof,
     InvalidInstruction(String),
-    InvalidOperand(&'static str)
+    InvalidOperand(&'static str),
+    UnsupportedIndirect(Operand),
 }
 
 pub struct Parser {
