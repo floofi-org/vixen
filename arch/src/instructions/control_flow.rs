@@ -19,9 +19,7 @@ pub fn jsr(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn ret(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = cpu.system_stack_pull_word()?;
-    cpu.program_counter = position - 15;
-    Ok(())
+    cpu.system_stack_restore_state()
 }
 
 pub fn beq(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {

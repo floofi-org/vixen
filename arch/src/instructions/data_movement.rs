@@ -17,7 +17,6 @@ pub fn str(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 pub fn mov(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let value = operands[1].read_word()?;
     operands[0].write_word(cpu, value)?;
-    operands[1].write_word(cpu, 0)?;
     Ok(())
 }
 
