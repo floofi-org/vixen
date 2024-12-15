@@ -13,7 +13,7 @@ impl FromTokenStream for Operand {
         match token {
             Token::Hash => literal(parser),
             Token::LeftBracket => indirect(parser),
-            Token::Literal(Literal::Identifier(register)) => identifier(register),
+            Token::Literal(Literal::Identifier(register)) => Ok(identifier(register)),
             Token::Literal(Literal::Number(address)) => Ok(absolute(address)),
             Token::Plus => relative(parser, true),
             Token::Minus => relative(parser, false),
@@ -42,19 +42,11 @@ fn register_indirect(register: RegisterId) -> Operand {
     Operand::Indirect(OperandIndirect::Register(register))
 }
 
-fn identifier(mut identifier: String) -> Result<Operand, ParseError> {
-    identifier.make_ascii_lowercase();
-
-    match identifier.strip_prefix('r') {
-        Some(reg) => register(reg),
-        None => Ok(Operand::Label(identifier)),
+fn identifier(identifier: String) -> Operand {
+    match get_register(&identifier) {
+        Some(reg) => Operand::Register(reg),
+        None => Operand::Label(identifier),
     }
-}
-
-fn register(register: &str) -> Result<Operand, ParseError> {
-    get_register(register)
-        .map(Operand::Register)
-        .ok_or(ParseError::InvalidRegister(register.to_owned()))
 }
 
 fn absolute(address: u32) -> Operand {
@@ -76,22 +68,24 @@ fn relative(parser: &mut Parser, forward: bool) -> Result<Operand, ParseError> {
 }
 
 fn get_register(register: &str) -> Option<RegisterId> {
-    match register {
-        "0" => Some(RegisterId::R0),
-        "1" => Some(RegisterId::R1),
-        "2" => Some(RegisterId::R2),
-        "3" => Some(RegisterId::R3),
-        "4" => Some(RegisterId::R4),
-        "5" => Some(RegisterId::R5),
-        "6" => Some(RegisterId::R6),
-        "7" => Some(RegisterId::R7),
-        "8" => Some(RegisterId::R8),
-        "9" => Some(RegisterId::R9),
-        "10" => Some(RegisterId::R10),
-        "11" => Some(RegisterId::R11),
-        "12" => Some(RegisterId::R12),
-        "13" => Some(RegisterId::R13),
-        "14" => Some(RegisterId::R14),
+    let register = register.to_ascii_uppercase();
+
+    match register.as_str() {
+        "R0" => Some(RegisterId::R0),
+        "R1" => Some(RegisterId::R1),
+        "R2" => Some(RegisterId::R2),
+        "R3" => Some(RegisterId::R3),
+        "R4" => Some(RegisterId::R4),
+        "R5" => Some(RegisterId::R5),
+        "R6" => Some(RegisterId::R6),
+        "R7" => Some(RegisterId::R7),
+        "R8" => Some(RegisterId::R8),
+        "R9" => Some(RegisterId::R9),
+        "R10" => Some(RegisterId::R10),
+        "R11" => Some(RegisterId::R11),
+        "R12" => Some(RegisterId::R12),
+        "R13" => Some(RegisterId::R13),
+        "R14" => Some(RegisterId::R14),
         _ => None
     }
 }
