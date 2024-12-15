@@ -14,17 +14,16 @@ strcopy:
     ; If so return
     mov r0, r1
     cmp #0
-    bne +2
+    bne copy_char
     ret
 
-    ; Copy character to destination
-    ldr r2
-    str r3
+    copy_char:
+        mov [r3], [r2] ; Copy character to destination
 
-    ; Increment pointers and decrement remaining string length
-    inc r2
-    inc r3
-    dec r1
+        ; Increment pointers and decrement remaining string length
+        inc r2
+        inc r3
+        dec r1
 
     ; Move next
     jmp strcopy
