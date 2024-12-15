@@ -127,6 +127,7 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
             dump_memory(cpu, start, end, None);
         },
         "g" | "registers" => {
+            println!("sr  = {}", cpu.status_register);
             println!("r0  = {register1:0>8x}, r1  = {register2:0>8x}, r2  = {register3:0>8x}",
                      register1 = cpu.registers.r0, register2 = cpu.registers.r1, register3 = cpu.registers.r2);
             println!("r3  = {register1:0>8x}, r4  = {register2:0>8x}, r5  = {register3:0>8x}",
@@ -149,14 +150,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
             exit(0);
         },
         _ => {
-            if let Ok(number) = u16::from_str_radix(line, 16) {
+            if let Ok(number) = u32::from_str_radix(line, 16) {
                 // We want to get a valid memory address at the end, this is intended
                 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-                if number == 0xFFFF {
+                if number == 4_294_967_295 {
                     println!("\u{1b}[33mInvalid memory address.\u{1b}[0m");
                 } else {
-                    let start = (f32::from(number.clamp(32, 65503)) / 32.0).round() as usize * 32 - 32;
-                    let end = (f32::from(number.clamp(32, 65503)) / 32.0).round() as usize * 32 + 32;
+                    let start = (f64::from(number.clamp(32, 4_294_967_293)) / 32.0).round() as usize * 32 - 32;
+                    let end = (f64::from(number.clamp(32, 4_294_967_293)) / 32.0).round() as usize * 32 + 32;
                     dump_memory(cpu, start, end, Some(number as usize));
                 }
             } else {
