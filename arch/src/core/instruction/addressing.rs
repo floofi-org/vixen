@@ -40,7 +40,7 @@ impl From<Addressing> for u8 {
             Addressing::Absolute => 0x3,
             Addressing::Relative => 0x4,
             Addressing::Implied => 0x5,
-            Addressing::RegisterIndirect => 0x6,
+            Addressing::RegisterIndirect => 0x7,
         }
     }
 }
