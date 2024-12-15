@@ -25,7 +25,7 @@ pub enum ParseError {
     UnexpectedToken(Token),
     UnexpectedEof,
     InvalidInstruction(String),
-    InvalidOperand(&'static str),
+    InvalidRegister(String),
     UnsupportedIndirect(Operand),
 }
 

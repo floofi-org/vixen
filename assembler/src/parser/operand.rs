@@ -54,7 +54,7 @@ fn identifier(mut identifier: String) -> Result<Operand, ParseError> {
 fn register(register: &str) -> Result<Operand, ParseError> {
     get_register(register)
         .map(Operand::Register)
-        .ok_or(ParseError::InvalidOperand("No such register"))
+        .ok_or(ParseError::InvalidRegister(register.to_owned()))
 }
 
 fn absolute(address: u32) -> Operand {
