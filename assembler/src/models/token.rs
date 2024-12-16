@@ -17,8 +17,11 @@ pub trait FromToken: Sized {
 pub enum Token {
     Colon,
     Hash,
+    Equals,
     LeftBracket,
     RightBracket,
+    LeftCurlyBracket,
+    RightCurlyBracket,
     Minus,
     Plus,
     Dot,
@@ -31,8 +34,11 @@ pub enum Token {
 tokens! {
     Colon,
     Hash,
+    Equals,
     LeftBracket,
     RightBracket,
+    LeftCurlyBracket,
+    RightCurlyBracket,
     Minus,
     Plus,
     Dot,

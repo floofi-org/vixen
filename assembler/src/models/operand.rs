@@ -3,8 +3,10 @@ use vixen::core::{instruction::Addressing, registers::RegisterId};
 #[derive(Debug)]
 pub enum Operand {
     Literal(u32),
+    ConstantLiteral(String),
     Register(RegisterId),
     Address(Address),
+    ConstantAddress(String),
     Label(String),
     Indirect(OperandIndirect),
 }
@@ -25,9 +27,10 @@ impl Operand {
     #[must_use]
     pub fn get_addressing(&self) -> Addressing {
         match self {
-            Operand::Literal(_) => Addressing::Immediate,
+            Operand::Literal(_) | Operand::ConstantLiteral(_) => Addressing::Immediate,
             Operand::Register(_) => Addressing::Direct,
             Operand::Address(address) => address.get_addressing(),
+            Operand::ConstantAddress(_) => Addressing::Absolute,
             Operand::Label(_) => Addressing::Relative, // Relative to the start of the program
             Operand::Indirect(indirect) => indirect.get_addressing(),
         }
@@ -60,6 +63,8 @@ impl From<Operand> for u32 {
             Operand::Register(reg) => reg.into(),
             Operand::Address(address) => address.into(),
             Operand::Label(_) => panic!("Tried to convert label to u32"),
+            Operand::ConstantLiteral(_) => panic!("Tried to convert constant literal to u32"),
+            Operand::ConstantAddress(_) => panic!("Tried to convert constant address to u32"),
             Operand::Indirect(indirect) => indirect.into(),
         }
     }

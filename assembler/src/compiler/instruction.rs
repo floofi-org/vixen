@@ -71,6 +71,7 @@ mod test {
         };
 
         let mut program = Program {
+            constants: HashMap::new(),
             labels: HashMap::new(),
             macros: Vec::new(),
             instructions: VecDeque::new(),

@@ -8,10 +8,11 @@ use crate::models::{Instruction, Token};
 use super::label::Label;
 use super::operation::OperationExt;
 use super::r#macro::MacroDefinition;
-use super::{FromTokenStream, ParseError, Parser};
+use super::{Constant, FromTokenStream, ParseError, Parser};
 
 #[derive(Debug, Default)]
 pub struct Program {
+    pub constants: HashMap<String, u32>,
     pub labels: HashMap<String, usize>,
     pub macros: Vec<(MacroDefinition, usize)>,
     pub instructions: VecDeque<Instruction>,
@@ -19,6 +20,7 @@ pub struct Program {
 
 impl FromTokenStream for Program {
     fn parse(parser: &mut Parser) -> Result<Self, ParseError> {
+        let mut constants = HashMap::new();
         let mut labels = HashMap::new();
         let mut macros = Vec::new();
         let mut instructions = VecDeque::new();
@@ -33,7 +35,7 @@ impl FromTokenStream for Program {
                 },
 
                 Token::Literal(Literal::Identifier(ident)) => {
-                    identifier(ident.clone(), &mut labels, &mut instructions, parser)?;
+                    identifier(ident.clone(), &mut constants, &mut labels, &mut instructions, parser)?;
                 },
 
                 Token::LineBreak => {
@@ -46,6 +48,7 @@ impl FromTokenStream for Program {
         }
 
         Ok(Self {
+            constants,
             labels,
             macros,
             instructions,
@@ -55,6 +58,7 @@ impl FromTokenStream for Program {
 
 fn identifier(
     identifier: String,
+    constants: &mut HashMap<String, u32>,
     labels: &mut HashMap<String, usize>,
     instructions: &mut VecDeque<Instruction>,
     parser: &mut Parser,
@@ -62,15 +66,24 @@ fn identifier(
     parser.next().unwrap();
     let next = parser.peek()?;
 
-    if let Token::Colon = next {
-        let label = Label::parse(identifier, parser)?;
+    match next {
+        Token::Colon => {
+            let label = Label::parse(identifier, parser)?;
+            labels.insert(label.0, instructions.len());
+        },
 
-        labels.insert(label.0, instructions.len());
-    } else {
-        let operation = Operation::parse(identifier)?;
-        let instruction = Instruction::parse(operation, parser)?;
+        Token::Equals => {
+            let constant = Constant::parse(identifier, parser)?;
 
-        instructions.push_back(instruction);
+            constants.insert(constant.0, constant.1);
+        }
+
+        _ => {
+            let operation = Operation::parse(identifier)?;
+            let instruction = Instruction::parse(operation, parser)?;
+
+            instructions.push_back(instruction);
+        }
     }
 
     Ok(())

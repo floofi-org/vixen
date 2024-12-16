@@ -5,6 +5,7 @@ use crate::models::{Operand, Token, TokenWithSpan};
 use crate::models::token::FromToken;
 
 mod args;
+mod constant;
 mod instruction;
 mod label;
 mod r#macro;
@@ -12,6 +13,7 @@ mod operand;
 mod operation;
 mod program;
 
+pub use constant::Constant;
 pub use label::Label;
 pub use r#macro::{MacroDefinition, MacroArg};
 pub use program::Program;

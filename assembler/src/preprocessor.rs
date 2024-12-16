@@ -14,6 +14,7 @@ pub struct Preprocessor;
 #[derive(Debug)]
 #[allow(clippy::module_name_repetitions)]
 pub enum PreprocessorError {
+    NoSuchConstant(String),
     NoSuchLabel(String),
     NoSuchMacro(String),
     UnexpectedMacroArguments(String, usize, usize),
@@ -21,6 +22,7 @@ pub enum PreprocessorError {
 }
 
 pub struct ProcessedProgram {
+    pub constants: HashMap<String, u32>,
     pub labels: HashMap<String, usize>,
     pub instructions: VecDeque<Instruction>,
 }
@@ -31,8 +33,9 @@ impl Preprocessor {
     const INSTRUCTION_SIZE: u32 = 15;
 
     pub fn process(source_path: &Path, program: Program) -> Result<ProcessedProgram, PreprocessorError> {
-        let Program {labels, macros, instructions } = program;
+        let Program { constants, labels, macros, instructions } = program;
         let mut processed = ProcessedProgram {
+            constants,
             labels,
             instructions,
         };
@@ -46,24 +49,46 @@ impl Preprocessor {
             .iter_mut()
             .flat_map(|i| i.operands.iter_mut());
 
+        // Transform constants and labels
         for operand in operands {
-            if let Operand::Label(label) = operand {
-                let address = Self::get_label_address(&processed.labels, label)?;
-                *operand = Operand::Address(address);
+            match operand {
+                Operand::ConstantLiteral(c) => *operand = Self::transform_constant(&processed.constants, c, true)?,
+                Operand::ConstantAddress(c) => *operand = Self::transform_constant(&processed.constants, c, false)?,
+                Operand::Label(label) => *operand = Self::transform_label(&processed.labels, label)?,
+                _ => {}
             }
         }
+
 
         Ok(processed)
     }
 
-    fn get_label_address(labels: &HashMap<String, usize>, label: &str) -> Result<Address, PreprocessorError> {
-        let address = labels
+    fn transform_constant(constants: &HashMap<String, u32>, constant: &str, is_literal: bool) -> Result<Operand, PreprocessorError> {
+        let constant = *constants.get(constant)
+            .ok_or_else(|| PreprocessorError::NoSuchConstant(constant.to_owned()))?;
+
+        let operand = if is_literal {
+            Operand::Literal(constant)
+        } else {
+            Operand::Address(Address::Absolute(constant))
+        };
+
+        Ok(operand)
+    }
+
+    fn transform_label(labels: &HashMap<String, usize>, label: &str) -> Result<Operand, PreprocessorError> {
+        let address = *labels
             .get(label)
             .ok_or_else(|| PreprocessorError::NoSuchLabel(label.to_owned()))?;
 
-        #[allow(clippy::cast_possible_truncation)]
-        let address = Self::START_OF_BOOT_ROM + *address as u32 * Self::INSTRUCTION_SIZE;
+        let address: u32 = address.try_into()
+            .expect("Label address is too high for ROM");
 
-        Ok(Address::Absolute(address))
+        Ok(Self::get_label_address(address))
+    }
+
+    fn get_label_address(offset: u32) -> Operand {
+        let address = Self::START_OF_BOOT_ROM + offset * Self::INSTRUCTION_SIZE;
+        Operand::Address(Address::Absolute(address))
     }
 }

@@ -7,7 +7,7 @@ const FORBIDDEN_LITERAL_CHARS: &[char] = &[
     ':', '$', '#', '%',
     '-', '+', '[', ']',
     '.', ',', ';', '\'',
-    '"',
+    '"', '=', '{', '}',
 ];
 
 pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {

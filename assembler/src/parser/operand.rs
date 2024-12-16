@@ -2,7 +2,7 @@ use vixen::core::registers::RegisterId;
 
 use crate::models::operand::OperandIndirect;
 use crate::models::{Address, Operand, Token};
-use crate::models::token::{Literal, Number, RightBracket};
+use crate::models::token::{Identifier, Literal, Number, RightBracket, RightCurlyBracket};
 
 use super::{FromTokenStream, ParseError, Parser};
 
@@ -13,6 +13,7 @@ impl FromTokenStream for Operand {
         match token {
             Token::Hash => literal(parser),
             Token::LeftBracket => indirect(parser),
+            Token::LeftCurlyBracket => constant(parser, false),
             Token::Literal(Literal::Identifier(register)) => Ok(identifier(register)),
             Token::Literal(Literal::Number(address)) => Ok(absolute(address)),
             Token::Plus => relative(parser, true),
@@ -23,9 +24,13 @@ impl FromTokenStream for Operand {
 }
 
 fn literal(parser: &mut Parser) -> Result<Operand, ParseError> {
-    let number: Number = parser.expect()?;
+    let token = parser.next()?;
 
-    Ok(Operand::Literal(number.0))
+    match token {
+        Token::Literal(Literal::Number(num)) => Ok(Operand::Literal(num)),
+        Token::LeftCurlyBracket => constant(parser, true),
+        t => Err(ParseError::UnexpectedToken(t.clone()))
+    }
 }
 
 fn indirect(parser: &mut Parser) -> Result<Operand, ParseError> {
@@ -65,6 +70,19 @@ fn relative(parser: &mut Parser, forward: bool) -> Result<Operand, ParseError> {
     };
 
     Ok(Operand::Address(Address::Relative(address)))
+}
+
+fn constant(parser: &mut Parser, is_literal: bool) -> Result<Operand, ParseError> {
+    let constant: Identifier = parser.expect::<Identifier>()?;
+    parser.expect::<RightCurlyBracket>()?;
+
+    let operand = if is_literal {
+        Operand::ConstantLiteral(constant.0)
+    } else {
+        Operand::ConstantAddress(constant.0)
+    };
+
+    Ok(operand)
 }
 
 fn get_register(register: &str) -> Option<RegisterId> {
