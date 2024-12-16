@@ -21,9 +21,14 @@ impl Args {
         }
 
         // Others expect comma
-        while let Some(Token::Comma) = parser.next_on_line()? {
-            let arg = f(parser)?;
-            args.push(arg);
+        while let Some(token) = parser.next_on_line()? {
+            match token {
+                Token::Comma => {
+                    let arg = f(parser)?;
+                    args.push(arg);
+                }
+                t => return Err(ParseError::UnexpectedToken(t)),
+            }
         }
 
         Ok(args)
