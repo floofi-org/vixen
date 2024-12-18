@@ -55,8 +55,6 @@ impl Compile for Instruction {
 
 #[cfg(test)]
 mod test {
-    use std::collections::{HashMap, VecDeque};
-
     use vixen::core::{instruction::Operation, registers::RegisterId};
 
     use crate::{models::Operand, parser::Program};
@@ -70,12 +68,7 @@ mod test {
             operands: vec![Operand::Register(RegisterId::R0), Operand::Literal(32)],
         };
 
-        let mut program = Program {
-            constants: HashMap::new(),
-            labels: HashMap::new(),
-            macros: Vec::new(),
-            instructions: VecDeque::new(),
-        };
+        let mut program = Program::default();
         program.instructions.push_back(instruction);
 
         let result = Compiler::default()
