@@ -28,6 +28,7 @@ pub enum ParseError {
     UnexpectedEof,
     InvalidInstruction(String),
     InvalidRegister(String),
+    ConstantAlreadyDefined(String),
     UnsupportedIndirect(Operand),
 }
 

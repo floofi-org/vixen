@@ -75,6 +75,10 @@ fn identifier(
         Token::Equals => {
             let constant = Constant::parse(identifier, parser)?;
 
+            if constants.contains_key(&constant.0) {
+                return Err(ParseError::ConstantAlreadyDefined(constant.0));
+            }
+
             constants.insert(constant.0, constant.1);
         }
 
