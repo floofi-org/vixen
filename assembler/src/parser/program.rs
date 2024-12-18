@@ -10,7 +10,9 @@ use super::operation::OperationExt;
 use super::r#macro::MacroDefinition;
 use super::{Constant, FromTokenStream, ParseError, Parser};
 
-#[derive(Debug, Default)]
+const BUILTIN_CONSTANTS: &[(&str, u32)] = &[];
+
+#[derive(Debug)]
 pub struct Program {
     pub constants: HashMap<String, u32>,
     pub labels: HashMap<String, usize>,
@@ -18,12 +20,25 @@ pub struct Program {
     pub instructions: VecDeque<Instruction>,
 }
 
+impl Default for Program {
+    fn default() -> Self {
+        let constants = BUILTIN_CONSTANTS.iter()
+            .map(|(k, v)| ((*k).to_owned(), *v))
+            .collect();
+
+        Self {
+            constants,
+            labels: HashMap::default(),
+            macros: Vec::default(),
+            instructions: VecDeque::default(),
+        }
+    }
+}
+
+
 impl FromTokenStream for Program {
     fn parse(parser: &mut Parser) -> Result<Self, ParseError> {
-        let mut constants = HashMap::new();
-        let mut labels = HashMap::new();
-        let mut macros = Vec::new();
-        let mut instructions = VecDeque::new();
+        let mut program = Program::default();
 
         loop {
             let token = parser.peek()?;
@@ -31,11 +46,11 @@ impl FromTokenStream for Program {
             match token {
                 Token::Dot => {
                     let r#macro = MacroDefinition::parse(parser)?;
-                    macros.push((r#macro, instructions.len()));
+                    program.macros.push((r#macro, program.instructions.len()));
                 },
 
                 Token::Literal(Literal::Identifier(ident)) => {
-                    identifier(ident.clone(), &mut constants, &mut labels, &mut instructions, parser)?;
+                    identifier(ident.clone(), &mut program.constants, &mut program.labels, &mut program.instructions, parser)?;
                 },
 
                 Token::LineBreak => {
@@ -47,12 +62,7 @@ impl FromTokenStream for Program {
             }
         }
 
-        Ok(Self {
-            constants,
-            labels,
-            macros,
-            instructions,
-        })
+        Ok(program)
     }
 }
 

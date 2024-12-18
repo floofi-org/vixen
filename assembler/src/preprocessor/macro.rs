@@ -69,6 +69,7 @@ impl Macro {
         }
 
         program.labels.extend(included.labels);
+        program.constants.extend(included.constants);
 
         Ok(())
     }
