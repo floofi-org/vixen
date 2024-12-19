@@ -4,8 +4,8 @@ use crate::CPU;
 use crate::InstructionResult;
 
 pub fn cmp(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = cpu.registers.r0;
-    let value2 = operand[0].read_word()?;
+    let value1 = operand[0].read_word()?;
+    let value2 = operand[1].read_word()?;
 
     cpu.status_register.zero = value1 == value2;
     cpu.status_register.carry = value1 >= value2;
@@ -15,8 +15,8 @@ pub fn cmp(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn lte(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = cpu.registers.r0;
-    let value2 = operand[0].read_word()?;
+    let value1 = operand[0].read_word()?;
+    let value2 = operand[1].read_word()?;
 
     cpu.status_register.zero = value1 <= value2;
     cpu.status_register.carry = value1 > value2;
@@ -26,8 +26,8 @@ pub fn lte(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn gte(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = cpu.registers.r0;
-    let value2 = operand[0].read_word()?;
+    let value1 = operand[0].read_word()?;
+    let value2 = operand[1].read_word()?;
 
     cpu.status_register.zero = value1 >= value2;
     cpu.status_register.carry = value1 < value2;
