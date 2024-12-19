@@ -3,68 +3,68 @@ use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
 
-pub fn and(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn and(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let result = number1 & number2;
 
     cpu.status_register.zero = result == 0;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn or(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn or(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let result = number1 | number2;
 
     cpu.status_register.zero = result == 0;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn xor(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn xor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let result = number1 ^ number2;
 
     cpu.status_register.zero = result == 0;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn nor(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn nor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let result = !(number1 | number2);
 
     cpu.status_register.zero = result == 0;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn nad(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn nad(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let result = !(number1 & number2);
 
     cpu.status_register.zero = result == 0;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn imp(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn imp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let result = (!number1) | number2;
 
     cpu.status_register.zero = result == 0;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }

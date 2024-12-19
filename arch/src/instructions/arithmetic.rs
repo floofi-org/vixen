@@ -5,10 +5,10 @@ use crate::CPU;
 use crate::InstructionResult;
 use libm::{sqrt, cbrt};
 
-pub fn add(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
+pub fn add(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let number2_negative = number2 >> 31 == 1;
 
     let sum = number1.overflowing_add(number2);
@@ -18,15 +18,15 @@ pub fn add(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
     cpu.status_register.zero = sum.0 == 0;
     cpu.status_register.negative = sum_negative;
-    cpu.registers.r0 = sum.0;
+    operands[0].write_word(cpu, sum.0)?;
 
     Ok(())
 }
 
-pub fn sub(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
+pub fn sub(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let number2_negative = number2 >> 31 == 1;
 
     let diff = number1.overflowing_sub(number2);
@@ -36,15 +36,15 @@ pub fn sub(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
     cpu.status_register.zero = diff.0 == 0;
     cpu.status_register.negative = diff_negative;
-    cpu.registers.r0 = diff.0;
+    operands[0].write_word(cpu, diff.0)?;
 
     Ok(())
 }
 
-pub fn mul(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
+pub fn mul(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let number2_negative = number2 >> 31 == 1;
 
     let result = number1.overflowing_mul(number2);
@@ -55,14 +55,14 @@ pub fn mul(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
         ((number1_negative != number2_negative) && !result_negative);
     cpu.status_register.zero = result.0 == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result.0;
+    operands[0].write_word(cpu, result.0)?;
 
     Ok(())
 }
 
-pub fn div(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn div(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
 
     if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
@@ -73,14 +73,14 @@ pub fn div(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = number1 == 2_147_483_647 && number2 == 4_294_967_295;
     cpu.status_register.zero = result.0 == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result.0;
+    operands[0].write_word(cpu, result.0)?;
 
     Ok(())
 }
 
-pub fn mod_(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+pub fn r#mod(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
 
     if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
@@ -89,43 +89,43 @@ pub fn mod_(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
     cpu.status_register.zero = result == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
 // Square root should be unsigned and 8-bit, this is intended
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-pub fn sqt(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+pub fn sqt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number = operands[1].read_word()?;
     let result = sqrt(f64::from(number)) as u32;
     let result_negative = result >> 31 == 1;
 
     cpu.status_register.zero = result == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
 // Cube root should be unsigned and 8-bit, this is intended
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-pub fn cbt(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+pub fn cbt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number = operands[1].read_word()?;
     let result = cbrt(f64::from(number)) as u32;
     let result_negative = result >> 31 == 1;
 
     cpu.status_register.zero = result == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
 // Overflow is (by definition) for signed operations
 #[allow(clippy::cast_possible_wrap)]
-pub fn sqr(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+pub fn sqr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number = operands[1].read_word()?;
     let number_abs = (number as i32).unsigned_abs();
 
     let result = number.overflowing_pow(2);
@@ -135,15 +135,15 @@ pub fn sqr(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = number_abs > 65535;
     cpu.status_register.zero = result.0 == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result.0;
+    operands[0].write_word(cpu, result.0)?;
 
     Ok(())
 }
 
 // Overflow is (by definition) for signed operations
 #[allow(clippy::cast_possible_wrap)]
-pub fn cbe(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+pub fn cbe(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number = operands[1].read_word()?;
     let number_abs = (number as i32).unsigned_abs();
 
     let result = number.overflowing_pow(3);
@@ -153,41 +153,41 @@ pub fn cbe(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = number_abs > 1625;
     cpu.status_register.zero = result.0 == 0;
     cpu.status_register.negative = result_negative;
-    cpu.registers.r0 = result.0;
+    operands[0].write_word(cpu, result.0)?;
 
     Ok(())
 }
 
-pub fn min(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operand[0].read_word()?;
-    let number2 = operand[1].read_word()?;
+pub fn min(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[0].read_word()?;
+    let number2 = operands[1].read_word()?;
 
     let result = number1.min(number2);
 
     cpu.status_register.zero = result == 0;
     cpu.status_register.negative = result >> 31 == 1;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn max(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operand[0].read_word()?;
-    let number2 = operand[1].read_word()?;
+pub fn max(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
 
     let result = number1.max(number2);
 
     cpu.status_register.zero = result == 0;
     cpu.status_register.negative = result >> 31 == 1;
-    cpu.registers.r0 = result;
+    operands[0].write_word(cpu, result)?;
 
     Ok(())
 }
 
-pub fn adc(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
+pub fn adc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let number2_negative = number2 >> 31 == 1;
 
     let sum_pre = number1.overflowing_add(number2);
@@ -198,15 +198,15 @@ pub fn adc(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = (number1_negative == number2_negative) && (sum_negative != number1_negative);
     cpu.status_register.zero = sum.0 == 0;
     cpu.status_register.negative = sum_negative;
-    cpu.registers.r0 = sum.0;
+    operands[0].write_word(cpu, sum.0)?;
 
     Ok(())
 }
 
-pub fn sbc(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
+pub fn sbc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let number1 = operands[1].read_word()?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[1].read_word()?;
+    let number2 = operands[2].read_word()?;
     let number2_negative = number2 >> 31 == 1;
 
     let diff_pre = number1.overflowing_sub(number2);
@@ -217,7 +217,7 @@ pub fn sbc(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.overflow = (number1_negative != number2_negative) && (diff_negative != number1_negative);
     cpu.status_register.zero = diff.0 == 0;
     cpu.status_register.negative = diff_negative;
-    cpu.registers.r0 = diff.0;
+    operands[0].write_word(cpu, diff.0)?;
 
     Ok(())
 }

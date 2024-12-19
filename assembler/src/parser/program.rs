@@ -73,7 +73,7 @@ fn identifier(
     instructions: &mut VecDeque<Instruction>,
     parser: &mut Parser,
 ) -> Result<(), ParseError> {
-    parser.next().unwrap();
+    parser.next()?;
     let next = parser.peek()?;
 
     match next {

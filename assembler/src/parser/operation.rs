@@ -69,8 +69,6 @@ impl OperationExt for Operation {
             "sro" => Sro,
 
 
-            "ldr" => Ldr,
-            "str" => Str,
             "mov" => Mov,
             "swp" => Swp,
             "clr" => Clr,

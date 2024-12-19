@@ -38,7 +38,7 @@ pub enum Operation {
     /* 0x02?? */ And, Or,  Xor, Nor, Nad, Imp, Not, Shl, Shr, Rol, Ror,
     /* 0x03?? */ Inc, Dec,
     /* 0x04?? */ Cmp, Lte, Gte, Srz, Src, Sro,
-    /* 0x05?? */ Ldr, Str, Mov, Swp, Clr, Sec, Clc, Sei, Cli, Clv,
+    /* 0x05?? */ Mov, Swp, Clr, Sec, Clc, Sei, Cli, Clv,
     /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam, Bpl, Bmi,
     /* 0x07?? */ Psh, Pll, Php, Plp
 }
@@ -103,16 +103,14 @@ isa! {
     0x045 => Sro,
 
     // 0x05?? - Data Movement Instructions
-    0x050 => Ldr,
-    0x051 => Str,
-    0x052 => Mov,
-    0x053 => Swp,
-    0x054 => Clr,
-    0x055 => Sec,
-    0x056 => Clc,
-    0x057 => Sei,
-    0x058 => Cli,
-    0x059 => Clv,
+    0x050 => Mov,
+    0x051 => Swp,
+    0x052 => Clr,
+    0x053 => Sec,
+    0x054 => Clc,
+    0x055 => Sei,
+    0x056 => Cli,
+    0x057 => Clv,
 
     // 0x06?? - Control Flow Instructions
     0x060 => Jmp,

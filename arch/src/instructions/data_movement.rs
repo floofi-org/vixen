@@ -3,17 +3,6 @@ use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
 
-pub fn ldr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    cpu.registers.r0 = operands[0].read_word()?;
-    cpu.status_register.zero = cpu.registers.r0 == 0;
-    Ok(())
-}
-
-pub fn str(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    operands[0].write_word(cpu, cpu.registers.r0)?;
-    Ok(())
-}
-
 pub fn mov(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let value = operands[1].read_word()?;
     operands[0].write_word(cpu, value)?;
