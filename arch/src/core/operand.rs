@@ -87,10 +87,17 @@ impl Operand {
 
     #[must_use]
     pub fn disassemble(raw_operand: u32, cpu: &CPU, mode: Addressing) -> String {
-        if let Ok(operand) = Operand::decode(raw_operand, cpu, mode) {
-            operand.disassemble_self()
-        } else {
-            String::from("<unk>")
+        match mode {
+            Addressing::RegisterIndirect => match RegisterId::try_from(raw_operand) {
+                Ok(register) => format!("[{register:?}]").to_lowercase(),
+                Err(_) => String::from("<unk>")
+            },
+            Addressing::Indirect => format!("[${raw_operand:0>8x}]"),
+            _ => if let Ok(operand) = Operand::decode(raw_operand, cpu, mode) {
+                operand.disassemble_self()
+            } else {
+                String::from("<unk>")
+            }
         }
     }
 

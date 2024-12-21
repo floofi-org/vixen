@@ -6,13 +6,13 @@ strcopy:
     ; Check whether the string length is zero
     ; If so return
     mov r0, r1
-    cmp #0
+    cmp r0, #0
     bne +30
     ret
 
     ; Copy character to destination
-    ldr [r2]
-    str [r3]
+    mov [r2], r0
+    mov [r3], r0
 
     ; Increment pointers and decrement remaining string length
     inc r2
