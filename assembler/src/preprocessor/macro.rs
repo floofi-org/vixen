@@ -48,7 +48,7 @@ impl Macro {
             }
         };
 
-        let mut included = match crate::compile_to_program(&source_path, &source) {
+        let mut included = match crate::compile_for_include(&source_path, &source) {
             Ok(s) => s,
             Err(e) => {
                 return Err(PreprocessorError::IncludeCompileError(source_path, Box::new(e)));

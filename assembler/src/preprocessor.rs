@@ -21,6 +21,7 @@ pub enum PreprocessorError {
     IncludeCompileError(PathBuf, Box<Error>)
 }
 
+#[derive(Debug)]
 pub struct ProcessedProgram {
     pub constants: HashMap<String, u32>,
     pub labels: HashMap<String, usize>,
@@ -32,7 +33,7 @@ impl Preprocessor {
     const START_OF_BOOT_ROM: u32 = 0x0000_0200;
     const INSTRUCTION_SIZE: u32 = 15;
 
-    pub fn process(source_path: &Path, program: Program) -> Result<ProcessedProgram, PreprocessorError> {
+    pub fn process(source_path: &Path, program: Program, included: bool) -> Result<ProcessedProgram, PreprocessorError> {
         let Program { constants, labels, macros, instructions } = program;
         let mut processed = ProcessedProgram {
             constants,
@@ -43,6 +44,11 @@ impl Preprocessor {
         for (definition, offset) in macros {
             let r#macro: Macro = definition.try_into()?;
             r#macro.apply(source_path, &mut processed, offset)?;
+        }
+
+        // If we're getting included, stop here and don't substitute anything
+        if included {
+            return Ok(processed);
         }
 
         let operands = processed.instructions
