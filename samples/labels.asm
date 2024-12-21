@@ -3,12 +3,13 @@
         int
 
 foo:
-        mov     R1, #12         ; Set R1 to 12
-        mov     R2, #34         ; Set R2 to 34
-        add     R1, R2          ; 12 + 34
-        str     $1000           ; Store at 0x1000
+        mov     r1, #12         ; Set r1 to 12
+        mov     r2, #34         ; Set r2 to 34
+        add     r1, r1, r2      ; 12 + 34
+        mov     r1, $1000       ; Store at 0x1000
         ret
 
-bar:    ldr     $1000           ; Load from 0x1000
-        mov     R6, R0          ; Move to R6
+bar:
+        mov     r0, $1000       ; Load from 0x1000
+        mov     r6, r0          ; Move to r6
         ret
