@@ -1,3 +1,5 @@
+use crate::core::Interrupt;
+
 pub type BusResult<T> = Result<T, BusError>;
 
 #[repr(u32)]
@@ -6,5 +8,12 @@ pub enum BusError {
     ReadOnly,
     WriteOnly,
     DeviceEvent,
-    EmptyBuffer
+    EmptyBuffer,
+    InternalSystem
+}
+
+impl From<Interrupt> for BusError {
+    fn from(_: Interrupt) -> Self {
+        Self::InternalSystem
+    }
 }

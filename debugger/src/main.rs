@@ -5,9 +5,10 @@ use std::process::exit;
 use std::{env, fs, io};
 use std::io::Write;
 use vixen::core::Interrupt;
-use vixen::{CPU, MEMORY_64M};
+use vixen::{BusDevice, CPU, MEMORY_64M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
+use vixen_devices::terminal::TerminalDevice;
 
 #[derive(Default)]
 struct DebuggerState {
@@ -38,6 +39,14 @@ fn main() {
     let mut cpu = CPU::new(MEMORY_64M);
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
+        exit(2);
+    }
+
+    let devices: Vec<Box<dyn BusDevice>> = vec![
+        Box::new(TerminalDevice::new())
+    ];
+    if let Err(e) = cpu.register_devices(devices) {
+        eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");
         exit(2);
     }
 

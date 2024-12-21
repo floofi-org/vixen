@@ -1,6 +1,7 @@
 pub mod system_stack;
 pub mod user_stack;
 pub mod decoder;
+mod io_controller;
 
 use alloc::boxed::Box;
 pub use decoder::Decoder;
@@ -13,7 +14,8 @@ use crate::core::{Interrupt, Specification};
 use crate::core::registers::RegisterId;
 use crate::core::Registers;
 use crate::core::registers::StatusRegister;
-use crate::{CPUResult, InstructionResult, CPU_SPECIFICATION};
+use crate::{BusDevice, CPUResult, InstructionResult, CPU_SPECIFICATION};
+use crate::cpu::io_controller::IOController;
 
 #[derive(Debug)]
 pub struct CPU {
@@ -22,7 +24,8 @@ pub struct CPU {
     pub program_counter: u32,
     pub status_register: StatusRegister,
     pub memory: Box<[u8]>,
-    pub system_stack: Vec<u32>
+    pub system_stack: Vec<u32>,
+    pub io: IOController
 }
 
 impl CPU {
@@ -35,6 +38,7 @@ impl CPU {
             status_register: StatusRegister::default(),
             memory: vec![0u8; memory_size].into_boxed_slice(),
             system_stack: vec![],
+            io: IOController::default()
         }
     }
 
@@ -53,6 +57,14 @@ impl CPU {
         // Reset stack pointer to the start of the stack
         self.stack_pointer = 0x0410_0201;
         self.system_stack_save_state()?;
+
+        Ok(())
+    }
+
+    pub fn register_devices(&mut self, devices: Vec<Box<dyn BusDevice>>) -> CPUResult<()> {
+        for device in devices {
+            self.io.add(device)?;
+        }
 
         Ok(())
     }
@@ -86,6 +98,7 @@ impl CPU {
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
+        self.io.tick()?;
         let mut instruction = self.read_instruction(self.program_counter)?;
         if let Err(interrupt) = instruction.execute_unhandled(self) {
             if self.status_register.interrupt_disable && interrupt.is_maskable() {

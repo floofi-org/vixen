@@ -1,18 +1,27 @@
 use std::collections::VecDeque;
 use std::io;
-use std::io::{Read, StdinLock, Stdout, Write};
+use std::io::{Read, Stdin, Stdout, Write};
 use vixen::BusDevice;
 use vixen::devices::errors::{BusError, BusResult};
 
 #[derive(Debug)]
-struct TerminalDevice<'a> {
+pub struct TerminalDevice {
     write_buffer: VecDeque<u8>,
     read_buffer: VecDeque<u8>,
-    stdin: StdinLock<'a>,
+    stdin: Stdin,
     stdout: Stdout
 }
 
-impl TerminalDevice<'_> {
+impl TerminalDevice {
+    pub fn new() -> Self {
+        Self {
+            write_buffer: VecDeque::new(),
+            read_buffer: VecDeque::new(),
+            stdin: io::stdin(),
+            stdout: io::stdout()
+        }
+    }
+    
     fn read(&mut self) -> BusResult<u32> {
         match self.write_buffer.pop_front() {
             Some(ch) => Ok(u32::from(ch)),
@@ -28,18 +37,13 @@ impl TerminalDevice<'_> {
     }
 }
 
-impl<'a> BusDevice<'a> for TerminalDevice<'a> {
-    fn new() -> Self {
-        Self {
-            write_buffer: VecDeque::new(),
-            read_buffer: VecDeque::new(),
-            stdin: io::stdin().lock(),
-            stdout: io::stdout()
-        }
-    }
-
-    fn get_port_count() -> u32 {
+impl BusDevice for TerminalDevice {
+    fn get_port_count(&self) -> u32 {
         3
+    }
+    #[allow(clippy::unreadable_literal)]
+    fn get_base_address(&self) -> u32 {
+        0x04000200
     }
 
     fn read_port(&mut self, index: u32) -> BusResult<u32> {
@@ -65,7 +69,8 @@ impl<'a> BusDevice<'a> for TerminalDevice<'a> {
         }
 
         let mut char_buffer = [0u8; 1];
-        if let Ok(1) = self.stdin.read(&mut char_buffer) {
+        let mut stdin = self.stdin.lock();
+        if let Ok(1) = stdin.read(&mut char_buffer) {
             self.read_buffer.push_back(char_buffer[0]);
             return Err(BusError::DeviceEvent);
         }

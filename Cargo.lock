@@ -182,6 +182,7 @@ name = "vdbg"
 version = "0.1.0"
 dependencies = [
  "vixen",
+ "vixen-devices",
 ]
 
 [[package]]
@@ -189,6 +190,7 @@ name = "vemu"
 version = "0.1.0"
 dependencies = [
  "vixen",
+ "vixen-devices",
 ]
 
 [[package]]

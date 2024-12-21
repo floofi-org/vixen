@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 vixen = { path = "../arch" }
+vixen-devices = { path = "../devices" }
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -4,8 +4,9 @@ use std::{env, fs};
 
 use vixen::core::Interrupt;
 use vixen::core::StackTrace;
-use vixen::{CPU, MEMORY_64M};
+use vixen::{BusDevice, CPU, MEMORY_64M};
 use vixen::CPUResult;
+use vixen_devices::terminal::TerminalDevice;
 
 fn main() {
     let path = get_rom_path().unwrap_or_else(|| {
@@ -32,6 +33,14 @@ fn main() {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);
     }
+    
+    let devices: Vec<Box<dyn BusDevice>> = vec![
+        Box::new(TerminalDevice::new())
+    ];
+    if let Err(e) = cpu.register_devices(devices) {
+        eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");
+        exit(2);
+    }
 
     if let Err(interrupt) = run_cpu(&mut cpu) {
         on_unhandled_interrupt(&cpu, interrupt);
@@ -53,10 +62,4 @@ fn run_cpu(cpu: &mut CPU) -> CPUResult<()> {
 
 fn on_unhandled_interrupt(cpu: &CPU, interrupt: Interrupt) {
     println!("\u{1b}[33m{}\u{1b}[0m", StackTrace::new(interrupt, cpu));
-
-    /*let result = fs::write("./memory.bin", &cpu.memory);
-    match result {
-        Ok(()) => println!("\u{1b}[33mCore dumped to 'memory.bin'.\u{1b}[0m"),
-        Err(e) => println!("\u{1b}[33mFailed to dump memory: {e}\u{1b}[0m"),
-    }*/
 }
