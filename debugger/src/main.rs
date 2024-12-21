@@ -10,10 +10,14 @@ use vixen::cpu::Decoder;
 use vixen::CPUResult;
 use vixen_devices::Terminal;
 
-#[derive(Default)]
+use stdin::DebuggerStdin;
+
+mod stdin;
+
 struct DebuggerState {
     pub running: bool,
-    pub interrupt: Option<Interrupt>
+    pub interrupt: Option<Interrupt>,
+    pub stdin: DebuggerStdin,
 }
 
 fn main() {
@@ -42,15 +46,24 @@ fn main() {
         exit(2);
     }
 
+    let stdin = DebuggerStdin::new();
+
     let devices: Vec<Box<dyn BusDevice>> = vec![
-        Box::new(Terminal::new())
+        Box::new(Terminal::new(stdin.clone()))
     ];
+
     if let Err(e) = cpu.register_devices(devices) {
         eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");
         exit(2);
     }
 
-    debug_cpu(&mut cpu, rom.len());
+    let mut state = DebuggerState {
+        running: false,
+        interrupt: None,
+        stdin,
+    };
+
+    debug_cpu(&mut state, &mut cpu, rom.len());
 }
 
 fn get_rom_path() -> Option<OsString> {
@@ -83,19 +96,20 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
         "i" | "interrupt" => commands::interrupt(state, cpu),
         "e" | "expand" => commands::expand(cpu),
         "q" | "quit" => commands::quit(),
+        line if line.starts_with('>') || line.starts_with("input") => commands::input(state, line),
         _ => commands::default(cpu, line)
     }
 
     Ok(())
 }
 
-fn debug_cpu(cpu: &mut CPU, rom_size: usize) {
+fn debug_cpu(state: &mut DebuggerState, cpu: &mut CPU, rom_size: usize) {
     println!("\u{1b}[33mLoaded {rom_size} bytes of system ROM.\u{1b}[0m");
     println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
              cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
-    let mut state = DebuggerState::default();
+
     loop {
-        if let Err(interrupt) = debugger_prompt(cpu, &mut state) {
+        if let Err(interrupt) = debugger_prompt(cpu, state) {
             state.interrupt = Some(interrupt);
             state.running = false;
             println!("\u{1b}[33mUnhandled interrupt {interrupt} at {:0>8x}: {}\u{1b}[0m",

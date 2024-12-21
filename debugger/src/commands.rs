@@ -18,6 +18,7 @@ pub fn help() {
     println!("  registers    -- Display current system registers (shorthand: g)");
     println!("  location     -- Show program location in memory (shorthand: l)");
     println!("  expand       -- Expand a binary instruction (shorthand: e)");
+    println!("  input        -- Write to stdin (shorthand: >)");
     println!("  <hex addr>   -- Display memory address");
 }
 
@@ -122,6 +123,11 @@ pub fn expand(cpu: &mut CPU) {
             println!("        !?");
         }
     }
+}
+
+pub fn input(state: &mut DebuggerState, line: &str) {
+    let line = line.trim_start_matches('>').trim();
+    state.stdin.write(line);
 }
 
 pub fn quit() {

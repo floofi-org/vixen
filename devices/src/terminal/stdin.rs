@@ -1,15 +1,21 @@
-use std::sync::mpsc::{Receiver, SyncSender};
+use std::fmt::Debug;
 use std::io::{self, Read, Stdin};
+use std::sync::mpsc::{Receiver, SyncSender};
 use std::thread;
 
 
 #[allow(clippy::module_name_repetitions)]
+pub trait StdinReader: Debug {
+    fn read(&self) -> Option<u8>;
+}
+
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
-pub struct StdinReader {
+pub struct TerminalStdin {
     receiver: Receiver<u8>,
 }
 
-impl StdinReader {
+impl TerminalStdin {
     pub fn spawn(sender: SyncSender<u8>, receiver: Receiver<u8>) -> Self {
         let stdin = io::stdin();
 
@@ -19,10 +25,12 @@ impl StdinReader {
             receiver,
         }
     }
+}
 
-    pub fn read(&self) -> Option<u8> {
-        if let Ok(value) = self.receiver.try_recv() {
-            Some(value)
+impl StdinReader for TerminalStdin {
+    fn read(&self) -> Option<u8> {
+        if let Ok(char) = self.receiver.try_recv() {
+            Some(char)
         } else {
             None
         }

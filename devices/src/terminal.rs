@@ -1,26 +1,34 @@
 use std::collections::VecDeque;
 use std::io;
 use std::io::{Stdout, Write};
-use stdin::StdinReader;
+use stdin::TerminalStdin;
 use vixen::BusDevice;
 use vixen::devices::errors::{BusError, BusResult};
 
 mod stdin;
 
+pub use stdin::StdinReader;
+
 #[derive(Debug)]
-pub struct Terminal {
-    stdin: StdinReader,
+pub struct Terminal<S: StdinReader> {
+    stdin: S,
     stdout: Stdout,
     read_buffer: VecDeque<u8>,
     write_buffer: VecDeque<u8>,
 }
 
-impl Terminal {
-    #[must_use]
-    pub fn new() -> Self {
+impl Default for Terminal<TerminalStdin> {
+    fn default() -> Self {
         let (sender, receiver) = std::sync::mpsc::sync_channel(0);
+        let stdin = TerminalStdin::spawn(sender, receiver);
 
-        let stdin = StdinReader::spawn(sender, receiver);
+        Self::new(stdin)
+    }
+}
+
+impl<S: StdinReader> Terminal<S> {
+    #[must_use]
+    pub fn new(stdin: S) -> Self {
         let stdout = io::stdout();
         let read_buffer = VecDeque::new();
         let write_buffer = VecDeque::new();
@@ -48,13 +56,7 @@ impl Terminal {
     }
 }
 
-impl Default for Terminal {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl BusDevice for Terminal {
+impl<S: StdinReader> BusDevice for Terminal<S> {
     fn get_port_count(&self) -> u32 {
         3
     }

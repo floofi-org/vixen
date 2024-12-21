@@ -35,7 +35,7 @@ fn main() {
     }
 
     let devices: Vec<Box<dyn BusDevice>> = vec![
-        Box::new(Terminal::new())
+        Box::new(Terminal::default())
     ];
     if let Err(e) = cpu.register_devices(devices) {
         eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");
