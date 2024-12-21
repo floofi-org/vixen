@@ -6,7 +6,7 @@ use vixen::core::Interrupt;
 use vixen::core::StackTrace;
 use vixen::{BusDevice, CPU, MEMORY_64M};
 use vixen::CPUResult;
-use vixen_devices::terminal::TerminalDevice;
+use vixen_devices::Terminal;
 
 fn main() {
     let path = get_rom_path().unwrap_or_else(|| {
@@ -33,9 +33,9 @@ fn main() {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);
     }
-    
+
     let devices: Vec<Box<dyn BusDevice>> = vec![
-        Box::new(TerminalDevice::new())
+        Box::new(Terminal::new())
     ];
     if let Err(e) = cpu.register_devices(devices) {
         eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");

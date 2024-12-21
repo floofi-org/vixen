@@ -8,7 +8,7 @@ use vixen::core::Interrupt;
 use vixen::{BusDevice, CPU, MEMORY_64M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
-use vixen_devices::terminal::TerminalDevice;
+use vixen_devices::Terminal;
 
 #[derive(Default)]
 struct DebuggerState {
@@ -43,7 +43,7 @@ fn main() {
     }
 
     let devices: Vec<Box<dyn BusDevice>> = vec![
-        Box::new(TerminalDevice::new())
+        Box::new(Terminal::new())
     ];
     if let Err(e) = cpu.register_devices(devices) {
         eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");

@@ -1,29 +1,40 @@
 use std::collections::VecDeque;
 use std::io;
-use std::io::{Read, Stdin, Stdout, Write};
+use std::io::{Stdout, Write};
+use stdin::StdinReader;
 use vixen::BusDevice;
 use vixen::devices::errors::{BusError, BusResult};
 
+mod stdin;
+
 #[derive(Debug)]
-pub struct TerminalDevice {
-    write_buffer: VecDeque<u8>,
+pub struct Terminal {
+    stdin: StdinReader,
+    stdout: Stdout,
     read_buffer: VecDeque<u8>,
-    stdin: Stdin,
-    stdout: Stdout
+    write_buffer: VecDeque<u8>,
 }
 
-impl TerminalDevice {
+impl Terminal {
+    #[must_use]
     pub fn new() -> Self {
+        let (sender, receiver) = std::sync::mpsc::sync_channel(0);
+
+        let stdin = StdinReader::spawn(sender, receiver);
+        let stdout = io::stdout();
+        let read_buffer = VecDeque::new();
+        let write_buffer = VecDeque::new();
+
         Self {
-            write_buffer: VecDeque::new(),
-            read_buffer: VecDeque::new(),
-            stdin: io::stdin(),
-            stdout: io::stdout()
+            stdin,
+            stdout,
+            read_buffer,
+            write_buffer,
         }
     }
-    
+
     fn read(&mut self) -> BusResult<u32> {
-        match self.write_buffer.pop_front() {
+        match self.read_buffer.pop_front() {
             Some(ch) => Ok(u32::from(ch)),
             None => Err(BusError::EmptyBuffer)
         }
@@ -32,18 +43,24 @@ impl TerminalDevice {
     #[allow(clippy::unnecessary_wraps)]
     fn write(&mut self, data: u32) -> BusResult<()> {
         #[allow(clippy::cast_possible_truncation)]
-        self.read_buffer.push_back(data as u8);
+        self.write_buffer.push_back(data as u8);
         Ok(())
     }
 }
 
-impl BusDevice for TerminalDevice {
+impl Default for Terminal {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl BusDevice for Terminal {
     fn get_port_count(&self) -> u32 {
         3
     }
-    #[allow(clippy::unreadable_literal)]
+
     fn get_base_address(&self) -> u32 {
-        0x04000200
+        0x0400_0200
     }
 
     fn read_port(&mut self, index: u32) -> BusResult<u32> {
@@ -64,14 +81,13 @@ impl BusDevice for TerminalDevice {
     }
 
     fn tick(&mut self) -> BusResult<()> {
+        // TODO: Handle results here
         if let Some(ch) = self.write_buffer.pop_front() {
-            let _ = self.stdout.write(&[ch]);
+            self.stdout.write_all(&[ch]).unwrap();
         }
 
-        let mut char_buffer = [0u8; 1];
-        let mut stdin = self.stdin.lock();
-        if let Ok(1) = stdin.read(&mut char_buffer) {
-            self.read_buffer.push_back(char_buffer[0]);
+        if let Some(char) = self.stdin.read() {
+            self.read_buffer.push_back(char);
             return Err(BusError::DeviceEvent);
         }
 

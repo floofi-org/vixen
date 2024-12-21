@@ -1,6 +1,6 @@
 use alloc::boxed::Box;
 use alloc::vec::Vec;
-use core::ops::{DerefMut, Range};
+use core::ops::Range;
 use crate::{BusDevice, CPUResult};
 use crate::core::Interrupt;
 use crate::devices::errors::BusResult;
@@ -17,7 +17,7 @@ impl IOController {
             .find(|(range, _)| range.contains(&address))
             .ok_or(Interrupt::IllegalMemory)?;
 
-        let device = device.deref_mut();
+        let device = &mut **device;
         let port = (address - range.start) / 4;
 
         Ok((device, port))
@@ -37,18 +37,19 @@ impl IOController {
         for (_, device) in &mut self.devices {
             device.tick()?;
         }
-        
+
         Ok(())
     }
 
     pub fn add(&mut self, device: Box<dyn BusDevice>) -> CPUResult<()> {
         let start = device.get_base_address();
-        let end = device.get_base_address() + (device.get_port_count() * 4);
-        if self.find_device_port(start).is_err() {
-            self.devices.push((start..end, device));
-            Ok(())
-        } else {
-            Err(Interrupt::Hardware)
+        let end = start + (device.get_port_count() * 4);
+
+        if self.find_device_port(start).is_ok() {
+            return Err(Interrupt::Hardware);
         }
+
+        self.devices.push((start..end, device));
+        Ok(())
     }
 }
