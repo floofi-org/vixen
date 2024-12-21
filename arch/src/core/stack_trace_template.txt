@@ -2,8 +2,9 @@
 Unhandled {reason}: {interrupt}
 At {pc:0>8x} ({state}) -> {disassembler}
 
-{a:0>8x} {x:0>8x} {y:0>8x} {r0:0>8x} {r1:0>8x}
-{r2:0>8x} {r3:0>8x} {r4:0>8x} {r5:0>8x} {r6:0>8x} {r7:0>8x}
+{r0:0>8x}
+{r1:0>8x} {r2:0>8x} {r3:0>8x} {r4:0>8x} {r5:0>8x} {r6:0>8x} {r7:0>8x}
+{r8:0>8x} {r9:0>8x} {r10:0>8x} {r11:0>8x} {r12:0>8x} {r13:0>8x} {r14:0>8x}
 
 Stack Pointer: {sp:0>8x}   Status Register: {sr}
 

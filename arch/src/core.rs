@@ -11,6 +11,6 @@ pub use operand::Operand;
 pub use interrupt::Interrupt;
 pub use instruction::Instruction;
 pub use memory_cell::MemoryCell;
-pub use specification::Specification;
+pub use specification::{Specification, StaticSpecification};
 pub use registers::Registers;
 pub use stack_trace::StackTrace;

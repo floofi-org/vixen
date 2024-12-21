@@ -1,0 +1,17 @@
+[package]
+name = "vasm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.23", features = ["derive"] }
+vixen = { path = "../arch" }
+
+[lints.rust]
+unsafe_code = "forbid"
+rust_2024_compatibility = "warn"
+
+[lints.clippy]
+pedantic = "warn"
+missing_panics_doc = "allow"
+missing_errors_doc = "allow"

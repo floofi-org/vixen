@@ -9,13 +9,14 @@ pub trait MemoryCell {
     fn read_word(&self) -> CPUResult<u32>;
     fn write_word(&mut self, cpu: &mut CPU, value: u32) -> CPUResult<()>;
     fn mode(&self) -> Addressing;
+    fn get_address(&self) -> CPUResult<u32>;
 }
 
 impl MemoryCell for Operand {
     fn read_word(&self) -> CPUResult<u32> {
         Ok(match self {
-            Operand::Literal(value) => *value,
-            Operand::Register(_, value) | Operand::Memory(_, value) => *value,
+            Operand::Literal(value) | Operand::Register(_, value) | 
+                Operand::Memory(_, value) => *value,
             Operand::Void => return Err(Interrupt::IllegalMemory)
         })
     }
@@ -63,6 +64,13 @@ impl MemoryCell for Operand {
             Operand::Register(_, _) => Addressing::Direct,
             Operand::Memory(_, _) => Addressing::Absolute,
             Operand::Void => Addressing::Implied
+        }
+    }
+
+    fn get_address(&self) -> CPUResult<u32> {
+        match self {
+            Operand::Memory(address, _) => Ok(*address),
+            _ => Err(Interrupt::IllegalMemory)
         }
     }
 }

@@ -1,5 +1,5 @@
 [workspace]
-members = ["arch", "emulator", "debugger", "disassembler", "devices"]
+members = ["arch", "emulator", "debugger", "disassembler", "assembler", "devices"]
 resolver = "2"
 
 [profile.release]

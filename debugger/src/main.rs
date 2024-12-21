@@ -1,10 +1,11 @@
+mod commands;
+
 use std::ffi::OsString;
 use std::process::exit;
 use std::{env, fs, io};
 use std::io::Write;
 use vixen::core::Interrupt;
-use vixen::core::StackTrace;
-use vixen::CPU;
+use vixen::{CPU, MEMORY_64M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
 
@@ -28,13 +29,13 @@ fn main() {
         exit(-1);
     });
 
-    if rom.len() > 33_553_920 {
+    if rom.len() > 67_108_864 {
         eprintln!("\u{1b}[33mROM is too large ({} bytes) for the reserved memory space \
-        (33553920 bytes).\u{1b}[0m", rom.len());
+        (67108864 bytes).\u{1b}[0m", rom.len());
         exit(2);
     }
 
-    let mut cpu = CPU::default();
+    let mut cpu = CPU::new(MEMORY_64M);
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);
@@ -48,32 +49,10 @@ fn get_rom_path() -> Option<OsString> {
     env::args_os().nth(1)
 }
 
-fn dump_memory(cpu: &mut CPU, start: usize, end: usize, focus: Option<usize>) {
-    let start = start.max(0);
-    let end = end.min(0xffff_ffff);
-    let mut position = start;
-
-    while position < end {
-        print!("\u{1b}[0m{position:0>8x}:  ");
-        for _ in 0..16 {
-            let focus_start = focus.unwrap_or(cpu.program_counter as usize);
-            let focus_end = focus_start + if focus.is_some() { 1 } else { 10 };
-            match position {
-                x if x > 0xffff_fffe => (),
-                x if x == focus_end - 1 => print!("\u{1b}[43m{:0>2x}\u{1b}[0m ", cpu.memory[position]),
-                x if (focus_start..focus_end).contains(&x) => print!("\u{1b}[43m{:0>2x} ", cpu.memory[position]),
-                _ => print!("{:0>2x} ", cpu.memory[position])
-            }
-            position += 1;
-        }
-        println!();
-    }
-}
-
 fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
     if state.running {
         cpu.tick()?;
-        cpu.program_counter += 10;
+        cpu.program_counter += 15;
         return Ok(());
     }
 
@@ -85,85 +64,17 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
     let line = line.trim();
 
     match line {
-        "?" | "help" => {
-            println!("Debugger commands:");
-            println!("  step         -- Run a single clock cycle (shorthand: s)");
-            println!("  run          -- Run system until breakpoint is hit (shorthand: r)");
-            println!("  help         -- Show this message (shorthand: ?)");
-            println!("  quit         -- Abort program (shorthand: q)");
-            println!("  unblock      -- Unblock interrupted system (shorthand: b)");
-            println!("  interrupt    -- Display interrupt stack trace (shorthand: i)");
-            println!("  registers    -- Display current system registers (shorthand: g)");
-            println!("  location     -- Show program location in memory (shorthand: l)");
-            println!("  <hex addr>   -- Display memory address");
-        },
-        "s" | "step" => {
-            if state.interrupt.is_some() {
-                println!("\u{1b}[33mSystem blocked on interrupt. 'i' for stack trace, 'b' to resume.\u{1b}[0m");
-            } else {
-                cpu.tick()?;
-                cpu.program_counter += 10;
-                println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
-                         cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
-            }
-        },
-        "b" | "unblock" => {
-            state.interrupt = None;
-            cpu.program_counter += 10;
-            println!("\u{1b}[33mSystem unblocked. Ignoring interrupts is unsafe, you are on your own.\u{1b}[0m");
-        },
-        "r" | "run" => {
-            if state.interrupt.is_some() {
-                println!("\u{1b}[33mSystem blocked on interrupt. 'i' for stack trace, 'b' to resume.\u{1b}[0m");
-            } else {
-                state.running = true;
-            }
-        },
-        // We want to get a valid memory address at the end, this is intended
-        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-        "l" | "location" => {
-            let start = (f64::from(cpu.program_counter) / 32.0).round() as usize * 32 - 32;
-            let end = (f64::from(cpu.program_counter) / 32.0).round() as usize * 32 + 32;
-            dump_memory(cpu, start, end, None);
-        },
-        "g" | "registers" => {
-            println!("A  = {register:0>8x}, {register}", register = cpu.registers.r0);
-            println!("X  = {register:0>8x}, {register}", register = cpu.registers.r1);
-            println!("Y  = {register:0>8x}, {register}", register = cpu.registers.r2);
-            println!("R0 = {register:0>8x}, {register}", register = cpu.registers.r0);
-            println!("R1 = {register:0>8x}, {register}", register = cpu.registers.r1);
-            println!("R2 = {register:0>8x}, {register}", register = cpu.registers.r2);
-            println!("R3 = {register:0>8x}, {register}", register = cpu.registers.r3);
-            println!("R4 = {register:0>8x}, {register}", register = cpu.registers.r4);
-            println!("R5 = {register:0>8x}, {register}", register = cpu.registers.r5);
-            println!("R6 = {register:0>8x}, {register}", register = cpu.registers.r6);
-            println!("R7 = {register:0>8x}, {register}", register = cpu.registers.r7);
-        },
-        "i" | "interrupt" => {
-            if state.interrupt.is_some() {
-                println!("{}", StackTrace::new(state.interrupt.unwrap(), cpu));
-            } else {
-                println!("\u{1b}[33mSystem is not blocked.\u{1b}[0m");
-            }
-        },
-        "q" | "quit" => {
-            exit(0);
-        },
-        _ => {
-            if let Ok(number) = u16::from_str_radix(line, 16) {
-                // We want to get a valid memory address at the end, this is intended
-                #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-                if number == 0xFFFF {
-                    println!("\u{1b}[33mInvalid memory address.\u{1b}[0m");
-                } else {
-                    let start = (f32::from(number.clamp(32, 65503)) / 32.0).round() as usize * 32 - 32;
-                    let end = (f32::from(number.clamp(32, 65503)) / 32.0).round() as usize * 32 + 32;
-                    dump_memory(cpu, start, end, Some(number as usize));
-                }
-            } else {
-                println!("\u{1b}[33mInvalid or empty command.\u{1b}[0m");
-            }
-        }
+        "?" | "help" => commands::help(),
+        "s" | "step" => commands::step(state, cpu)?,
+        "b" | "unblock" => commands::unblock(state, cpu),
+        "j" | "jump" => commands::jump(cpu),
+        "r" | "run" => commands::run(state),
+        "l" | "location" => commands::location(cpu),
+        "g" | "registers" => commands::registers(cpu),
+        "i" | "interrupt" => commands::interrupt(state, cpu),
+        "e" | "expand" => commands::expand(cpu),
+        "q" | "quit" => commands::quit(),
+        _ => commands::default(cpu, line)
     }
 
     Ok(())
@@ -172,14 +83,14 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
 fn debug_cpu(cpu: &mut CPU, rom_size: usize) {
     println!("\u{1b}[33mLoaded {rom_size} bytes of system ROM.\u{1b}[0m");
     println!("\u{1b}[33mProgram at {:0>8x}: {}\u{1b}[0m",
-             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+             cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
     let mut state = DebuggerState::default();
     loop {
         if let Err(interrupt) = debugger_prompt(cpu, &mut state) {
             state.interrupt = Some(interrupt);
             state.running = false;
             println!("\u{1b}[33mUnhandled interrupt {interrupt} at {:0>8x}: {}\u{1b}[0m",
-                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter, false));
+                     cpu.program_counter, cpu.read_instruction_string(cpu.program_counter));
         }
     }
 }

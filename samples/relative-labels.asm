@@ -2,12 +2,12 @@
         int
 
 foo:
-        ldx     #12             ; Set X to 12
-        ldy     #34             ; Set Y to 34
-        add     X, Y            ; 12 + 34
+        mov     r1, #12         ; Set R1 to 12
+        mov     r2, #34         ; Set R2 to 34
+        add     r1, r1, r2      ; 12 + 34
         bne     bar             ; Immediately return
-        lda     $1000           ; Load from 0x1000
-        mov     A, R6           ; Move to R6
+        mov     r0, $1000       ; Load from 0x1000
+        mov     r6, r0          ; Move to R6
 
 bar:
         ret
