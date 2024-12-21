@@ -45,7 +45,10 @@ pub fn string(scanner: &mut Scanner) -> Option<Token> {
         .filter(quotation_mark)
         .expect("Expected beginning of a string");
 
-    let string = scanner.next_while(|c| *c != '"')?;
+    let string = scanner.next_while(|c| !quotation_mark(c))?;
+    scanner.next()
+        .filter(quotation_mark)
+        .expect("Expected end of a string");
 
     Some(Token::Literal(Literal::String(string)))
 }
