@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::path::{Path, PathBuf};
 
 use vixen::core::instruction::Operation;
@@ -32,11 +31,11 @@ impl Macro {
     }
 
     fn interrupt(program: &mut ProcessedProgram, instruction_offset: usize) {
-        Self::define_handler(&mut program.instructions, Self::INTERRUPT_HANDLER_ADDRESS, instruction_offset);
+        Self::define_handler(program, Self::INTERRUPT_HANDLER_ADDRESS, instruction_offset);
     }
 
     fn double_fault(program: &mut ProcessedProgram, instruction_offset: usize) {
-        Self::define_handler(&mut program.instructions, Self::DOUBLE_FAULT_HANDLER_ADDRESS, instruction_offset);
+        Self::define_handler(program, Self::DOUBLE_FAULT_HANDLER_ADDRESS, instruction_offset);
     }
 
     fn include(program: &mut ProcessedProgram, instruction_offset: usize, source_path: &Path, path: PathBuf) -> Result<(), PreprocessorError> {
@@ -75,7 +74,7 @@ impl Macro {
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    fn define_handler(instructions: &mut VecDeque<Instruction>, setup_address: u32, handler_offset: usize) {
+    fn define_handler(program: &mut ProcessedProgram, setup_address: u32, handler_offset: usize) {
         let mov = Instruction {
             operation: Operation::Mov,
             operands: vec![
@@ -84,7 +83,12 @@ impl Macro {
             ],
         };
 
-        instructions.push_front(mov);
+        // Every label is gonna have to move by 1
+        for label in &mut program.labels {
+            *label.1 += 1;
+        }
+
+        program.instructions.push_front(mov);
     }
 
 }
