@@ -6,9 +6,9 @@ use crate::InstructionResult;
 use libm::{sqrt, cbrt};
 
 pub fn add(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[2].read_word()?;
+    let number2 = operands[2].read_word(cpu)?;
     let number2_negative = number2 >> 31 == 1;
 
     let sum = number1.overflowing_add(number2);
@@ -24,9 +24,9 @@ pub fn add(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn sub(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[2].read_word()?;
+    let number2 = operands[2].read_word(cpu)?;
     let number2_negative = number2 >> 31 == 1;
 
     let diff = number1.overflowing_sub(number2);
@@ -42,9 +42,9 @@ pub fn sub(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn mul(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[2].read_word()?;
+    let number2 = operands[2].read_word(cpu)?;
     let number2_negative = number2 >> 31 == 1;
 
     let result = number1.overflowing_mul(number2);
@@ -61,8 +61,8 @@ pub fn mul(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn div(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
 
     if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
@@ -79,8 +79,8 @@ pub fn div(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn r#mod(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
 
     if number2 == 0 { return Err(Interrupt::DivideByZero); }
 
@@ -97,7 +97,7 @@ pub fn r#mod(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 // Square root should be unsigned and 8-bit, this is intended
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 pub fn sqt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[1].read_word()?;
+    let number = operands[1].read_word(cpu)?;
     let result = sqrt(f64::from(number)) as u32;
     let result_negative = result >> 31 == 1;
 
@@ -111,7 +111,7 @@ pub fn sqt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 // Cube root should be unsigned and 8-bit, this is intended
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 pub fn cbt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[1].read_word()?;
+    let number = operands[1].read_word(cpu)?;
     let result = cbrt(f64::from(number)) as u32;
     let result_negative = result >> 31 == 1;
 
@@ -125,7 +125,7 @@ pub fn cbt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 // Overflow is (by definition) for signed operations
 #[allow(clippy::cast_possible_wrap)]
 pub fn sqr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[1].read_word()?;
+    let number = operands[1].read_word(cpu)?;
     let number_abs = (number as i32).unsigned_abs();
 
     let result = number.overflowing_pow(2);
@@ -143,7 +143,7 @@ pub fn sqr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 // Overflow is (by definition) for signed operations
 #[allow(clippy::cast_possible_wrap)]
 pub fn cbe(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[1].read_word()?;
+    let number = operands[1].read_word(cpu)?;
     let number_abs = (number as i32).unsigned_abs();
 
     let result = number.overflowing_pow(3);
@@ -159,8 +159,8 @@ pub fn cbe(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn min(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[0].read_word()?;
-    let number2 = operands[1].read_word()?;
+    let number1 = operands[0].read_word(cpu)?;
+    let number2 = operands[1].read_word(cpu)?;
 
     let result = number1.min(number2);
 
@@ -172,8 +172,8 @@ pub fn min(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn max(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
 
     let result = number1.max(number2);
 
@@ -185,9 +185,9 @@ pub fn max(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn adc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[2].read_word()?;
+    let number2 = operands[2].read_word(cpu)?;
     let number2_negative = number2 >> 31 == 1;
 
     let sum_pre = number1.overflowing_add(number2);
@@ -204,9 +204,9 @@ pub fn adc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn sbc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
-    let number2 = operands[2].read_word()?;
+    let number2 = operands[2].read_word(cpu)?;
     let number2_negative = number2 >> 31 == 1;
 
     let diff_pre = number1.overflowing_sub(number2);
@@ -229,7 +229,7 @@ pub fn asr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     // shift right on that (>> does ASR on i32, LSR on u32), and then convert it back to an 32-bit
     // word and update memory.
     // c.f. https://doc.rust-lang.org/stable/reference/expressions/operator-expr.html#arithmetic-and-logical-binary-operators
-    let word = operands[0].read_word()?;
+    let word = operands[0].read_word(cpu)?;
     let word = word as i32;
     let word = word >> 1;
     let word = word as u32;

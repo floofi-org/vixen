@@ -96,6 +96,14 @@ pub fn int(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 pub fn irt(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.interrupt = false;
     cpu.status_register.double_fault = false;
+    ret(operands, cpu)?;
+    cpu.program_counter -= 15;
+    Ok(())
+}
+
+pub fn irj(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    cpu.status_register.interrupt = false;
+    cpu.status_register.double_fault = false;
     ret(operands, cpu)
 }
 

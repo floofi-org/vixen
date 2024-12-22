@@ -4,8 +4,8 @@ use crate::CPU;
 use crate::InstructionResult;
 
 pub fn and(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
     let result = number1 & number2;
 
     cpu.status_register.zero = result == 0;
@@ -15,8 +15,8 @@ pub fn and(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn or(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
     let result = number1 | number2;
 
     cpu.status_register.zero = result == 0;
@@ -26,8 +26,8 @@ pub fn or(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn xor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
     let result = number1 ^ number2;
 
     cpu.status_register.zero = result == 0;
@@ -37,8 +37,8 @@ pub fn xor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn nor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
     let result = !(number1 | number2);
 
     cpu.status_register.zero = result == 0;
@@ -48,8 +48,8 @@ pub fn nor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn nad(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
     let result = !(number1 & number2);
 
     cpu.status_register.zero = result == 0;
@@ -59,8 +59,8 @@ pub fn nad(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn imp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number1 = operands[1].read_word()?;
-    let number2 = operands[2].read_word()?;
+    let number1 = operands[1].read_word(cpu)?;
+    let number2 = operands[2].read_word(cpu)?;
     let result = (!number1) | number2;
 
     cpu.status_register.zero = result == 0;
@@ -76,7 +76,7 @@ pub fn not(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn shl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+    let number = operands[0].read_word(cpu)?;
     let result = number << 1;
 
     cpu.status_register.zero = result == 0;
@@ -86,7 +86,7 @@ pub fn shl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn shr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+    let number = operands[0].read_word(cpu)?;
     let result = number >> 1;
 
     cpu.status_register.zero = result == 0;
@@ -96,7 +96,7 @@ pub fn shr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn rol(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+    let number = operands[0].read_word(cpu)?;
     let result = number.rotate_left(1);
 
     cpu.status_register.zero = result == 0;
@@ -106,7 +106,7 @@ pub fn rol(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn ror(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let number = operands[0].read_word()?;
+    let number = operands[0].read_word(cpu)?;
     let result = number.rotate_right(1);
 
     cpu.status_register.zero = result == 0;

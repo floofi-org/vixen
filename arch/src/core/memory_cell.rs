@@ -6,17 +6,22 @@ use crate::CPU;
 use crate::CPUResult;
 
 pub trait MemoryCell {
-    fn read_word(&self) -> CPUResult<u32>;
+    fn read_word(&mut self, cpu: &mut CPU) -> CPUResult<u32>;
     fn write_word(&mut self, cpu: &mut CPU, value: u32) -> CPUResult<()>;
     fn mode(&self) -> Addressing;
     fn get_address(&self) -> CPUResult<u32>;
 }
 
 impl MemoryCell for Operand {
-    fn read_word(&self) -> CPUResult<u32> {
+    fn read_word(&mut self, cpu: &mut CPU) -> CPUResult<u32> {
         Ok(match self {
-            Operand::Literal(value) | Operand::Register(_, value) | 
-                Operand::Memory(_, value) => *value,
+            Operand::Literal(value) | Operand::Register(_, value) => *value,
+            Operand::Memory(address, value) => {
+                if (0x0400_0200..0x0410_01ff).contains(address) {
+                    *value = cpu.io.read_bus(*address)?;
+                }
+                *value
+            },
             Operand::Void => return Err(Interrupt::IllegalMemory)
         })
     }
@@ -46,9 +51,13 @@ impl MemoryCell for Operand {
                 Ok(())
             },
             Operand::Memory(addr, initial_value) => {
-                if (0x0000_0000..0xdfff_ffff).contains(addr) {
+                if (0x0400_0200..0xdfff_ffff).contains(addr) {
                     let bytes = value.to_le_bytes();
-                    cpu.memory[(*addr as usize)..(*addr as usize + 4)].copy_from_slice(&bytes);
+                    if (0x0400_0200..0x0410_01ff).contains(addr) {
+                        cpu.io.write_bus(*addr, value)?;
+                    } else {
+                        cpu.memory[(*addr as usize)..(*addr as usize + 4)].copy_from_slice(&bytes);
+                    }
                     *initial_value = value;
                     Ok(())
                 } else {

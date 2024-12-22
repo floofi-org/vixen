@@ -98,7 +98,11 @@ impl CPU {
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
-        self.io.tick()?;
+        if let Err(e) = self.io.tick() {
+            if !self.status_register.interrupt && !self.status_register.double_fault {
+                return Err(e)
+            }
+        }
         let mut instruction = self.read_instruction(self.program_counter)?;
         if let Err(interrupt) = instruction.execute_unhandled(self) {
             if self.status_register.interrupt_disable && interrupt.is_maskable() {
@@ -117,10 +121,12 @@ impl CPU {
         // If we are already handling interrupt, use ROM-provided double fault handler
         if self.status_register.interrupt {
             self.status_register.double_fault = true;
+            self.registers.r13 = self.registers.r14;
             self.registers.r14 = interrupt.into();
             self.program_counter = 0x0400_dead;
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
+            self.registers.r13 = interrupt.into();
             self.status_register.interrupt = true;
             let address = u32::from_le_bytes([
                 self.memory[0x0450_0aaa], self.memory[0x0450_0aab],

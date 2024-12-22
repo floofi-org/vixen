@@ -19,7 +19,7 @@ pub struct Terminal<S: StdinReader> {
 
 impl Default for Terminal<TerminalStdin> {
     fn default() -> Self {
-        let (sender, receiver) = std::sync::mpsc::sync_channel(0);
+        let (sender, receiver) = std::sync::mpsc::sync_channel(512);
         let stdin = TerminalStdin::spawn(sender, receiver);
 
         Self::new(stdin)
@@ -83,9 +83,9 @@ impl<S: StdinReader> BusDevice for Terminal<S> {
     }
 
     fn tick(&mut self) -> BusResult<()> {
-        // TODO: Handle results here
         if let Some(ch) = self.write_buffer.pop_front() {
             self.stdout.write_all(&[ch]).unwrap();
+            self.stdout.flush().unwrap();
         }
 
         if let Some(char) = self.stdin.read() {

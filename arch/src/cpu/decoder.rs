@@ -1,3 +1,4 @@
+use alloc::borrow::ToOwned;
 use alloc::string::String;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::Instruction;
@@ -50,7 +51,6 @@ impl Decoder for CPU {
         let operation = instruction >> 12;
 
         DecodedInstruction {
-            cpu: self,
             instruction,
             operands,
             modes,
@@ -60,11 +60,11 @@ impl Decoder for CPU {
 
     fn read_instruction(&self, position: u32) -> CPUResult<Instruction> {
         let instruction = self.decode_instruction(position);
-        instruction.try_into()
+        instruction.into_instruction(self)
     }
 
     fn read_instruction_string(&self, position: u32) -> String {
         let instruction = self.decode_instruction(position);
-        instruction.into()
+        instruction.disassemble(self)
     }
 }

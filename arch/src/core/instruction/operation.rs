@@ -39,7 +39,7 @@ pub enum Operation {
     /* 0x03?? */ Inc, Dec,
     /* 0x04?? */ Cmp, Lte, Gte, Srz, Src, Sro,
     /* 0x05?? */ Mov, Swp, Clr, Sec, Clc, Sei, Cli, Clv,
-    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Nop, Jam, Bpl, Bmi,
+    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Irj, Nop, Jam, Bpl, Bmi,
     /* 0x07?? */ Psh, Pll, Php, Plp
 }
 
@@ -124,10 +124,11 @@ isa! {
     0x068 => Bno,
     0x069 => Int,
     0x06A => Irt,
-    0x06B => Nop,
-    0x06C => Jam,
-    0x06D => Bpl,
-    0x06E => Bmi,
+    0x06B => Irj,
+    0x06C => Nop,
+    0x06D => Jam,
+    0x06E => Bpl,
+    0x06F => Bmi,
 
     // 0x07?? - Stack Instructions
     0x070 => Psh,
