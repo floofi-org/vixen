@@ -8,7 +8,7 @@ use vixen::core::Interrupt;
 use vixen::{BusDevice, CPU, MEMORY_64M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
-use vixen_devices::Terminal;
+use vixen_devices::{RealTimeClock, Terminal};
 
 use stdin::DebuggerStdin;
 
@@ -49,7 +49,8 @@ fn main() {
     let stdin = DebuggerStdin::new();
 
     let devices: Vec<Box<dyn BusDevice>> = vec![
-        Box::new(Terminal::new(stdin.clone()))
+        Box::new(Terminal::new(stdin.clone())),
+        Box::new(RealTimeClock::now())
     ];
 
     if let Err(e) = cpu.register_devices(devices) {
