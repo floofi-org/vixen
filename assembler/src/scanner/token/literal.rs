@@ -1,3 +1,4 @@
+use crate::models::escape_char;
 use crate::models::token::Literal;
 use crate::scanner::Scanner;
 
@@ -8,6 +9,7 @@ const FORBIDDEN_LITERAL_CHARS: &[char] = &[
     '-', '+', '[', ']',
     '.', ',', ';', '\'',
     '"', '=', '{', '}',
+    '\\',
 ];
 
 pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {
@@ -19,9 +21,15 @@ pub fn number(scanner: &mut Scanner, radix: u32) -> Option<Token> {
 }
 
 pub fn number_char(scanner: &mut Scanner) -> Token {
-    let char = scanner.next()
+    let mut char = scanner.next()
         .filter(char::is_ascii)
         .expect("Invalid character literal");
+
+    if char == '\\' {
+        char = scanner.next()
+            .map(escape_char)
+            .expect("Unexpected EOF on char escape code");
+    }
 
     let char = char as u32;
 
@@ -50,7 +58,28 @@ pub fn string(scanner: &mut Scanner) -> Option<Token> {
         .filter(quotation_mark)
         .expect("Expected end of a string");
 
+    let string = escape_string(string);
+
     Some(Token::Literal(Literal::String(string)))
+}
+
+
+fn escape_string(string: String) -> String {
+    let mut escaped = String::with_capacity(string.len());
+
+    let mut chars = string.chars();
+    while let Some(char) = chars.next() {
+        let char = if char == '\\' {
+            let char = chars.next().expect("Unexpected end of string on escape sequence");
+            escape_char(char)
+        } else {
+            char
+        };
+
+        escaped.push(char);
+    }
+
+    escaped
 }
 
 // .next_while require we take a reference of char
