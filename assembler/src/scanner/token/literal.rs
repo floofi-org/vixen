@@ -58,13 +58,13 @@ pub fn string(scanner: &mut Scanner) -> Option<Token> {
         .filter(quotation_mark)
         .expect("Expected end of a string");
 
-    let string = escape_string(string);
+    let string = escape_string(&string);
 
     Some(Token::Literal(Literal::String(string)))
 }
 
 
-fn escape_string(string: String) -> String {
+fn escape_string(string: &str) -> String {
     let mut escaped = String::with_capacity(string.len());
 
     let mut chars = string.chars();
