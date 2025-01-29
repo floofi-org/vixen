@@ -79,10 +79,15 @@ impl CPU {
     }
 
     fn has_interrupt_handler(&self) -> bool {
-        self.memory.len() >= 0x0450_0aad && (
-            self.memory[0x0450_0aaa] != 0 || self.memory[0x0450_0aab] != 0 ||
-            self.memory[0x0450_0aac] != 0 || self.memory[0x0450_0aad] != 0
-        )
+        if self.memory.len() >= 0x0450_0203 {
+            let interrupt_ptr = u32::from_le_bytes([
+                self.memory[0x0450_0200], self.memory[0x0450_0201],
+                self.memory[0x0450_0202], self.memory[0x0450_0203]
+            ]);
+            interrupt_ptr != 0
+        } else {
+            false
+        }
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
@@ -101,17 +106,21 @@ impl CPU {
     fn handle_interrupt(&mut self, interrupt: Interrupt) -> InstructionResult {
         self.system_stack_save_state()?;
 
-        // If we are already handling interrupt, use ROM-provided double fault handler
+        // If we are already handling interrupt, use double fault handler
         if self.status_register.interrupt {
             self.status_register.double_fault = true;
             self.registers.r14 = interrupt.into();
-            self.program_counter = 0x0400_dead;
+            let address = u32::from_le_bytes([
+                self.memory[0x0450_0204], self.memory[0x0450_0205],
+                self.memory[0x0450_0206], self.memory[0x0450_0207]
+            ]);
+            self.program_counter = address;
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
             self.status_register.interrupt = true;
             let address = u32::from_le_bytes([
-                self.memory[0x0450_0aaa], self.memory[0x0450_0aab],
-                self.memory[0x0450_0aac], self.memory[0x0450_0aad]
+                self.memory[0x0450_0200], self.memory[0x0450_0201],
+                self.memory[0x0450_0202], self.memory[0x0450_0203]
             ]);
             self.program_counter = address;
         }
