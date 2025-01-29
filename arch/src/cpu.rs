@@ -79,15 +79,8 @@ impl CPU {
     }
 
     fn has_interrupt_handler(&self) -> bool {
-        if self.memory.len() >= 0x0450_0203 {
-            let interrupt_ptr = u32::from_le_bytes([
-                self.memory[0x0450_0200], self.memory[0x0450_0201],
-                self.memory[0x0450_0202], self.memory[0x0450_0203]
-            ]);
-            interrupt_ptr != 0
-        } else {
-            false
-        }
+        let ptr = self.memory.get(0x0450_0200..=0x0450_0203).unwrap_or_default();
+        ptr != 0u32.to_le_bytes()
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
