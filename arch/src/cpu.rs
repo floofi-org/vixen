@@ -15,6 +15,9 @@ use crate::core::Registers;
 use crate::core::registers::StatusRegister;
 use crate::{CPUResult, InstructionResult, CPU_SPECIFICATION};
 
+const INTERRUPT_HANDLER: usize = 0x0450_0200;
+const DOUBLEFAULT_HANDLER: usize = 0x0450_0204;
+
 #[derive(Debug)]
 pub struct CPU {
     pub registers: Registers,
@@ -79,10 +82,7 @@ impl CPU {
     }
 
     fn has_interrupt_handler(&self) -> bool {
-        self.memory.len() >= 0x0450_0aad && (
-            self.memory[0x0450_0aaa] != 0 || self.memory[0x0450_0aab] != 0 ||
-            self.memory[0x0450_0aac] != 0 || self.memory[0x0450_0aad] != 0
-        )
+        self.read_word(INTERRUPT_HANDLER).unwrap_or_default() != 0
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
@@ -98,22 +98,25 @@ impl CPU {
         }
     }
 
+    fn read_word(&self, location: usize) -> Option<u32> {
+        let range = location ..= location + 4;
+        self.memory.get(range)
+            .map(|s| <[u8; 4]>::try_from(s).unwrap())
+            .map(u32::from_le_bytes)
+    }
+
     fn handle_interrupt(&mut self, interrupt: Interrupt) -> InstructionResult {
         self.system_stack_save_state()?;
 
-        // If we are already handling interrupt, use ROM-provided double fault handler
+        // If we are already handling interrupt, use double fault handler
         if self.status_register.interrupt {
             self.status_register.double_fault = true;
             self.registers.r14 = interrupt.into();
-            self.program_counter = 0x0400_dead;
+            self.program_counter = self.read_word(INTERRUPT_HANDLER).unwrap();
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
             self.status_register.interrupt = true;
-            let address = u32::from_le_bytes([
-                self.memory[0x0450_0aaa], self.memory[0x0450_0aab],
-                self.memory[0x0450_0aac], self.memory[0x0450_0aad]
-            ]);
-            self.program_counter = address;
+            self.program_counter = self.read_word(DOUBLEFAULT_HANDLER).unwrap();
         }
 
         Ok(())
