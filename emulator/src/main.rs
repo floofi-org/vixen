@@ -6,7 +6,7 @@ use vixen::core::Interrupt;
 use vixen::core::StackTrace;
 use vixen::{BusDevice, CPU, MEMORY_64M};
 use vixen::CPUResult;
-use vixen_devices::Terminal;
+use vixen_devices::{RealTimeClock, Terminal};
 
 fn main() {
     let path = get_rom_path().unwrap_or_else(|| {
@@ -35,7 +35,8 @@ fn main() {
     }
 
     let devices: Vec<Box<dyn BusDevice>> = vec![
-        Box::new(Terminal::default())
+        Box::new(Terminal::default()),
+        Box::new(RealTimeClock::now()),
     ];
     if let Err(e) = cpu.register_devices(devices) {
         eprintln!("\u{1b}[33mFailed to start up devices: {e}\u{1b}[0m");
