@@ -8,6 +8,7 @@ pub enum Operand {
     Address(Address),
     ConstantAddress(String),
     Label(String),
+    LabelLiteral(String),
     Indirect(OperandIndirect),
 }
 
@@ -27,7 +28,7 @@ impl Operand {
     #[must_use]
     pub fn get_addressing(&self) -> Addressing {
         match self {
-            Operand::Literal(_) | Operand::ConstantLiteral(_) => Addressing::Immediate,
+            Operand::Literal(_) | Operand::LabelLiteral(_) | Operand::ConstantLiteral(_) => Addressing::Immediate,
             Operand::Register(_) => Addressing::Direct,
             Operand::Address(address) => address.get_addressing(),
             Operand::ConstantAddress(_) => Addressing::Absolute,
@@ -63,6 +64,7 @@ impl From<Operand> for u32 {
             Operand::Register(reg) => reg.into(),
             Operand::Address(address) => address.into(),
             Operand::Label(_) => panic!("Tried to convert label to u32"),
+            Operand::LabelLiteral(_) => panic!("Tried to convert label literal to u32"),
             Operand::ConstantLiteral(_) => panic!("Tried to convert constant literal to u32"),
             Operand::ConstantAddress(_) => panic!("Tried to convert constant address to u32"),
             Operand::Indirect(indirect) => indirect.into(),

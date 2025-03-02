@@ -1,5 +1,5 @@
-        jsr     foo
-        jsr     bar
+        jsr     #foo
+        jsr     #bar
         int
 
 foo:

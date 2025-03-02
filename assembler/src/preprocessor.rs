@@ -61,6 +61,7 @@ impl Preprocessor {
                 Operand::ConstantLiteral(c) => *operand = Self::transform_constant(&processed.constants, c, true)?,
                 Operand::ConstantAddress(c) => *operand = Self::transform_constant(&processed.constants, c, false)?,
                 Operand::Label(label) => *operand = Self::transform_label(&processed.labels, label)?,
+                Operand::LabelLiteral(label) => *operand = Self::transform_label_literal(&processed.labels, label)?,
                 _ => {}
             }
         }
@@ -93,8 +94,25 @@ impl Preprocessor {
         Ok(Self::get_label_address(address))
     }
 
+
+    fn transform_label_literal(labels: &HashMap<String, usize>, label: &str) -> Result<Operand, PreprocessorError> {
+        let address = *labels
+            .get(label)
+            .ok_or_else(|| PreprocessorError::NoSuchLabel(label.to_owned()))?;
+
+        let address: u32 = address.try_into()
+            .map(Self::offset_label)
+            .expect("Label address is too high for ROM");
+
+        Ok(Operand::Literal(address))
+    }
+
     fn get_label_address(offset: u32) -> Operand {
-        let address = Self::START_OF_BOOT_ROM + offset * Self::INSTRUCTION_SIZE;
+        let address = Self::offset_label(offset);
         Operand::Address(Address::Absolute(address))
+    }
+
+    fn offset_label(offset: u32) -> u32 {
+        Self::START_OF_BOOT_ROM + offset * Self::INSTRUCTION_SIZE
     }
 }

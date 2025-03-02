@@ -18,8 +18,8 @@ impl Macro {
     const START_OF_BOOT_ROM: u32 = 0x0000_0200;
 
     // See: https://github.com/floofi-org/vixen/wiki/Interrupts-and-faults
-    const INTERRUPT_HANDLER_ADDRESS: u32 = 0x0450_0aaa;
-    const DOUBLE_FAULT_HANDLER_ADDRESS: u32 = 0x0400_dead;
+    const INTERRUPT_HANDLER_ADDRESS: u32 = 0x0450_0200;
+    const DOUBLE_FAULT_HANDLER_ADDRESS: u32 = 0x0450_0204;
 
     #[allow(clippy::unit_arg)]
     pub fn apply(self, source_path: &Path, program: &mut ProcessedProgram, instruction_offset: usize) -> Result<(), PreprocessorError> {

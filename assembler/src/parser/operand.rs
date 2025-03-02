@@ -28,6 +28,7 @@ fn literal(parser: &mut Parser) -> Result<Operand, ParseError> {
 
     match token {
         Token::Literal(Literal::Number(num)) => Ok(Operand::Literal(num)),
+        Token::Literal(Literal::Identifier(label)) => Ok(Operand::LabelLiteral(label)),
         Token::LeftCurlyBracket => constant(parser, true),
         t => Err(ParseError::UnexpectedToken(t.clone()))
     }

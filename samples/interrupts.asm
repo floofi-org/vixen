@@ -1,7 +1,7 @@
 main:                           ; Our main program
         add     r0, #1, #1      ; Run some arbitrary calculation
         pll     r1              ; This should cause a stack underflow
-        jmp     main            ; Otherwise repeat infinitely
+        jmp     #main            ; Otherwise repeat infinitely
 
 .interrupt                      ; Define a custom interrupt handler
 handle_interrupt:
