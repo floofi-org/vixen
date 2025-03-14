@@ -39,7 +39,7 @@ pub enum Operation {
     /* 0x03?? */ Inc, Dec,
     /* 0x04?? */ Cmp, Lte, Gte, Srz, Src, Sro,
     /* 0x05?? */ Mov, Swp, Clr, Sec, Clc, Sei, Cli, Clv,
-    /* 0x06?? */ Jmp, Jsr, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Irj, Nop, Jam, Bpl, Bmi,
+    /* 0x06?? */ Jmp, Ret, Beq, Bne, Bec, Bnc, Beo, Bno, Int, Irt, Irj, Nop, Jam, Bpl, Bmi,
     /* 0x07?? */ Psh, Pll, Php, Plp
 }
 
@@ -114,7 +114,6 @@ isa! {
 
     // 0x06?? - Control Flow Instructions
     0x060 => Jmp,
-    0x061 => Jsr,
     0x062 => Ret,
     0x063 => Beq,
     0x064 => Bne,

@@ -5,7 +5,7 @@ use std::process::exit;
 use std::{env, fs, io};
 use std::io::Write;
 use vixen::core::Interrupt;
-use vixen::{BusDevice, CPU, MEMORY_64M};
+use vixen::{BusDevice, CPU, MEMORY_512M};
 use vixen::cpu::Decoder;
 use vixen::CPUResult;
 use vixen_devices::{RealTimeClock, Terminal};
@@ -40,7 +40,7 @@ fn main() {
         exit(2);
     }
 
-    let mut cpu = CPU::new(MEMORY_64M);
+    let mut cpu = CPU::new(MEMORY_512M);
     if let Err(e) = cpu.load_rom(&rom) {
         eprintln!("\u{1b}[33mFailed to load ROM into CPU: {e}\u{1b}[0m");
         exit(2);

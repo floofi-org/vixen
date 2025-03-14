@@ -17,9 +17,6 @@ use crate::core::registers::StatusRegister;
 use crate::{BusDevice, CPUResult, InstructionResult, CPU_SPECIFICATION};
 use crate::cpu::io_controller::IOController;
 
-const INTERRUPT_HANDLER: usize = 0x0450_0200;
-const DOUBLEFAULT_HANDLER: usize = 0x0450_0204;
-
 #[derive(Debug)]
 pub struct CPU {
     pub registers: Registers,
@@ -94,7 +91,8 @@ impl CPU {
     }
 
     fn has_interrupt_handler(&self) -> bool {
-        self.read_word(INTERRUPT_HANDLER).unwrap_or_default() != 0
+        let ptr = self.memory.get(0x0450_0200..=0x0450_0203).unwrap_or_default();
+        ptr != 0u32.to_le_bytes()
     }
 
     pub fn tick_unhandled(&mut self) -> InstructionResult {
@@ -115,27 +113,26 @@ impl CPU {
         }
     }
 
-    fn read_word(&self, location: usize) -> Option<u32> {
-        let range = location ..= location + 4;
-        self.memory.get(range)
-            .map(|s| <[u8; 4]>::try_from(s).unwrap())
-            .map(u32::from_le_bytes)
-    }
-
     fn handle_interrupt(&mut self, interrupt: Interrupt) -> InstructionResult {
         self.system_stack_save_state()?;
 
         // If we are already handling interrupt, use double fault handler
         if self.status_register.interrupt {
             self.status_register.double_fault = true;
-            self.registers.r13 = self.registers.r14;
             self.registers.r14 = interrupt.into();
-            self.program_counter = self.read_word(INTERRUPT_HANDLER).unwrap();
+            let address = u32::from_le_bytes([
+                self.memory[0x0450_0204], self.memory[0x0450_0205],
+                self.memory[0x0450_0206], self.memory[0x0450_0207]
+            ]);
+            self.program_counter = address;
         // Otherwise this is the first time we see an interrupt, so just use the configured handler
         } else {
-            self.registers.r13 = interrupt.into();
             self.status_register.interrupt = true;
-            self.program_counter = self.read_word(DOUBLEFAULT_HANDLER).unwrap();
+            let address = u32::from_le_bytes([
+                self.memory[0x0450_0200], self.memory[0x0450_0201],
+                self.memory[0x0450_0202], self.memory[0x0450_0203]
+            ]);
+            self.program_counter = address;
         }
 
         Ok(())

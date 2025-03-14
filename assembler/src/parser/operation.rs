@@ -80,7 +80,7 @@ impl OperationExt for Operation {
 
 
             "jmp" => Jmp,
-            "jsr" => Jsr,
+            "jsr" => Jmp,
             "ret" => Ret,
             "beq" => Beq,
             "bne" => Bne,

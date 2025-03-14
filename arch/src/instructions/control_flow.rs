@@ -7,12 +7,6 @@ use crate::InstructionResult;
 
 pub fn jmp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let position = &operands[0].read_word(cpu)?;
-    cpu.program_counter = position - 15;
-    Ok(())
-}
-
-pub fn jsr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].read_word(cpu)?;
     cpu.system_stack_save_state()?;
     cpu.program_counter = position - 15;
     Ok(())

@@ -79,7 +79,6 @@ impl Instruction {
 
             // 0x06?? - Control Flow Instructions
             Operation::Jmp => instructions::jmp(&mut self.operands, cpu),
-            Operation::Jsr => instructions::jsr(&mut self.operands, cpu),
             Operation::Ret => instructions::ret(&self.operands, cpu),
             Operation::Beq => instructions::beq(&mut self.operands, cpu),
             Operation::Bne => instructions::bne(&mut self.operands, cpu),

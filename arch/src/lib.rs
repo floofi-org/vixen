@@ -2,13 +2,13 @@
 extern crate alloc;
 
 pub const CPU_SPECIFICATION: StaticSpecification = StaticSpecification {
-    name: b"Floofi(TM) Vixen(TM) Coyote",
-    id: 0x0002,
-    microarchitecture: b"vx2",
-    microarchitecture_name: b"Kitsune",
+    name: b"Floofi(TM) Vixen(TM) Kanto",
+    id: 0x0003,
+    microarchitecture: b"VXAv2.1",
+    microarchitecture_name: b"Goupix",
     data_width: 32,
     address_width: 32,
-    microcode: 0x0005
+    microcode: 0x0006
 };
 
 pub mod core;
