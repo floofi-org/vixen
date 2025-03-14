@@ -1,5 +1,5 @@
 use alloc::string::String;
-use crate::core::{Interrupt, Operand};
+use crate::core::Operand;
 use crate::{instructions, CPUResult, InstructionResult};
 use crate::CPU;
 
@@ -78,22 +78,22 @@ impl Instruction {
             Operation::Clv => instructions::clv(&self.operands, cpu),
 
             // 0x06?? - Control Flow Instructions
-            Operation::Jmp => instructions::jmp(&self.operands, cpu),
-            Operation::Jsr => instructions::jsr(&self.operands, cpu),
+            Operation::Jmp => instructions::jmp(&mut self.operands, cpu),
+            Operation::Jsr => instructions::jsr(&mut self.operands, cpu),
             Operation::Ret => instructions::ret(&self.operands, cpu),
-            Operation::Beq => instructions::beq(&self.operands, cpu),
-            Operation::Bne => instructions::bne(&self.operands, cpu),
-            Operation::Bec => instructions::bec(&self.operands, cpu),
-            Operation::Bnc => instructions::bnc(&self.operands, cpu),
-            Operation::Beo => instructions::beo(&self.operands, cpu),
-            Operation::Bno => instructions::bno(&self.operands, cpu),
+            Operation::Beq => instructions::beq(&mut self.operands, cpu),
+            Operation::Bne => instructions::bne(&mut self.operands, cpu),
+            Operation::Bec => instructions::bec(&mut self.operands, cpu),
+            Operation::Bnc => instructions::bnc(&mut self.operands, cpu),
+            Operation::Beo => instructions::beo(&mut self.operands, cpu),
+            Operation::Bno => instructions::bno(&mut self.operands, cpu),
             Operation::Int => instructions::int(&self.operands, cpu),
             Operation::Irt => instructions::irt(&self.operands, cpu),
             Operation::Irj => instructions::irj(&self.operands, cpu),
             Operation::Nop => instructions::nop(&self.operands, cpu),
             Operation::Jam => instructions::jam(&self.operands, cpu),
-            Operation::Bpl => instructions::bpl(&self.operands, cpu),
-            Operation::Bmi => instructions::bmi(&self.operands, cpu),
+            Operation::Bpl => instructions::bpl(&mut self.operands, cpu),
+            Operation::Bmi => instructions::bmi(&mut self.operands, cpu),
 
             // 0x07?? - Stack Instructions
             Operation::Psh => instructions::psh(&mut self.operands, cpu),
@@ -124,7 +124,8 @@ impl DecodedInstruction {
         })
     }
 
-    pub fn disassemble(self, cpu: &CPU) -> String {
+    #[allow(clippy::cast_possible_truncation)]
+    #[must_use] pub fn disassemble(self, cpu: &CPU) -> String {
         let mut disassembled = String::new();
         let operation = Operation::disassemble(self.operation as u16);
         disassembled.push_str(&operation);

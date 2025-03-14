@@ -36,7 +36,7 @@ pub fn step(state: &mut DebuggerState, cpu: &mut CPU) -> CPUResult<()> {
     Ok(())
 }
 
-pub fn unblock(state: &mut DebuggerState, cpu: &mut CPU) {
+pub fn unblock(state: &mut DebuggerState) {
     state.interrupt = None;
     println!("\u{1b}[33mSystem unblocked. Ignoring interrupts is unsafe, you are on your own.\u{1b}[0m");
 }

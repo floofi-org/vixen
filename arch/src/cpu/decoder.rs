@@ -1,4 +1,3 @@
-use alloc::borrow::ToOwned;
 use alloc::string::String;
 use crate::core::binary::ExtractedBinaryData;
 use crate::core::Instruction;

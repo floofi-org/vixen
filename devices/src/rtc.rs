@@ -105,7 +105,7 @@ impl RealTimeClock {
             .adjust_nanos(nanos);
     }
 
-    pub fn has_timer(&self) -> bool {
+    #[must_use] pub fn has_timer(&self) -> bool {
         self.timer.is_some()
     }
 

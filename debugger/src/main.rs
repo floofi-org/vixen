@@ -89,7 +89,7 @@ fn debugger_prompt(cpu: &mut CPU, state: &mut DebuggerState) -> CPUResult<()> {
     match line {
         "?" | "help" => commands::help(),
         "s" | "step" => commands::step(state, cpu)?,
-        "b" | "unblock" => commands::unblock(state, cpu),
+        "b" | "unblock" => commands::unblock(state),
         "j" | "jump" => commands::jump(cpu),
         "r" | "run" => commands::run(state),
         "l" | "location" => commands::location(cpu),

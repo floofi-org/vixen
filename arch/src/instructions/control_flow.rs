@@ -5,14 +5,14 @@ use crate::CPU;
 use crate::cpu::SystemStack;
 use crate::InstructionResult;
 
-pub fn jmp(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].read_word()?;
+pub fn jmp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let position = &operands[0].read_word(cpu)?;
     cpu.program_counter = position - 15;
     Ok(())
 }
 
-pub fn jsr(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].read_word()?;
+pub fn jsr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let position = &operands[0].read_word(cpu)?;
     cpu.system_stack_save_state()?;
     cpu.program_counter = position - 15;
     Ok(())
@@ -22,7 +22,7 @@ pub fn ret(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.system_stack_restore_state()
 }
 
-pub fn beq(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn beq(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.zero {
         jmp(operands, cpu)
     } else {
@@ -30,7 +30,7 @@ pub fn beq(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bne(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn bne(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.zero {
         Ok(())
     } else {
@@ -38,7 +38,7 @@ pub fn bne(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bec(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn bec(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.carry {
         jmp(operands, cpu)
     } else {
@@ -46,7 +46,7 @@ pub fn bec(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bnc(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn bnc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.carry {
         Ok(())
     } else {
@@ -54,7 +54,7 @@ pub fn bnc(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn beo(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn beo(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.overflow {
         jmp(operands, cpu)
     } else {
@@ -62,7 +62,7 @@ pub fn beo(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bno(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn bno(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.overflow {
         Ok(())
     } else {
@@ -116,7 +116,7 @@ pub fn jam(_operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
     loop {}
 }
 
-pub fn bpl(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn bpl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.negative {
         jmp(operands, cpu)
     } else {
@@ -124,7 +124,7 @@ pub fn bpl(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bmi(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn bmi(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.negative {
         jmp(operands, cpu)
     } else {

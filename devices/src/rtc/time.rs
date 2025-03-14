@@ -36,6 +36,7 @@ impl Time {
         self.nanos
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     pub fn add(&mut self, duration: Duration) {
         let secs = duration.as_secs();
         let nanos = duration.subsec_nanos();
