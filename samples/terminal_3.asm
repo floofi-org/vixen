@@ -2,7 +2,7 @@ TTY_STDOUT = $04000200          ; Memory address of stdout
 TTY_STDIN  = $04000204          ; Memory address of stdin
 TTY_BUFFER = $04000208          ; Memory address of buffer
 
-mov $04500aaa, #$000002ff
+mov $04500200, #$000002ff
 
 main:
         mov {TTY_STDOUT}, #'P'  ; Display the message
@@ -22,15 +22,15 @@ main:
         jmp loop
 
 loop:
-        jmp loop
+        jmpl loop
 
 interrupt:
-        jsr interrupt_print
-        irt
+        jmp interrupt_print
+        iret
 
 interrupt_print:
         mov {TTY_STDOUT}, {TTY_STDIN}   ; Print character from buffer
         cmp {TTY_BUFFER}, #$1           ; Check if buffer is empty
-        bne +30                         ; Return if empty
-        jsr interrupt_print             ; Print again if not empty
+        jnz +30                         ; Return if empty
+        jmpl interrupt_print             ; Print again if not empty
         ret

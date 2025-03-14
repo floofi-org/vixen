@@ -3,7 +3,6 @@ use crate::core::MemoryCell;
 use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
-use libm::{sqrt, cbrt};
 
 pub fn add(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number1 = operands[1].read_word(cpu)?;
@@ -96,9 +95,9 @@ pub fn r#mod(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 // Square root should be unsigned and 8-bit, this is intended
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-pub fn sqt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn sqrt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number = operands[1].read_word(cpu)?;
-    let result = sqrt(f64::from(number)) as u32;
+    let result = libm::sqrt(f64::from(number)) as u32;
     let result_negative = result >> 31 == 1;
 
     cpu.status_register.zero = result == 0;
@@ -110,9 +109,9 @@ pub fn sqt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 // Cube root should be unsigned and 8-bit, this is intended
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-pub fn cbt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn cbrt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number = operands[1].read_word(cpu)?;
-    let result = cbrt(f64::from(number)) as u32;
+    let result = libm::cbrt(f64::from(number)) as u32;
     let result_negative = result >> 31 == 1;
 
     cpu.status_register.zero = result == 0;
@@ -124,7 +123,7 @@ pub fn cbt(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 // Overflow is (by definition) for signed operations
 #[allow(clippy::cast_possible_wrap)]
-pub fn sqr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn sqre(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number = operands[1].read_word(cpu)?;
     let number_abs = (number as i32).unsigned_abs();
 
@@ -142,7 +141,7 @@ pub fn sqr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 // Overflow is (by definition) for signed operations
 #[allow(clippy::cast_possible_wrap)]
-pub fn cbe(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn cube(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number = operands[1].read_word(cpu)?;
     let number_abs = (number as i32).unsigned_abs();
 
@@ -184,7 +183,7 @@ pub fn max(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn adc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn addc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
     let number2 = operands[2].read_word(cpu)?;
@@ -203,7 +202,7 @@ pub fn adc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn sbc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn subc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number1 = operands[1].read_word(cpu)?;
     let number1_negative = number1 >> 31 == 1;
     let number2 = operands[2].read_word(cpu)?;
@@ -224,7 +223,7 @@ pub fn sbc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 // u8 <-> i8 conversion is intended, see comment below
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]
-pub fn asr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn sar(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     // For this instruction, we convert the 32-bit word to a signed integer and then do an arithmetic
     // shift right on that (>> does ASR on i32, LSR on u32), and then convert it back to an 32-bit
     // word and update memory.
@@ -232,6 +231,20 @@ pub fn asr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let word = operands[0].read_word(cpu)?;
     let word = word as i32;
     let word = word >> 1;
+    let word = word as u32;
+    operands[0].write_word(cpu, word)
+}
+
+// u8 <-> i8 conversion is intended, see comment below
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]
+pub fn sal(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    // For this instruction, we convert the 32-bit word to a signed integer and then do an arithmetic
+    // shift left on that (<< does ASL on i32, LSR on u32), and then convert it back to an 32-bit
+    // word and update memory.
+    // c.f. https://doc.rust-lang.org/stable/reference/expressions/operator-expr.html#arithmetic-and-logical-binary-operators
+    let word = operands[0].read_word(cpu)?;
+    let word = word as i32;
+    let word = word << 1;
     let word = word as u32;
     operands[0].write_word(cpu, word)
 }

@@ -6,8 +6,14 @@ use crate::cpu::SystemStack;
 use crate::InstructionResult;
 
 pub fn jmp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].read_word(cpu)?;
+    let position = &operands[0].get_address()?;
     cpu.system_stack_save_state()?;
+    cpu.program_counter = position - 15;
+    Ok(())
+}
+
+pub fn jmpl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let position = &operands[0].get_address()?;
     cpu.program_counter = position - 15;
     Ok(())
 }
@@ -16,7 +22,7 @@ pub fn ret(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.system_stack_restore_state()
 }
 
-pub fn beq(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jz(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.zero {
         jmp(operands, cpu)
     } else {
@@ -24,7 +30,7 @@ pub fn beq(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bne(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jnz(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.zero {
         Ok(())
     } else {
@@ -32,7 +38,7 @@ pub fn bne(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bec(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.carry {
         jmp(operands, cpu)
     } else {
@@ -40,7 +46,7 @@ pub fn bec(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bnc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jnc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.carry {
         Ok(())
     } else {
@@ -48,7 +54,7 @@ pub fn bnc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn beo(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jo(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.overflow {
         jmp(operands, cpu)
     } else {
@@ -56,7 +62,7 @@ pub fn beo(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bno(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jno(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.overflow {
         Ok(())
     } else {
@@ -87,7 +93,7 @@ pub fn int(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     })
 }
 
-pub fn irt(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn iret(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.interrupt = false;
     cpu.status_register.double_fault = false;
     ret(operands, cpu)?;
@@ -95,7 +101,7 @@ pub fn irt(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn irj(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn irets(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.interrupt = false;
     cpu.status_register.double_fault = false;
     ret(operands, cpu)
@@ -106,11 +112,11 @@ pub fn nop(_operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
 }
 
 #[allow(clippy::empty_loop)]
-pub fn jam(_operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
+pub fn hlt(_operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
     loop {}
 }
 
-pub fn bpl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn js(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.negative {
         jmp(operands, cpu)
     } else {
@@ -118,7 +124,7 @@ pub fn bpl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     }
 }
 
-pub fn bmi(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn jns(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.negative {
         jmp(operands, cpu)
     } else {

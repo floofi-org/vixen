@@ -9,7 +9,7 @@ pub fn mov(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn swp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn xchg(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let value1 = operands[0].read_word(cpu)?;
     let value2 = operands[1].read_word(cpu)?;
     operands[1].write_word(cpu, value1)?;
@@ -23,7 +23,7 @@ pub fn clr(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn sec(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn stc(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.carry = true;
     Ok(())
 }
@@ -33,7 +33,7 @@ pub fn clc(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn sei(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn sti(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     cpu.status_register.interrupt_disable = true;
     Ok(())
 }

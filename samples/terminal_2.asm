@@ -2,22 +2,22 @@ TTY_STDOUT = $04000200          ; Memory address of stdout
 TTY_STDIN  = $04000204          ; Memory address of stdin
 TTY_BUFFER = $04000208          ; Memory address of buffer
 
-mov $04500aaa, #$000003b3
+mov $04500200, #$000003b3
 
 main:
         ; Write hello world to stack
-        psh #'!'
-        psh #'d'
-        psh #'l'
-        psh #'r'
-        psh #'o'
-        psh #'w'
-        psh #' '
-        psh #'o'
-        psh #'l'
-        psh #'l'
-        psh #'e'
-        psh #'H'
+        push #'!'
+        push #'d'
+        push #'l'
+        push #'r'
+        push #'o'
+        push #'w'
+        push #' '
+        push #'o'
+        push #'l'
+        push #'l'
+        push #'e'
+        push #'H'
 
         ; Write prompt message
         mov {TTY_STDOUT}, #'P'  ; Display the message
@@ -38,9 +38,9 @@ main:
         jmp loop
 
 loop:
-        jmp loop
+        jmpl loop
 
 interrupt:
-        pll r0                  ; Get character from stack
+        pop r0                  ; Get character from stack
         mov {TTY_STDOUT}, r0    ; Print it
-        irt
+        iret

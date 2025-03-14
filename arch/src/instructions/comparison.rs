@@ -36,17 +36,17 @@ pub fn gte(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn srz(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn setz(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     operand[0].write_word(cpu, u32::from(cpu.status_register.zero))?;
     Ok(())
 }
 
-pub fn src(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn setc(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     operand[0].write_word(cpu, u32::from(cpu.status_register.carry))?;
     Ok(())
 }
 
-pub fn sro(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn seto(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     operand[0].write_word(cpu, u32::from(cpu.status_register.overflow))?;
     Ok(())
 }

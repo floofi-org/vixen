@@ -11,4 +11,4 @@ mov {RTC_TIMER_SECS}, #10 ; Set up a timer for 10 seconds
 
 ; Spin lock while we're waiting
 loop:
-    jmp loop
+    jmpl loop

@@ -47,7 +47,7 @@ pub fn nor(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn nad(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+pub fn nand(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let number1 = operands[1].read_word(cpu)?;
     let number2 = operands[2].read_word(cpu)?;
     let result = !(number1 & number2);

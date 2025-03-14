@@ -2,7 +2,7 @@ main:
     and r1, $00000000, #$FF ; CPU name length, AND to take only one byte
     mov r2, #$00000001 ; Start of the CPU name
     mov r3, #$04500200 ; Copy to the start of the RAM
-    jsr #strcopy
+    jmp strcopy
     int
 
 ; Arguments
@@ -13,7 +13,7 @@ strcopy:
     ; Check whether the string length is zero
     ; If so return
     cmp r1, #0
-    bne #copy
+    jnz copy
     ret
 
     copy:
@@ -26,4 +26,4 @@ strcopy:
         dec r1
 
         ; Move next
-        jmp #strcopy
+        jmp strcopy

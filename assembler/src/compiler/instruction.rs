@@ -64,7 +64,7 @@ mod test {
     #[test]
     fn test_instruction() {
         let instruction = Instruction {
-            operation: Operation::Sqr,
+            operation: Operation::Sqre,
             operands: vec![Operand::Register(RegisterId::R0), Operand::Literal(32)],
         };
 
