@@ -14,7 +14,7 @@ pub struct RealTimeClock {
     last_tick_time: Instant,
 }
 
-#[allow(clippy::cast_possible_truncation, reason = "Wrapping is intentional as Vixen is 32-bit")]
+#[allow(clippy::cast_possible_truncation)]
 impl RealTimeClock {
     #[must_use]
     pub fn new(time: Time) -> Self {
@@ -122,7 +122,6 @@ impl RealTimeClock {
         let elapsed = now - self.last_tick_time;
         self.last_tick_time = now;
 
-        // Y2K38 says haiii
         self.add(elapsed);
     }
 
