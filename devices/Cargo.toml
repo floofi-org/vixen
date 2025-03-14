@@ -1,15 +1,12 @@
 [package]
-name = "vemu"
+name = "vixen-devices"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+getch = "0.3.1"
 vixen = { path = "../arch" }
-vixen-devices = { path = "../devices" }
-
-[lints.rust]
-unsafe_code = "forbid"
-rust_2024_compatibility = "warn"
 
 [lints.clippy]
 pedantic = "warn"
+missing_errors_doc = "allow"

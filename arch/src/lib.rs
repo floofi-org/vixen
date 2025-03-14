@@ -14,10 +14,12 @@ pub const CPU_SPECIFICATION: StaticSpecification = StaticSpecification {
 pub mod core;
 pub mod cpu;
 pub mod instructions;
+pub mod devices;
 pub mod memory_types;
 
 pub use cpu::CPU;
 pub use memory_types::*;
+pub use devices::BusDevice;
 
 use crate::core::Interrupt;
 use crate::core::StaticSpecification;

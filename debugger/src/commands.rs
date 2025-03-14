@@ -18,6 +18,7 @@ pub fn help() {
     println!("  registers    -- Display current system registers (shorthand: g)");
     println!("  location     -- Show program location in memory (shorthand: l)");
     println!("  expand       -- Expand a binary instruction (shorthand: e)");
+    println!("  input        -- Write to stdin (shorthand: >)");
     println!("  <hex addr>   -- Display memory address");
 }
 
@@ -37,7 +38,6 @@ pub fn step(state: &mut DebuggerState, cpu: &mut CPU) -> CPUResult<()> {
 
 pub fn unblock(state: &mut DebuggerState, cpu: &mut CPU) {
     state.interrupt = None;
-    cpu.program_counter += 15;
     println!("\u{1b}[33mSystem unblocked. Ignoring interrupts is unsafe, you are on your own.\u{1b}[0m");
 }
 
@@ -64,7 +64,7 @@ pub fn location(cpu: &mut CPU) {
 }
 
 pub fn registers(cpu: &mut CPU) {
-    println!("sr  = {}", cpu.status_register);
+    println!("sr  = {}, sp  = {:0>8x}, pc  = {:0>8x}", cpu.status_register, cpu.stack_pointer, cpu.program_counter);
     println!("r0  = {register1:0>8x}, r1  = {register2:0>8x}, r2  = {register3:0>8x}",
              register1 = cpu.registers.r0, register2 = cpu.registers.r1, register3 = cpu.registers.r2);
     println!("r3  = {register1:0>8x}, r4  = {register2:0>8x}, r5  = {register3:0>8x}",
@@ -90,7 +90,7 @@ pub fn expand(cpu: &mut CPU) {
 
     let info = cpu.decode_instruction(cpu.program_counter);
     print!("{:0>3x}: {} @ {:0>8x}", info.operation, Operation::disassemble(info.operation as u16).trim(), cpu.program_counter);
-    let parsed: CPUResult<Instruction> = cpu.decode_instruction(cpu.program_counter).try_into();
+    let parsed: CPUResult<Instruction> = cpu.decode_instruction(cpu.program_counter).into_instruction(cpu);
     if parsed.is_err() {
         print!(" <!>");
     }
@@ -109,7 +109,7 @@ pub fn expand(cpu: &mut CPU) {
             if let Addressing::Indirect | Addressing::RegisterIndirect = decoded_mode {
                 print!(" -> ");
                 match Operand::decode(*operand, cpu, decoded_mode) {
-                    Ok(decoded_operand) => match decoded_operand.read_word() {
+                    Ok(mut decoded_operand) => match decoded_operand.read_word(cpu) {
                         Ok(word) => println!("{word:0>8x}"),
                         Err(_) => println!("?")
                     },
@@ -122,6 +122,11 @@ pub fn expand(cpu: &mut CPU) {
             println!("        !?");
         }
     }
+}
+
+pub fn input(state: &mut DebuggerState, line: &str) {
+    let line = line.trim_start_matches('>').trim();
+    state.stdin.write(line);
 }
 
 pub fn quit() {

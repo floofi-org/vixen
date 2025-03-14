@@ -2,6 +2,7 @@ use alloc::string::String;
 use core::fmt::{Display, Formatter};
 use core::fmt::Write;
 use crate::core::registers::StatusRegister;
+use crate::devices::errors::BusError;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Interrupt {
@@ -44,6 +45,17 @@ impl From<Interrupt> for u32 {
             Interrupt::User16 => 0xEF,
             Interrupt::Failure => 0xFE,
             Interrupt::Reset => 0xFF,
+        }
+    }
+}
+
+impl From<BusError> for Interrupt {
+    fn from(value: BusError) -> Self {
+        match value {
+            BusError::PortOutOfRange | BusError::ReadOnly | BusError::WriteOnly => Interrupt::IllegalMemory,
+            BusError::DeviceEvent => Interrupt::AsyncIO,
+            BusError::EmptyBuffer => Interrupt::StackUnderflow,
+            BusError::InternalSystem => Interrupt::Failure
         }
     }
 }

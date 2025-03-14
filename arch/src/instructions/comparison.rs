@@ -3,9 +3,9 @@ use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
 
-pub fn cmp(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = operand[0].read_word()?;
-    let value2 = operand[1].read_word()?;
+pub fn cmp(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let value1 = operand[0].read_word(cpu)?;
+    let value2 = operand[1].read_word(cpu)?;
 
     cpu.status_register.zero = value1 == value2;
     cpu.status_register.carry = value1 >= value2;
@@ -14,9 +14,9 @@ pub fn cmp(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn lte(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = operand[0].read_word()?;
-    let value2 = operand[1].read_word()?;
+pub fn lte(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let value1 = operand[0].read_word(cpu)?;
+    let value2 = operand[1].read_word(cpu)?;
 
     cpu.status_register.zero = value1 <= value2;
     cpu.status_register.carry = value1 > value2;
@@ -25,9 +25,9 @@ pub fn lte(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
     Ok(())
 }
 
-pub fn gte(operand: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = operand[0].read_word()?;
-    let value2 = operand[1].read_word()?;
+pub fn gte(operand: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let value1 = operand[0].read_word(cpu)?;
+    let value2 = operand[1].read_word(cpu)?;
 
     cpu.status_register.zero = value1 >= value2;
     cpu.status_register.carry = value1 < value2;

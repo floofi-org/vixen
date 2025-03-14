@@ -5,8 +5,9 @@ use crate::CPU;
 use crate::cpu::user_stack::UserStack;
 use crate::InstructionResult;
 
-pub fn psh(operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    cpu.user_stack_push_word(operands[0].read_word()?)
+pub fn psh(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
+    let word = operands[0].read_word(cpu)?;
+    cpu.user_stack_push_word(word)
 }
 
 pub fn pll(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {

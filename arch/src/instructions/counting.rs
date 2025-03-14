@@ -4,7 +4,7 @@ use crate::CPU;
 use crate::InstructionResult;
 
 pub fn inc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let initial = operands[0].read_word()?;
+    let initial = operands[0].read_word(cpu)?;
     let result = initial.overflowing_add(1);
 
     cpu.status_register.carry = result.1;
@@ -15,7 +15,7 @@ pub fn inc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 }
 
 pub fn dec(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let initial = operands[0].read_word()?;
+    let initial = operands[0].read_word(cpu)?;
     let result = initial.overflowing_sub(1);
 
     cpu.status_register.carry = result.1;

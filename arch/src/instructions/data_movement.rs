@@ -4,14 +4,14 @@ use crate::CPU;
 use crate::InstructionResult;
 
 pub fn mov(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value = operands[1].read_word()?;
+    let value = operands[1].read_word(cpu)?;
     operands[0].write_word(cpu, value)?;
     Ok(())
 }
 
 pub fn swp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let value1 = operands[0].read_word()?;
-    let value2 = operands[1].read_word()?;
+    let value1 = operands[0].read_word(cpu)?;
+    let value2 = operands[1].read_word(cpu)?;
     operands[1].write_word(cpu, value1)?;
     operands[0].write_word(cpu, value2)?;
     Ok(())

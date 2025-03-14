@@ -1,6 +1,6 @@
 use alloc::string::String;
 use crate::core::{Interrupt, Operand};
-use crate::{instructions, InstructionResult};
+use crate::{instructions, CPUResult, InstructionResult};
 use crate::CPU;
 
 pub mod addressing;
@@ -16,8 +16,7 @@ pub struct Instruction {
 }
 
 #[allow(clippy::module_name_repetitions)]
-pub struct DecodedInstruction<'a> {
-    pub cpu: &'a CPU,
+pub struct DecodedInstruction {
     pub instruction: u32,
     pub operands: [u32; 3],
     pub modes: [u32; 3],
@@ -61,9 +60,9 @@ impl Instruction {
             Operation::Dec => instructions::dec(&mut self.operands, cpu),
 
             // 0x04?? - Comparison Instructions
-            Operation::Cmp => instructions::cmp(&self.operands, cpu),
-            Operation::Lte => instructions::lte(&self.operands, cpu),
-            Operation::Gte => instructions::gte(&self.operands, cpu),
+            Operation::Cmp => instructions::cmp(&mut self.operands, cpu),
+            Operation::Lte => instructions::lte(&mut self.operands, cpu),
+            Operation::Gte => instructions::gte(&mut self.operands, cpu),
             Operation::Srz => instructions::srz(&mut self.operands, cpu),
             Operation::Src => instructions::src(&mut self.operands, cpu),
             Operation::Sro => instructions::sro(&mut self.operands, cpu),
@@ -90,13 +89,14 @@ impl Instruction {
             Operation::Bno => instructions::bno(&self.operands, cpu),
             Operation::Int => instructions::int(&self.operands, cpu),
             Operation::Irt => instructions::irt(&self.operands, cpu),
+            Operation::Irj => instructions::irj(&self.operands, cpu),
             Operation::Nop => instructions::nop(&self.operands, cpu),
             Operation::Jam => instructions::jam(&self.operands, cpu),
             Operation::Bpl => instructions::bpl(&self.operands, cpu),
             Operation::Bmi => instructions::bmi(&self.operands, cpu),
 
             // 0x07?? - Stack Instructions
-            Operation::Psh => instructions::psh(&self.operands, cpu),
+            Operation::Psh => instructions::psh(&mut self.operands, cpu),
             Operation::Pll => instructions::pll(&mut self.operands, cpu),
             Operation::Php => instructions::php(&self.operands, cpu),
             Operation::Plp => instructions::plp(&self.operands, cpu)
@@ -104,40 +104,35 @@ impl Instruction {
     }
 }
 
-impl TryFrom<DecodedInstruction<'_>> for Instruction {
-    type Error = Interrupt;
-
+impl DecodedInstruction {
     #[allow(clippy::cast_possible_truncation)]
-    fn try_from(value: DecodedInstruction) -> Result<Self, Self::Error> {
-        let operation = Operation::try_from(value.operation as u16)?;
+    pub fn into_instruction(self, cpu: &CPU) -> CPUResult<Instruction> {
+        let operation = Operation::try_from(self.operation as u16)?;
         let modes = [
-            Addressing::try_from(value.modes[0] as u8)?,
-            Addressing::try_from(value.modes[1] as u8)?,
-            Addressing::try_from(value.modes[2] as u8)?
+            Addressing::try_from(self.modes[0] as u8)?,
+            Addressing::try_from(self.modes[1] as u8)?,
+            Addressing::try_from(self.modes[2] as u8)?
         ];
         let operands = [
-            Operand::decode(value.operands[0], value.cpu, modes[0])?,
-            Operand::decode(value.operands[1], value.cpu, modes[1])?,
-            Operand::decode(value.operands[2], value.cpu, modes[2])?
+            Operand::decode(self.operands[0], cpu, modes[0])?,
+            Operand::decode(self.operands[1], cpu, modes[1])?,
+            Operand::decode(self.operands[2], cpu, modes[2])?
         ];
         Ok(Instruction {
             operation,
             operands,
         })
     }
-}
 
-impl From<DecodedInstruction<'_>> for String {
-    #[allow(clippy::cast_possible_truncation)]
-    fn from(value: DecodedInstruction) -> Self {
-        let mut disassembled = Self::new();
-        let operation = Operation::disassemble(value.operation as u16);
+    pub fn disassemble(self, cpu: &CPU) -> String {
+        let mut disassembled = String::new();
+        let operation = Operation::disassemble(self.operation as u16);
         disassembled.push_str(&operation);
 
         let operands_with_modes = [
-            (value.operands[0], value.modes[0]),
-            (value.operands[1], value.modes[1]),
-            (value.operands[2], value.modes[2])
+            (self.operands[0], self.modes[0]),
+            (self.operands[1], self.modes[1]),
+            (self.operands[2], self.modes[2])
         ];
 
         for (i, (operand, mode)) in operands_with_modes.iter().enumerate() {
@@ -150,9 +145,9 @@ impl From<DecodedInstruction<'_>> for String {
                 if i > 0 {
                     disassembled.push_str(", ");
                 }
-                
-                let operand = Operand::disassemble(*operand, value.cpu, mode);
-                disassembled.push_str(&operand);         
+
+                let operand = Operand::disassemble(*operand, cpu, mode);
+                disassembled.push_str(&operand);
             }
         }
 

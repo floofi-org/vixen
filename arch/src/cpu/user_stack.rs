@@ -18,7 +18,7 @@ impl UserStack for CPU {
         } else {
             let bytes = value.to_le_bytes();
             self.memory[(self.stack_pointer as usize)..(self.stack_pointer as usize + 4)].copy_from_slice(&bytes);
-            self.stack_pointer -= 1;
+            self.stack_pointer += 4;
             Ok(())
         }
     }
@@ -27,12 +27,12 @@ impl UserStack for CPU {
         if self.stack_pointer >= 0x1fff_fffb {
             Err(Interrupt::StackUnderflow)
         } else {
-            self.stack_pointer += 4;
+            self.stack_pointer -= 4;
             Ok(u32::from_le_bytes([
-                self.memory[(self.stack_pointer - 4) as usize],
-                self.memory[(self.stack_pointer - 3) as usize],
-                self.memory[(self.stack_pointer - 2) as usize],
-                self.memory[(self.stack_pointer - 1) as usize]
+                self.memory[self.stack_pointer as usize],
+                self.memory[(self.stack_pointer + 1) as usize],
+                self.memory[(self.stack_pointer + 2) as usize],
+                self.memory[(self.stack_pointer + 3) as usize]
             ]))
         }
     }
