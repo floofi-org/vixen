@@ -6,14 +6,14 @@ use crate::cpu::SystemStack;
 use crate::InstructionResult;
 
 pub fn jmp(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].get_address()?;
+    let position = operands[0].get_address()?;
     cpu.system_stack_save_state()?;
     cpu.program_counter = position - 15;
     Ok(())
 }
 
 pub fn jmpl(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
-    let position = &operands[0].get_address()?;
+    let position = operands[0].get_address()?;
     cpu.program_counter = position - 15;
     Ok(())
 }

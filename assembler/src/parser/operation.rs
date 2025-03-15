@@ -135,6 +135,18 @@ impl OperationExt for Operation {
             "pll" => Pop,
             "php" => Pushf,
             "plp" => Popf,
+
+            "wait" => Wait,
+            "jnae" => Jnae,
+            "jae" => Jae,
+            "jna" => Jna,
+            "ja" => Ja,
+            "jl" => Jl,
+            "jge" => Jge,
+            "jle" => Jle,
+            "jg" => Jg,
+            "jp" => Jp,
+            "jnp" => Jnp,
         }
     }
 }

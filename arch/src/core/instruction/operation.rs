@@ -34,43 +34,14 @@ macro_rules! isa {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Operation {
-    /* 0x01?? */ Add, Sub, Mul, Div, Mod,
-    Sqrt,
-    Cbrt,
-    Sqre,
-    Cube, Min, Max,
-    Addc,
-    Subc,
-    Sar,
-    Sal,
-    /* 0x02?? */ And, Or,  Xor, Nor,
-    Nand, Imp, Not, Shl, Shr, Rol, Ror,
+    /* 0x01?? */ Add, Sub, Mul, Div, Mod, Sqrt, Cbrt, Sqre, Cube, Min, Max, Addc, Subc, Sar, Sal,
+    /* 0x02?? */ And, Or,  Xor, Nor, Nand, Imp, Not, Shl, Shr, Rol, Ror,
     /* 0x03?? */ Inc, Dec,
-    /* 0x04?? */ Cmp, Lte, Gte,
-    Setz,
-    Setc,
-    Seto,
-    /* 0x05?? */ Mov,
-    Xchg, Clr,
-    Stc, Clc,
-    Sti, Cli, Clv,
-    /* 0x06?? */ Jmp, Jmpl, Ret,
-    Jz,
-    Jnz,
-    Jc,
-    Jnc,
-    Jo,
-    Jno, Int,
-    Iret,
-    Irets, Nop,
-    Hlt,
-    Js,
-    Jns,
-    /* 0x07?? */
-    Push,
-    Pop,
-    Pushf,
-    Popf
+    /* 0x04?? */ Cmp, Lte, Gte, Setz, Setc, Seto,
+    /* 0x05?? */ Mov, Xchg, Clr, Stc, Clc, Sti, Cli, Clv,
+    /* 0x06?? */ Jmp, Jmpl, Ret, Jz, Jnz, Jc, Jnc, Jo, Jno, Int, Iret, Irets, Nop, Hlt, Js, Jns,
+    /* 0x07?? */ Push, Pop, Pushf, Popf,
+    /* 0x08?? */ Wait, Jnae, Jae, Jna, Ja, Jl, Jge, Jle, Jg, Jp, Jnp
 }
 
 impl Display for Operation {
@@ -165,5 +136,18 @@ isa! {
     0x070 => Push,
     0x071 => Pop,
     0x072 => Pushf,
-    0x073 => Popf
+    0x073 => Popf,
+
+    // 0x08?? - AFE: Advanced Flow Extension
+    0x080 => Wait,
+    0x081 => Jnae,
+    0x082 => Jae,
+    0x083 => Jna,
+    0x084 => Ja,
+    0x085 => Jl,
+    0x086 => Jge,
+    0x087 => Jle,
+    0x088 => Jg,
+    0x089 => Jp,
+    0x08A => Jnp
 }

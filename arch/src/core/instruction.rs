@@ -100,7 +100,20 @@ impl Instruction {
             Operation::Push => instructions::push(&mut self.operands, cpu),
             Operation::Pop => instructions::pop(&mut self.operands, cpu),
             Operation::Pushf => instructions::pushf(&self.operands, cpu),
-            Operation::Popf => instructions::popf(&self.operands, cpu)
+            Operation::Popf => instructions::popf(&self.operands, cpu),
+            
+            // 0x08?? - AFE: Advanced Flow Extension
+            Operation::Wait => instructions::wait(&self.operands, cpu),
+            Operation::Jnae => instructions::jnae(&mut self.operands, cpu),
+            Operation::Jae => instructions::jae(&mut self.operands, cpu),
+            Operation::Jna => instructions::jna(&mut self.operands, cpu),
+            Operation::Ja => instructions::ja(&mut self.operands, cpu),
+            Operation::Jl => instructions::jl(&mut self.operands, cpu),
+            Operation::Jge => instructions::jge(&mut self.operands, cpu),
+            Operation::Jle => instructions::jle(&mut self.operands, cpu),
+            Operation::Jg => instructions::jg(&mut self.operands, cpu),
+            Operation::Jp => instructions::jp(&mut self.operands, cpu),
+            Operation::Jnp => instructions::jnp(&mut self.operands, cpu)
         }
     }
 }
