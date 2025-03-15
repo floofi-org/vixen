@@ -48,7 +48,7 @@ impl Display for StackTrace<'_> {
                sp = cpu.stack_pointer,
                sr = cpu.status_register,
                pc = cpu.program_counter,
-               state = cpu.extract_instruction(cpu.program_counter),
+               state = cpu.extract_instruction_infailible(cpu.program_counter),
                disassembler = cpu.read_instruction_string(cpu.program_counter),
                stack_trace = stack_trace,
         )

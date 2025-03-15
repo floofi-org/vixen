@@ -44,7 +44,7 @@ fn disassemble_rom(mut cpu: CPU, rom: &[u8]) -> String {
         let text = cpu.read_instruction_string(position);
 
         disassembled.push_str(&format!("{text:<32} ; {position:0>8x}: {}",
-                                       cpu.extract_instruction(position)));
+                                       cpu.extract_instruction_infailible(position)));
         disassembled.push('\n');
         cpu.program_counter += 15;
     }

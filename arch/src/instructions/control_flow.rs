@@ -24,7 +24,7 @@ pub fn ret(_operands: &[Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 pub fn jz(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.zero {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     } else {
         Ok(())
     }
@@ -34,13 +34,13 @@ pub fn jnz(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.zero {
         Ok(())
     } else {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     }
 }
 
 pub fn jc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.carry {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     } else {
         Ok(())
     }
@@ -50,13 +50,13 @@ pub fn jnc(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.carry {
         Ok(())
     } else {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     }
 }
 
 pub fn jo(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.overflow {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     } else {
         Ok(())
     }
@@ -66,7 +66,7 @@ pub fn jno(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.overflow {
         Ok(())
     } else {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     }
 }
 
@@ -118,7 +118,7 @@ pub fn hlt(_operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
 
 pub fn js(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.negative {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     } else {
         Ok(())
     }
@@ -126,7 +126,7 @@ pub fn js(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
 
 pub fn jns(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     if cpu.status_register.negative {
-        jmp(operands, cpu)
+        jmpl(operands, cpu)
     } else {
         Ok(())
     }

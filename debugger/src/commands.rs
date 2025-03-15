@@ -2,7 +2,7 @@ use std::process::exit;
 use vdbg::dump_memory;
 use vixen::{CPUResult, CPU};
 use vixen::core::instruction::{Addressing, Operation};
-use vixen::core::{Instruction, MemoryCell, Operand, StackTrace};
+use vixen::core::{Instruction, Interrupt, MemoryCell, Operand, StackTrace};
 use vixen::cpu::Decoder;
 use crate::DebuggerState;
 
@@ -88,39 +88,46 @@ pub fn interrupt(state: &mut DebuggerState, cpu: &mut CPU) {
 #[allow(clippy::cast_possible_truncation)]
 pub fn expand(cpu: &mut CPU) {
 
-    let info = cpu.decode_instruction(cpu.program_counter);
-    print!("{:0>3x}: {} @ {:0>8x}", info.operation, Operation::disassemble(info.operation as u16).trim(), cpu.program_counter);
-    let parsed: CPUResult<Instruction> = cpu.decode_instruction(cpu.program_counter).into_instruction(cpu);
-    if parsed.is_err() {
-        print!(" <!>");
-    }
-    println!();
+    if let Ok(info) = cpu.decode_instruction(cpu.program_counter) {
+        print!("{:0>3x}: {} @ {:0>8x}", info.operation, Operation::disassemble(info.operation as u16).trim(), cpu.program_counter);
+        let parsed: CPUResult<Instruction> = if let Ok(i) = cpu.decode_instruction(cpu.program_counter) {
+            i.into_instruction(cpu)
+        } else {
+            Err(Interrupt::IllegalMemory)
+        };
+        if parsed.is_err() {
+            print!(" <!>");
+        }
+        println!();
 
-    for (i, operand) in info.operands.iter().enumerate() {
-        let mode = info.modes[i];
-        print!("    mem {mode:x}: ");
+        for (i, operand) in info.operands.iter().enumerate() {
+            let mode = info.modes[i];
+            print!("    mem {mode:x}: ");
 
-        if let Ok(decoded_mode) = Addressing::try_from(mode as u8) {
-            println!("{decoded_mode:?}");
-            print!("        {:0>8x}: {}",
-                operand,
-                Operand::disassemble(*operand, cpu, decoded_mode)
-            );
-            if let Addressing::Indirect | Addressing::RegisterIndirect = decoded_mode {
-                print!(" -> ");
-                match Operand::decode(*operand, cpu, decoded_mode) {
-                    Ok(mut decoded_operand) => match decoded_operand.read_word(cpu) {
-                        Ok(word) => println!("{word:0>8x}"),
+            if let Ok(decoded_mode) = Addressing::try_from(mode as u8) {
+                println!("{decoded_mode:?}");
+                print!("        {:0>8x}: {}",
+                       operand,
+                       Operand::disassemble(*operand, cpu, decoded_mode)
+                );
+                if let Addressing::Indirect | Addressing::RegisterIndirect = decoded_mode {
+                    print!(" -> ");
+                    match Operand::decode(*operand, cpu, decoded_mode) {
+                        Ok(mut decoded_operand) => match decoded_operand.read_word(cpu) {
+                            Ok(word) => println!("{word:0>8x}"),
+                            Err(_) => println!("?")
+                        },
                         Err(_) => println!("?")
-                    },
-                    Err(_) => println!("?")
+                    }
+                } else {
+                    println!();
                 }
             } else {
-                println!();
+                println!("        !?");
             }
-        } else {
-            println!("        !?");
         }
+    } else {
+        println!("<!>");
     }
 }
 
