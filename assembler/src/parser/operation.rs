@@ -22,6 +22,7 @@ pub trait OperationExt: Sized {
 }
 
 impl OperationExt for Operation {
+    #[allow(clippy::too_many_lines)]
     fn parse(mut name: String) -> Result<Self, ParseError> {
         name.make_ascii_lowercase();
 
@@ -102,6 +103,18 @@ impl OperationExt for Operation {
             "pop" => Pop,
             "pushf" => Pushf,
             "popf" => Popf,
+            
+            
+            "jnae" => Jnae,
+            "jae" => Jae,
+            "jna" => Jna,
+            "ja" => Ja,
+            "jl" => Jl,
+            "jge" => Jge,
+            "jle" => Jle,
+            "jg" => Jg,
+            "jp" => Jp,
+            "jnp" => Jnp,
 
             // Aliases for old mnemonics
             "jsr" => Jmp,
@@ -134,19 +147,7 @@ impl OperationExt for Operation {
             "psh" => Push,
             "pll" => Pop,
             "php" => Pushf,
-            "plp" => Popf,
-
-            "wait" => Wait,
-            "jnae" => Jnae,
-            "jae" => Jae,
-            "jna" => Jna,
-            "ja" => Ja,
-            "jl" => Jl,
-            "jge" => Jge,
-            "jle" => Jle,
-            "jg" => Jg,
-            "jp" => Jp,
-            "jnp" => Jnp,
+            "plp" => Popf
         }
     }
 }

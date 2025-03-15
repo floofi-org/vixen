@@ -41,7 +41,7 @@ pub enum Operation {
     /* 0x05?? */ Mov, Xchg, Clr, Stc, Clc, Sti, Cli, Clv,
     /* 0x06?? */ Jmp, Jmpl, Ret, Jz, Jnz, Jc, Jnc, Jo, Jno, Int, Iret, Irets, Nop, Hlt, Js, Jns,
     /* 0x07?? */ Push, Pop, Pushf, Popf,
-    /* 0x08?? */ Wait, Jnae, Jae, Jna, Ja, Jl, Jge, Jle, Jg, Jp, Jnp
+    /* 0x08?? */ Jnae, Jae, Jna, Ja, Jl, Jge, Jle, Jg, Jp, Jnp
 }
 
 impl Display for Operation {
@@ -139,15 +139,14 @@ isa! {
     0x073 => Popf,
 
     // 0x08?? - AFE: Advanced Flow Extension
-    0x080 => Wait,
-    0x081 => Jnae,
-    0x082 => Jae,
-    0x083 => Jna,
-    0x084 => Ja,
-    0x085 => Jl,
-    0x086 => Jge,
-    0x087 => Jle,
-    0x088 => Jg,
-    0x089 => Jp,
-    0x08A => Jnp
+    0x080 => Jnae,
+    0x081 => Jae,
+    0x082 => Jna,
+    0x083 => Ja,
+    0x084 => Jl,
+    0x085 => Jge,
+    0x086 => Jle,
+    0x087 => Jg,
+    0x088 => Jp,
+    0x089 => Jnp
 }

@@ -103,7 +103,6 @@ impl Instruction {
             Operation::Popf => instructions::popf(&self.operands, cpu),
             
             // 0x08?? - AFE: Advanced Flow Extension
-            Operation::Wait => instructions::wait(&self.operands, cpu),
             Operation::Jnae => instructions::jnae(&mut self.operands, cpu),
             Operation::Jae => instructions::jae(&mut self.operands, cpu),
             Operation::Jna => instructions::jna(&mut self.operands, cpu),

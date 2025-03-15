@@ -3,10 +3,6 @@ use crate::core::Operand;
 use crate::CPU;
 use crate::InstructionResult;
 
-pub fn wait(_operands: &[Operand; 3], _cpu: &mut CPU) -> InstructionResult {
-    todo!()
-}
-
 pub fn jnae(operands: &mut [Operand; 3], cpu: &mut CPU) -> InstructionResult {
     let val1 = operands[0].read_word(cpu)?;
     let val2 = operands[1].read_word(cpu)?;
